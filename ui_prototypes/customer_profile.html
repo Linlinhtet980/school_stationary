@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Supply - My Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FFD200;
+            --secondary: #0B2149;
+            --bg-light: #F8F9FA;
+            --text-dark: #0B2149;
+            --text-light: #FFFFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #FDFDF7; color: var(--text-dark); overflow-x: hidden; }
+
+        /* Navbar (Reused) */
+        .navbar { display: flex; align-items: center; padding: 1rem 2rem; background: white; position: relative; border-bottom: 1px solid #E2E8F0; }
+        .logo-container { display: flex; align-items: center; gap: 10px; z-index: 2; width: 250px; }
+        .logo-icon { color: var(--primary); font-size: 2rem; }
+        .logo-text { font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--secondary); text-transform: uppercase; }
+        .nav-right-bg { position: absolute; right: 0; top: 0; bottom: 0; left: 240px; background-color: var(--secondary); border-bottom-left-radius: 40px; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-light); text-decoration: none; font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; }
+        .nav-actions { display: flex; align-items: center; gap: 1.5rem; }
+        .icons { display: flex; gap: 1.2rem; align-items: center; color: white; font-size: 1.2rem; }
+        .cart-wrapper { position: relative; }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: var(--primary); color: var(--secondary); font-size: 0.7rem; font-weight: 800; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+
+        /* Profile Layout */
+        .profile-container { display: flex; max-width: 1200px; margin: 3rem auto; gap: 3rem; padding: 0 2rem; }
+        
+        /* Sidebar Menu */
+        .profile-sidebar { width: 250px; flex-shrink: 0; }
+        .user-card { background: white; padding: 2rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 2rem; }
+        .user-avatar { width: 80px; height: 80px; background: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: var(--secondary); margin: 0 auto 1rem; }
+        .user-name { font-weight: 900; font-size: 1.2rem; }
+        .user-email { color: #888; font-size: 0.9rem; }
+        
+        .profile-menu { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .menu-item { display: flex; align-items: center; gap: 1rem; padding: 1.2rem 1.5rem; color: var(--text-dark); text-decoration: none; font-weight: 600; border-bottom: 1px solid #F0F0F0; transition: 0.2s; }
+        .menu-item:hover { background: #F8F9FA; padding-left: 1.8rem; }
+        .menu-item.active { border-left: 4px solid var(--primary); background: #FDFDF7; }
+        .menu-item i { width: 20px; color: #888; }
+        .menu-item.active i { color: var(--secondary); }
+
+        /* Main Content */
+        .profile-main { flex-grow: 1; }
+        .section-box { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 2rem; }
+        .section-title { font-size: 1.5rem; font-weight: 900; color: var(--secondary); margin-bottom: 1.5rem; }
+        
+        /* Order History Table */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #F0F0F0; }
+        th { color: #888; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        td { font-weight: 600; }
+        .status-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
+        .status-delivered { background: #E6FFFA; color: #38A169; }
+        .status-processing { background: #FFFBEB; color: #D69E2E; }
+        .btn-view { background: none; border: 1px solid #CCC; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-view:hover { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+        /* Addresses */
+        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .address-card { border: 2px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; position: relative; }
+        .address-card.default { border-color: var(--secondary); }
+        .default-badge { position: absolute; top: -10px; right: 20px; background: var(--secondary); color: white; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.8rem; border-radius: 10px; }
+        .address-name { font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .address-text { color: #666; line-height: 1.6; margin-bottom: 1rem; }
+        .address-actions { display: flex; gap: 10px; }
+        .address-actions a { color: var(--secondary); font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+        .address-actions a:hover { text-decoration: underline; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <i class="fa-solid fa-graduation-cap logo-icon"></i>
+            <div class="logo-text">CAMPUS<br>SUPPLY</div>
+        </div>
+        <div class="nav-right-bg">
+            <div class="nav-links">
+                <a href="#">HOME</a>
+                <a href="#">PRODUCTS</a>
+                <a href="#">NEW ARRIVALS</a>
+            </div>
+            <div class="nav-actions">
+                <div class="icons">
+                    <i class="fa-solid fa-user" style="color:var(--primary);"></i>
+                    <i class="fa-regular fa-heart"></i>
+                    <div class="cart-wrapper">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="user-card">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-name">John Doe</div>
+                <div class="user-email">john.doe@example.com</div>
+            </div>
+
+            <div class="profile-menu">
+                <a href="#" class="menu-item active"><i class="fa-solid fa-box"></i> Order History</a>
+                <a href="#" class="menu-item"><i class="fa-regular fa-heart"></i> Wishlist</a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-location-dot"></i> Saved Addresses</a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Account Settings</a>
+                <a href="#" class="menu-item" style="color: #E53E3E;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="profile-main">
+            
+            <div class="section-box">
+                <h2 class="section-title">Recent Orders</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#ORD-9824</td>
+                            <td>May 28, 2026</td>
+                            <td>$58.98</td>
+                            <td><span class="status-badge status-processing">Processing</span></td>
+                            <td><button class="btn-view">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-7611</td>
+                            <td>Apr 15, 2026</td>
+                            <td>$124.50</td>
+                            <td><span class="status-badge status-delivered">Delivered</span></td>
+                            <td><button class="btn-view">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-5503</td>
+                            <td>Jan 02, 2026</td>
+                            <td>$18.00</td>
+                            <td><span class="status-badge status-delivered">Delivered</span></td>
+                            <td><button class="btn-view">View Details</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                    <h2 class="section-title" style="margin:0;">Shipping Addresses</h2>
+                    <button class="btn-view" style="background:var(--primary); color:var(--secondary); border:none;"><i class="fa-solid fa-plus"></i> Add New</button>
+                </div>
+                
+                <div class="address-grid">
+                    <div class="address-card default">
+                        <span class="default-badge">Default</span>
+                        <div class="address-name">John Doe</div>
+                        <div class="address-text">
+                            123 Campus Drive, Apt 4B<br>
+                            New York, NY 10001<br>
+                            United States
+                        </div>
+                        <div class="address-actions">
+                            <a href="#">Edit</a>
+                            <a href="#" style="color:#E53E3E;">Delete</a>
+                        </div>
+                    </div>
+                    <div class="address-card">
+                        <div class="address-name">John Doe (Office)</div>
+                        <div class="address-text">
+                            456 Business Blvd, Suite 200<br>
+                            Brooklyn, NY 11201<br>
+                            United States
+                        </div>
+                        <div class="address-actions">
+                            <a href="#">Edit</a>
+                            <a href="#" style="color:#E53E3E;">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

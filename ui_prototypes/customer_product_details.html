@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Supply - Product Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FFD200;
+            --secondary: #0B2149;
+            --bg-light: #F8F9FA;
+            --text-dark: #0B2149;
+            --text-light: #FFFFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #FDFDF7; color: var(--text-dark); overflow-x: hidden; }
+
+        /* Navbar (Reused) */
+        .navbar { display: flex; align-items: center; padding: 1rem 2rem; background: white; position: relative; }
+        .logo-container { display: flex; align-items: center; gap: 10px; z-index: 2; width: 250px; }
+        .logo-icon { color: var(--primary); font-size: 2rem; }
+        .logo-text { font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--secondary); text-transform: uppercase; }
+        .nav-right-bg { position: absolute; right: 0; top: 0; bottom: 0; left: 240px; background-color: var(--secondary); border-bottom-left-radius: 40px; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-light); text-decoration: none; font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; }
+        .nav-actions { display: flex; align-items: center; gap: 1.5rem; }
+        .search-bar { background: white; border-radius: 20px; padding: 0.5rem 1rem; display: flex; align-items: center; width: 250px; }
+        .search-bar input { border: none; outline: none; width: 100%; font-size: 0.9rem; }
+        .search-bar i { color: #888; }
+        .icons { display: flex; gap: 1.2rem; align-items: center; color: white; font-size: 1.2rem; }
+        .cart-wrapper { position: relative; }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: var(--primary); color: var(--secondary); font-size: 0.7rem; font-weight: 800; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+
+        /* Breadcrumb */
+        .breadcrumb { padding: 2rem 2rem 0; color: #888; font-weight: 600; font-size: 0.9rem; }
+        .breadcrumb a { color: var(--secondary); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Product Details Layout */
+        .product-container { display: flex; padding: 2rem; gap: 4rem; max-width: 1200px; margin: 0 auto; }
+        
+        .product-image-section { flex: 1; }
+        .main-image { width: 100%; height: 500px; object-fit: contain; background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .thumbnail-list { display: flex; gap: 1rem; margin-top: 1rem; }
+        .thumbnail { width: 80px; height: 80px; object-fit: contain; background: white; border-radius: 10px; padding: 0.5rem; border: 2px solid transparent; cursor: pointer; }
+        .thumbnail.active { border-color: var(--primary); }
+
+        .product-info-section { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .brand-name { color: #888; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .product-title { font-size: 2.5rem; font-weight: 900; line-height: 1.2; color: var(--secondary); margin-bottom: 1rem; }
+        .reviews-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .stars { color: var(--primary); }
+        .review-count { color: #666; font-weight: 600; text-decoration: underline; cursor: pointer; }
+        
+        .price-section { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+        .current-price { font-size: 2.5rem; font-weight: 900; color: var(--secondary); }
+        .original-price { font-size: 1.2rem; color: #999; text-decoration: line-through; font-weight: 600; }
+        .stock-status { color: #38A169; font-weight: 800; background: #E6FFFA; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+
+        .description { color: #555; line-height: 1.6; margin-bottom: 2rem; }
+
+        /* Options */
+        .options-group { margin-bottom: 1.5rem; }
+        .options-title { font-weight: 800; color: var(--secondary); margin-bottom: 0.5rem; }
+        .color-options { display: flex; gap: 10px; }
+        .color-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px #CCC; cursor: pointer; }
+        .color-btn.active { box-shadow: 0 0 0 2px var(--secondary); }
+
+        /* Add to Cart Actions */
+        .actions-row { display: flex; gap: 1rem; margin-top: 1rem; }
+        .qty-selector { display: flex; align-items: center; background: white; border: 1px solid #CCC; border-radius: 8px; overflow: hidden; }
+        .qty-btn { background: none; border: none; padding: 0 1rem; font-size: 1.2rem; font-weight: 800; color: var(--secondary); cursor: pointer; }
+        .qty-input { width: 50px; text-align: center; border: none; font-size: 1.1rem; font-weight: 800; color: var(--secondary); }
+        
+        .btn-add-huge { flex-grow: 1; background: var(--primary); color: var(--secondary); border: none; border-radius: 8px; font-size: 1.2rem; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 210, 0, 0.3); }
+        .btn-add-huge:hover { background: #E6BE00; transform: translateY(-2px); }
+        
+        .btn-wishlist { background: white; border: 1px solid #CCC; color: var(--secondary); width: 60px; border-radius: 8px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; }
+        .btn-wishlist:hover { color: #E53E3E; border-color: #E53E3E; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <!-- ... Same Navbar Content ... -->
+        <div class="logo-container">
+            <i class="fa-solid fa-graduation-cap logo-icon"></i>
+            <div class="logo-text">CAMPUS<br>SUPPLY</div>
+        </div>
+        <div class="nav-right-bg">
+            <div class="nav-links">
+                <a href="customerview.html">HOME</a>
+                <a href="customer_shop.html" class="active">PRODUCTS</a>
+                <a href="customer_new_arrivals.html">NEW ARRIVALS</a>
+                <a href="customer_bestsellers.html">BESTSELLERS</a>
+                <a href="customer_b2s_deals.html">B2S DEALS</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="icons">
+                    <a href="customer_profile.html" style="color:white;"><i class="fa-regular fa-user"></i></a>
+                    <i class="fa-regular fa-heart"></i>
+                    <a href="customer_cart_checkout.html" style="color:white; text-decoration:none;">
+                        <div class="cart-wrapper">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span class="cart-badge">3</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="#">Home</a> / <a href="#">Products</a> / <a href="#">Notebooks</a> / Eco-Friendly A5 Notebook
+    </div>
+
+    <div class="product-container">
+        <!-- Image Section -->
+        <div class="product-image-section">
+            <img src="https://images.unsplash.com/photo-1531346878377-a5f20ce31158?w=600" class="main-image" alt="Product Image">
+            <div class="thumbnail-list">
+                <img src="https://images.unsplash.com/photo-1531346878377-a5f20ce31158?w=100" class="thumbnail active">
+                <img src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=100" class="thumbnail">
+                <img src="https://images.unsplash.com/photo-1516382772591-64508d249fbe?w=100" class="thumbnail">
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="product-info-section">
+            <div class="brand-name">Moleskine</div>
+            <h1 class="product-title">Eco-Friendly A5 Notebook - Navy Blue Edition</h1>
+            
+            <div class="reviews-summary">
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="review-count">4.8 (124 Reviews)</div>
+            </div>
+
+            <div class="price-section">
+                <div class="current-price">$18.99</div>
+                <div class="original-price">$24.99</div>
+                <div class="stock-status">In Stock</div>
+            </div>
+
+            <p class="description">
+                Elevate your note-taking with our premium eco-friendly A5 notebook. Crafted with sustainable materials, it features 160 pages of thick, bleed-resistant paper perfect for fountain pens and markers. The durable hardcover protects your ideas, while the elastic closure keeps everything secure.
+            </p>
+
+            <div class="options-group">
+                <div class="options-title">Color: <span style="font-weight: normal; color:#666;">Navy Blue</span></div>
+                <div class="color-options">
+                    <div class="color-btn active" style="background-color: #0B2149;"></div>
+                    <div class="color-btn" style="background-color: #FFD200;"></div>
+                    <div class="color-btn" style="background-color: #E53E3E;"></div>
+                    <div class="color-btn" style="background-color: #38A169;"></div>
+                </div>
+            </div>
+
+            <div class="actions-row">
+                <div class="qty-selector">
+                    <button class="qty-btn">-</button>
+                    <input type="text" class="qty-input" value="1" readonly>
+                    <button class="qty-btn">+</button>
+                </div>
+                <button class="btn-add-huge">
+                    <i class="fa-solid fa-cart-shopping" style="margin-right: 10px;"></i> Add to Cart
+                </button>
+                <button class="btn-wishlist">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

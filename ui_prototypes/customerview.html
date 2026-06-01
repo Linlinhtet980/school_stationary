@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Supply - Premium Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FFD200; /* Yellow */
+            --secondary: #0B2149; /* Navy Blue */
+            --bg-light: #F8F9FA;
+            --text-dark: #0B2149;
+            --text-light: #FFFFFF;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #FDFDF7; color: var(--text-dark); overflow-x: hidden; }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: white;
+            position: relative;
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; z-index: 2; width: 250px; }
+        .logo-img { width: 45px; height: 45px; object-fit: contain; border-radius: 8px; }
+        .logo-text { font-size: 1.6rem; font-weight: 900; color: var(--secondary); letter-spacing: -0.5px; display: flex; flex-direction: column; line-height: 0.9; }
+        .logo-text span { font-weight: 800; font-size: 0.75rem; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+        .nav-right-bg {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            left: 240px;
+            background-color: var(--secondary);
+            border-bottom-left-radius: 40px;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .nav-links a.active { color: var(--primary); }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .search-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            width: 250px;
+        }
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .search-bar i { color: #888; }
+        .icons { display: flex; gap: 1.2rem; align-items: center; color: white; font-size: 1.2rem; }
+        .cart-wrapper { position: relative; }
+        .cart-badge {
+            position: absolute; top: -8px; right: -8px;
+            background: var(--primary); color: var(--secondary);
+            font-size: 0.7rem; font-weight: 800;
+            width: 16px; height: 16px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Hero Banner */
+        .hero-container { padding: 2rem; }
+        .hero {
+            background-color: #EBF3FA;
+            border-radius: 20px;
+            position: relative;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+        }
+        .hero-bg-shape1 { position: absolute; top: -50px; left: -50px; width: 300px; height: 300px; background: var(--primary); border-radius: 50%; opacity: 0.9; }
+        .hero-bg-shape2 { position: absolute; bottom: -50px; right: -50px; width: 400px; height: 300px; background: var(--primary); border-radius: 100px 0 0 0; }
+        .hero-bg-shape3 { position: absolute; bottom: -20px; left: 100px; width: 250px; height: 250px; background: var(--secondary); border-radius: 50%; }
+        .hero-bg-shape4 { position: absolute; top: 0; right: 0; width: 300px; height: 100%; background: var(--secondary); border-radius: 0 20px 20px 200px; }
+        
+        .hero-content { position: relative; z-index: 10; max-width: 600px; }
+        .hero h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 1rem; color: var(--secondary); }
+        .hero p { font-size: 1.1rem; font-weight: 600; margin-bottom: 2rem; color: #333; }
+        .btn-shop {
+            background: var(--primary); color: var(--secondary);
+            padding: 1rem 2.5rem; border-radius: 30px; font-weight: 800; font-size: 1.1rem;
+            text-decoration: none; display: inline-block; border: none; cursor: pointer;
+        }
+
+        /* Sections */
+        .section { padding: 3rem 2rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .section-title { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; color: var(--secondary); }
+        .arrows { display: flex; gap: 0.5rem; }
+        .arrow { width: 30px; height: 30px; border-radius: 50%; background: #E2E8F0; display: flex; justify-content: center; align-items: center; color: var(--secondary); cursor: pointer; }
+
+        /* Product Grid */
+        .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .card {
+            background: white; border-radius: 16px; padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: left;
+        }
+        .card-img { width: 100%; height: 200px; object-fit: contain; background: #F8F9FA; border-radius: 12px; margin-bottom: 1rem; padding: 1rem; }
+        .card-title { font-size: 1rem; font-weight: 800; margin-bottom: 0.2rem; }
+        .card-desc { font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; }
+        .card-price-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .card-price { font-size: 1.2rem; font-weight: 900; }
+        .stars { color: var(--primary); font-size: 0.8rem; }
+        .btn-add {
+            width: 100%; background: var(--primary); color: var(--secondary);
+            padding: 0.8rem; border-radius: 8px; border: none; font-weight: 800;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+
+        /* Dark Section */
+        .dark-section { background: var(--secondary); color: white; position: relative; overflow: hidden; padding-bottom: 5rem;}
+        .dark-section .section-title { color: white; }
+        .dark-shape1 { position: absolute; bottom: 0; right: -50px; width: 300px; height: 200px; background: var(--primary); border-radius: 200px 0 0 0; }
+        .dark-shape2 { position: absolute; top: 100px; left: -50px; width: 150px; height: 150px; background: var(--primary); border-radius: 50%; }
+        .dark-section .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .dark-section .card-img { background: white; }
+        .dark-section .card-desc { color: #DDD; }
+
+        /* Contact Section */
+        .contact-section { background: #EBF3FA; padding: 4rem 2rem; text-align: center; }
+        .contact-container { max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .contact-container h2 { font-size: 2rem; color: var(--secondary); margin-bottom: 1rem; font-weight: 900; }
+        .contact-container p { color: #555; margin-bottom: 2rem; }
+        .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+        .contact-form input, .contact-form textarea { width: 100%; padding: 1rem; border: 1px solid #CCC; border-radius: 8px; font-family: 'Inter', sans-serif; outline: none;}
+        .contact-form input:focus, .contact-form textarea:focus { border-color: var(--secondary); }
+        .contact-form button { background: var(--primary); color: var(--secondary); border: none; padding: 1rem; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .contact-form button:hover { background: #E6BE00; }
+
+        /* Footer */
+        .footer { background: var(--secondary); color: white; padding: 4rem 2rem 2rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; margin-bottom: 3rem; text-align: left; }
+        .footer-col h3 { color: var(--primary); margin-bottom: 1.5rem; font-weight: 800; font-size: 1.2rem; }
+        .footer-col p { color: #DDD; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.8rem; }
+        .footer-links a { color: #DDD; text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+        .footer-links a:hover { color: var(--primary); }
+        .social-icons { display: flex; gap: 1rem; margin-top: 1rem; }
+        .social-icons a { color: white; background: rgba(255,255,255,0.1); width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 50%; transition: 0.3s; text-decoration: none; }
+        .social-icons a:hover { background: var(--primary); color: var(--secondary); }
+        .footer-bottom { text-align: center; color: #888; font-size: 0.9rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img">
+            <div class="logo-text">CAMPUS<span>SUPPLY</span></div>
+        </div>
+        <div class="nav-right-bg">
+            <div class="nav-links">
+                <a href="customerview.html" class="active">HOME</a>
+                <a href="customer_shop.html">PRODUCTS</a>
+                <a href="customer_new_arrivals.html">NEW ARRIVALS</a>
+                <a href="customer_bestsellers.html">BESTSELLERS</a>
+                <a href="customer_b2s_deals.html">B2S DEALS</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="icons">
+                    <a href="customer_profile.html" style="color:white;"><i class="fa-regular fa-user"></i></a>
+                    <i class="fa-regular fa-heart"></i>
+                    <a href="customer_cart_checkout.html" style="color:white; text-decoration:none;">
+                        <div class="cart-wrapper">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span class="cart-badge">3</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-container">
+        <div class="hero">
+            <div class="hero-bg-shape1"></div>
+            <div class="hero-bg-shape3"></div>
+            <div class="hero-bg-shape4"></div>
+            <div class="hero-bg-shape2"></div>
+            
+            <div class="hero-content">
+                <h1>BACK TO SCHOOL<br>ESSENTIALS</h1>
+                <p>Gear up for the new semester! Premium stationery,<br>quality supplies, and huge savings.</p>
+                <button class="btn-shop" onclick="window.location.href='customer_shop.html'">SHOP NOW &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">OUR BESTSELLERS</h2>
+            <div class="arrows">
+                <div class="arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+        </div>
+        <div class="product-grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1531346878377-a5f20ce31158?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Notebook">
+                <div class="card-title">Eco-Friendly A5 Notebook</div>
+                <div class="card-desc">Navy/Yellow</div>
+                <div class="card-price-row">
+                    <div class="card-price">$8.99</div>
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Notebook">
+                <div class="card-title">Moleskine Classic L</div>
+                <div class="card-desc">Navy</div>
+                <div class="card-price-row">
+                    <div class="card-price">$19.99</div>
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1516382772591-64508d249fbe?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Notebook">
+                <div class="card-title">Spiral Bound Journal</div>
+                <div class="card-desc">Yellow</div>
+                <div class="card-price-row">
+                    <div class="card-price">$6.50</div>
+                </div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1522881113591-b6a3861c83ec?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Notebook">
+                <div class="card-title">Rocketbook Smart</div>
+                <div class="card-desc">Notebook</div>
+                <div class="card-price-row">
+                    <div class="card-price">$29.99</div>
+                </div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section dark-section">
+        <div class="dark-shape1"></div>
+        <div class="dark-shape2"></div>
+        <div class="section-header" style="position:relative; z-index:2;">
+            <h2 class="section-title">FEATURED PENS & MARKERS</h2>
+            <div class="arrows">
+                <div class="arrow" style="background: rgba(255,255,255,0.2); color:white;"><i class="fa-solid fa-chevron-left"></i></div>
+                <div class="arrow" style="background: var(--primary); color:var(--secondary);"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+        </div>
+        <div class="product-grid" style="position:relative; z-index:2;">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Pens">
+                <div class="card-title">Uni-ball Onyx Pens</div>
+                <div class="stars" style="margin-bottom:0.2rem"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <div class="card-price" style="margin-bottom:1rem; color:var(--primary);">$12.00</div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1601646738986-e887e5b56dc6?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Pens">
+                <div class="card-title">Zebra Sarasa Gel</div>
+                <div class="stars" style="margin-bottom:0.2rem"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <div class="card-price" style="margin-bottom:1rem; color:var(--primary);">$15.99</div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1568285521976-1b417e1329c3?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Markers">
+                <div class="card-title">Stabilo Boss Highlighters</div>
+                <div class="stars" style="margin-bottom:0.2rem"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <div class="card-price" style="margin-bottom:1rem; color:var(--primary);">$10.50</div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1549887552-cb1071d3e5ca?w=300" class="card-img" style="cursor:pointer;" onclick="window.location.href='customer_product_details.html'" alt="Markers">
+                <div class="card-title">Copic Marker Set</div>
+                <div class="stars" style="margin-bottom:0.2rem"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <div class="card-price" style="margin-bottom:1rem; color:var(--primary);">$75.00</div>
+                <button class="btn-add" onclick="window.location.href='customer_cart_checkout.html'"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section">
+        <div class="contact-container">
+            <h2>GET IN TOUCH</h2>
+            <p>Have questions about your order or need help finding specific stationery? Send us a message!</p>
+            <form class="contact-form">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea rows="4" placeholder="How can we help you?" required></textarea>
+                <button type="button">SEND MESSAGE</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>CAMPUS SUPPLY</h3>
+                <p>Your one-stop premium stationery store. We provide high-quality school and office supplies to fuel your creativity and productivity.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>QUICK LINKS</h3>
+                <ul class="footer-links">
+                    <li><a href="customerview.html">Home</a></li>
+                    <li><a href="customer_shop.html">Shop All</a></li>
+                    <li><a href="customer_new_arrivals.html">New Arrivals</a></li>
+                    <li><a href="customer_bestsellers.html">Bestsellers</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>CUSTOMER SERVICE</h3>
+                <ul class="footer-links">
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Shipping & Returns</a></li>
+                    <li><a href="#">Track Order</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>CONTACT INFO</h3>
+                <p><i class="fa-solid fa-location-dot" style="margin-right: 10px; color: var(--primary);"></i> 123 University Ave, NY 10012</p>
+                <p><i class="fa-solid fa-phone" style="margin-right: 10px; color: var(--primary);"></i> +1 (555) 123-4567</p>
+                <p><i class="fa-solid fa-envelope" style="margin-right: 10px; color: var(--primary);"></i> hello@campussupply.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Campus Supply. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Supply - Cart & Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FFD200;
+            --secondary: #0B2149;
+            --bg-light: #F8F9FA;
+            --text-dark: #0B2149;
+            --text-light: #FFFFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #FDFDF7; color: var(--text-dark); overflow-x: hidden; }
+
+        /* Navbar (Reused) */
+        .navbar { display: flex; align-items: center; padding: 1rem 2rem; background: white; position: relative; border-bottom: 1px solid #E2E8F0; }
+        .logo-container { display: flex; align-items: center; gap: 10px; z-index: 2; width: 250px; }
+        .logo-icon { color: var(--primary); font-size: 2rem; }
+        .logo-text { font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--secondary); text-transform: uppercase; }
+
+        /* Checkout Layout */
+        .checkout-container { display: flex; max-width: 1200px; margin: 3rem auto; gap: 3rem; padding: 0 2rem; }
+        .left-col { flex: 2; }
+        .right-col { flex: 1; }
+
+        .section-title { font-size: 1.5rem; font-weight: 900; color: var(--secondary); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #E2E8F0; }
+
+        /* Cart Items */
+        .cart-item { display: flex; align-items: center; gap: 1.5rem; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 1rem; }
+        .cart-item-img { width: 80px; height: 80px; object-fit: contain; background: #F8F9FA; border-radius: 8px; padding: 0.5rem; }
+        .cart-item-info { flex-grow: 1; }
+        .cart-item-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 0.3rem; }
+        .cart-item-desc { color: #888; font-size: 0.9rem; }
+        .qty-selector { display: flex; align-items: center; background: #F8F9FA; border-radius: 6px; overflow: hidden; border: 1px solid #E2E8F0; }
+        .qty-btn { background: none; border: none; padding: 0.3rem 0.8rem; font-weight: 800; color: var(--secondary); cursor: pointer; }
+        .qty-input { width: 40px; text-align: center; border: none; font-weight: 800; background: none; }
+        .cart-item-price { font-size: 1.2rem; font-weight: 900; color: var(--secondary); width: 100px; text-align: right; }
+        .btn-remove { color: #E53E3E; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding-left: 1rem; }
+
+        /* Form */
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .form-group { flex: 1; display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input, .form-group select { padding: 0.8rem 1rem; border: 1px solid #CCC; border-radius: 8px; font-family: inherit; }
+        .form-group input:focus { outline: none; border-color: var(--secondary); }
+
+        /* Order Summary Box */
+        .summary-box { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: sticky; top: 20px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; color: #555; }
+        .summary-row.total { font-weight: 900; font-size: 1.5rem; color: var(--secondary); border-top: 2px solid #E2E8F0; padding-top: 1rem; margin-top: 1rem; margin-bottom: 2rem; }
+        
+        .btn-checkout { width: 100%; background: var(--primary); color: var(--secondary); padding: 1.2rem; border-radius: 8px; border: none; font-size: 1.2rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 210, 0, 0.3); transition: 0.3s; }
+        .btn-checkout:hover { background: #E6BE00; transform: translateY(-2px); }
+
+        /* Payment Methods */
+        .payment-methods { display: flex; gap: 10px; margin-bottom: 2rem; }
+        .payment-method { border: 1px solid #CCC; border-radius: 8px; padding: 1rem; flex: 1; text-align: center; cursor: pointer; transition: 0.2s; }
+        .payment-method.active { border-color: var(--secondary); background: #F8F9FA; border-width: 2px; }
+        .payment-method i { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--secondary); }
+
+        /* Back Button */
+        .btn-back { display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--secondary); font-weight: 800; margin-bottom: 1.5rem; transition: 0.3s; }
+        .btn-back:hover { color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <i class="fa-solid fa-graduation-cap logo-icon"></i>
+            <div class="logo-text">CAMPUS<br>SUPPLY</div>
+        </div>
+        <div style="flex-grow:1; text-align:center; font-weight:800; font-size:1.2rem; color:#888;">
+            SECURE CHECKOUT
+        </div>
+        <div style="width:250px;"></div>
+    </nav>
+
+    <div class="checkout-container">
+        <!-- Left Column: Cart & Details -->
+        <div class="left-col">
+            <a href="customer_shop.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
+            <h2 class="section-title">1. Your Cart</h2>
+            
+            <div class="cart-item">
+                <img src="https://images.unsplash.com/photo-1531346878377-a5f20ce31158?w=200" class="cart-item-img" alt="Item">
+                <div class="cart-item-info">
+                    <div class="cart-item-title">Eco-Friendly A5 Notebook</div>
+                    <div class="cart-item-desc">Color: Navy Blue</div>
+                </div>
+                <div class="qty-selector">
+                    <button class="qty-btn">-</button>
+                    <input type="text" class="qty-input" value="2" readonly>
+                    <button class="qty-btn">+</button>
+                </div>
+                <div class="cart-item-price">$37.98</div>
+                <button class="btn-remove"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+
+            <div class="cart-item">
+                <img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=200" class="cart-item-img" alt="Item">
+                <div class="cart-item-info">
+                    <div class="cart-item-title">Uni-ball Onyx Pens</div>
+                    <div class="cart-item-desc">Pack of 10</div>
+                </div>
+                <div class="qty-selector">
+                    <button class="qty-btn">-</button>
+                    <input type="text" class="qty-input" value="1" readonly>
+                    <button class="qty-btn">+</button>
+                </div>
+                <div class="cart-item-price">$12.00</div>
+                <button class="btn-remove"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 4rem;">2. Shipping Information</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" placeholder="Doe">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Email Address</label>
+                <input type="email" placeholder="john@example.com">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Street Address</label>
+                <input type="text" placeholder="123 Campus Drive, Apt 4B">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" placeholder="New York">
+                </div>
+                <div class="form-group">
+                    <label>State / Province</label>
+                    <select>
+                        <option>New York (NY)</option>
+                        <option>California (CA)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ZIP / Postal Code</label>
+                    <input type="text" placeholder="10001">
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 4rem;">3. Payment Method</h2>
+            
+            <div class="payment-methods">
+                <div class="payment-method active">
+                    <i class="fa-regular fa-credit-card"></i>
+                    <div style="font-weight: 800;">Credit Card</div>
+                </div>
+                <div class="payment-method">
+                    <i class="fa-brands fa-paypal"></i>
+                    <div style="font-weight: 800;">PayPal</div>
+                </div>
+                <div class="payment-method">
+                    <i class="fa-brands fa-apple"></i>
+                    <div style="font-weight: 800;">Apple Pay</div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Card Number</label>
+                <input type="text" placeholder="0000 0000 0000 0000">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="text" placeholder="MM/YY">
+                </div>
+                <div class="form-group">
+                    <label>CVC</label>
+                    <input type="text" placeholder="123">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Order Summary -->
+        <div class="right-col">
+            <div class="summary-box">
+                <h2 class="section-title" style="border:none; margin-bottom: 1rem;">Order Summary</h2>
+                
+                <div class="summary-row">
+                    <span>Subtotal (3 items)</span>
+                    <span style="font-weight: 600; color: var(--text-dark);">$49.98</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span style="font-weight: 600; color: var(--text-dark);">$5.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (8%)</span>
+                    <span style="font-weight: 600; color: var(--text-dark);">$4.00</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>$58.98</span>
+                </div>
+
+                <button class="btn-checkout"><i class="fa-solid fa-lock" style="margin-right: 10px;"></i> Place Order</button>
+                <p style="text-align: center; color: #888; font-size: 0.8rem; margin-top: 1rem;">
+                    By placing your order, you agree to our Terms of Service and Privacy Policy.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
