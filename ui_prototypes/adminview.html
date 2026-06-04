@@ -4,194 +4,1433 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Stationary - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #FFD700;
-            --secondary: #0A192F;
+            --primary: #FFD200; /* Matching the yellow from previous files */
+            --secondary: #0B2149; /* Matching navy blue */
             --bg-light: #F4F7F6;
             --text-dark: #333;
             --text-light: #FFF;
-            --sidebar-width: 250px;
+            --sidebar-width: 260px;
+            --border-color: #E2E8F0;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            background-color: var(--bg-light);
-            height: 100vh;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; display: flex; background-color: var(--bg-light); height: 100vh; overflow: hidden; color: var(--text-dark); }
+        
         /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--secondary);
-            color: var(--text-light);
-            display: flex;
-            flex-direction: column;
-            padding: 2rem 0;
-        }
-        .sidebar .brand {
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--text-light);
-            padding: 0 1rem;
-        }
-        .sidebar a {
-            color: #A0AEC0;
-            text-decoration: none;
-            padding: 1rem 2rem;
-            display: block;
-            border-left: 4px solid transparent;
-        }
-        .sidebar a:hover, .sidebar a.active {
-            color: var(--primary);
-            background-color: rgba(255,255,255,0.05);
-            border-left-color: var(--primary);
-        }
+        .sidebar { width: var(--sidebar-width); background-color: var(--secondary); color: var(--text-light); display: flex; flex-direction: column; padding: 1.5rem 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 10; }
+        .sidebar .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; color: var(--primary); padding: 0 1.5rem; display: flex; align-items: center; gap: 10px; letter-spacing: 1px;}
+        .sidebar-menu { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+        .sidebar a { color: white; text-decoration: none; padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 15px; font-weight: 600; border-radius: 8px; margin: 0.2rem 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; font-size: 0.95rem; }
+        .sidebar a:hover { background-color: rgba(255,255,255,0.1); transform: translateX(5px); }
+        .sidebar a:active { transform: scale(0.96); background-color: rgba(255,255,255,0.2); }
+        .sidebar a.active { background-color: var(--primary); color: #000; font-weight: bold; transform: none; box-shadow: 0 4px 10px rgba(255, 210, 0, 0.3); }
+        .sidebar .user-info { display: none; /* Hide bottom profile, moved to topbar */ }
+        .avatar { width: 35px; height: 35px; background: #E2E8F0; color: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+        
+        /* Sidebar Dropdown */
+        .has-dropdown { display: flex; flex-direction: column; align-items: stretch; padding: 0 !important; }
+        .dropdown-toggle { padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 15px; width: auto; margin: 0.2rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; justify-content: space-between; color: white; font-weight: 600; font-size: 0.95rem; }
+        .dropdown-toggle:hover { background-color: rgba(255,255,255,0.1); transform: translateX(5px); }
+        .dropdown-toggle:active { transform: scale(0.96); background-color: rgba(255,255,255,0.2); }
+        .dropdown-menu { display: none; flex-direction: column; background: transparent; padding-left: 1rem; }
+        .dropdown-menu.show { display: flex; }
+        .dropdown-menu a { padding: 0.6rem 1.5rem; font-size: 0.85rem; border-radius: 6px; margin: 0.1rem 1rem; color: #CBD5E0; transition: all 0.3s ease; display: block; text-decoration: none;}
+        .dropdown-menu a:hover { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+        .dropdown-menu a.active { background-color: var(--primary); color: #000; font-weight: bold; box-shadow: 0 4px 10px rgba(255, 210, 0, 0.3); }
+        
         /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 2rem 3rem;
-            overflow-y: auto;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .header h1 {
-            margin: 0;
-            color: var(--secondary);
-        }
-        .btn {
-            background-color: var(--primary);
-            color: var(--secondary);
-            padding: 0.6rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        /* Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .card {
-            background: var(--text-light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--primary);
-        }
-        .card h3 {
-            margin: 0;
-            font-size: 1rem;
-            color: #718096;
-        }
-        .card .value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--secondary);
-            margin-top: 0.5rem;
-        }
-        /* Table */
-        .table-container {
-            background: var(--text-light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #E2E8F0;
-        }
-        th {
-            color: #718096;
-            font-weight: 600;
-        }
-        .status-shipped {
-            background-color: var(--primary);
-            color: var(--secondary);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-light); }
+        .topbar { height: 70px; background: white; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 5; }
+        .topbar h1 { margin: 0; font-size: 1.4rem; color: #000; font-weight: bold; }
+        .main-content { flex: 1; padding: 1.5rem 2rem; overflow-y: auto; background: var(--bg-light); }
+        
+        /* Layout Panels */
+        .panel { display: none; animation: fadeIn 0.3s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Reusable UI Components */
+        .btn { background-color: var(--primary); color: var(--secondary); padding: 0.6rem 1.2rem; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; position: relative; }
+        .btn:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(1px) scale(0.96); box-shadow: 0 2px 4px rgba(0,0,0,0.1); filter: brightness(0.85); }
+        .btn-outline { background: transparent; border: 2px solid var(--secondary); color: var(--secondary); }
+        .btn-danger { background-color: #E53E3E; color: white; }
+        
+        .card-container { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 2rem; border: 1px solid var(--border-color); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .card-header h2 { margin: 0; font-size: 1.2rem; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
+        
+        /* Grid Layouts */
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        
+        /* Stat Cards */
+        .stat-card { background: white; padding: 1.2rem; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .stat-title { margin: 0; font-size: 0.95rem; color: #1A202C; font-weight: 600; }
+        .stat-pill { background: #E6FFFA; color: #38A169; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .stat-value { font-size: 1.8rem; font-weight: 900; color: #000; margin: 5px 0; }
+        .stat-footer { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #718096; font-weight: 600; }
+        .stat-footer i { background: #EDF2F7; padding: 5px; border-radius: 50%; color: #4A5568; font-size: 0.7rem; }
+        .alert-card { border: 1px solid #E53E3E; }
+        .alert-card .stat-pill { background: #FED7D7; color: #E53E3E; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: #718096; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; background: #F7FAFC; }
+        tbody tr:hover { background: #F7FAFC; }
+        
+        /* Badges */
+        .badge { padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .badge-pending { background-color: #FEFCBF; color: #975A16; }
+        .badge-shipped { background-color: #BEE3F8; color: #2B6CB0; }
+        .badge-delivered { background-color: #C6F6D5; color: #22543D; }
+        .badge-active { background-color: #C6F6D5; color: #22543D; }
+        .badge-inactive { background-color: #FED7D7; color: #9B2C2C; }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--secondary); font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.8rem; border: 1px solid #CBD5E0; border-radius: 6px; font-family: inherit; font-size: 0.95rem; }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 210, 0, 0.2); }
+        .row { display: flex; gap: 1.5rem; }
+        .col { flex: 1; }
+        
+        /* Custom Select for Order State */
+        .select-state { padding: 0.4rem; border-radius: 4px; border: 1px solid #CBD5E0; font-weight: bold; cursor: pointer; }
+        
+        /* Shipping Card Specifics */
+        .shipping-card { background: #F7FAFC; padding: 1.5rem; border-radius: 8px; border: 1px dashed #CBD5E0; }
+        .shipping-card h4 { margin: 0 0 10px 0; color: var(--secondary); border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 5px; }
+        .shipping-card p { margin: 5px 0; color: #4A5568; font-size: 0.95rem; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal.show { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 600px; max-width: 90%; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #A0AEC0; }
+        
+        /* Pagination */
+        .pagination { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: 1rem; }
+        .page-info { color: #718096; font-size: 0.9rem; }
+        .page-controls button { padding: 0.4rem 0.8rem; border: 1px solid #CBD5E0; background: white; cursor: pointer; border-radius: 4px; margin-left: 5px; }
+        .page-controls button.active { background: var(--secondary); color: white; border-color: var(--secondary); }
     </style>
 </head>
 <body>
 
+    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="brand">EDU-SUPPLY ADMIN</div>
-        <a href="#" class="active">Dashboard</a>
-        <a href="#">Catalog</a>
-        <a href="#">Orders</a>
-        <a href="#">Customers</a>
-        <a href="#">Settings</a>
+        <div class="brand">
+            <i class="fa-solid fa-graduation-cap"></i> ADMIN OS
+        </div>
+        
+        <div style="padding: 0 1rem; margin-bottom: 1rem;">
+            <select id="role-simulator" class="form-control" style="background: #1A365D; color: white; border: 1px solid #4A5568; font-size: 0.85rem;" onchange="simulateRole(this.value)">
+                <option value="superadmin">Role: Super Admin</option>
+                <option value="catalogadmin">Role: Catalog Admin</option>
+                <option value="orderstaff">Role: Order Staff</option>
+                <option value="contentmanager">Role: Content Manager</option>
+                <option value="customersupport">Role: Customer Support</option>
+            </select>
+        </div>
+        
+        <div class="sidebar-menu">
+            <!-- For Super Admin & Finance Manager -->
+            <a onclick="switchTab('dashboard')" id="nav-dashboard" class="active role-item" data-roles="superadmin,catalogadmin,orderstaff,contentmanager,customersupport"><i class="fa-solid fa-house"></i> Dashboard</a>
+            
+            <!-- For Order Staff -->
+            <a onclick="switchTab('orders')" id="nav-orders" class="role-item" data-roles="superadmin,orderstaff,customersupport"><i class="fa-solid fa-cart-shopping"></i> Orders</a>
+            
+            <!-- For Inventory Manager -->
+            <div class="has-dropdown role-item" data-roles="superadmin,catalogadmin">
+                <div class="dropdown-toggle" onclick="toggleDropdown('catalog-menu')">
+                    <div style="display: flex; align-items: center; gap: 15px;"><i class="fa-solid fa-box-open"></i> Products</div>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
+                </div>
+                <div class="dropdown-menu" id="catalog-menu">
+                    <a onclick="switchTab('catalog-products')" id="nav-catalog-products">All Products</a>
+                    <a onclick="switchTab('catalog-categories')" id="nav-catalog-categories">Categories</a>
+                    <a onclick="switchTab('catalog-brands')" id="nav-catalog-brands">Brands</a>
+                    <a onclick="switchTab('catalog-types')" id="nav-catalog-types">Types</a>
+                </div>
+            </div>
+            
+            <!-- For Customer Support -->
+            <a onclick="switchTab('customers')" id="nav-customers" class="role-item" data-roles="superadmin,customersupport"><i class="fa-solid fa-users"></i> Customers</a>
+            
+            <!-- Marketing / Storefront -->
+            <div class="has-dropdown role-item" data-roles="superadmin,contentmanager">
+                <div class="dropdown-toggle" onclick="toggleDropdown('marketing-menu')">
+                    <div style="display: flex; align-items: center; gap: 15px;"><i class="fa-solid fa-bullhorn"></i> Marketing</div>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
+                </div>
+                <div class="dropdown-menu" id="marketing-menu">
+                    <a onclick="switchTab('catalog-banners')" id="nav-catalog-banners">Banners</a>
+                    <a href="#">Promo Codes</a>
+                </div>
+            </div>
+
+            <!-- For Super Admin -->
+            <a onclick="switchTab('staff')" id="nav-staff" class="role-item" data-roles="superadmin"><i class="fa-solid fa-gear"></i> Settings</a>
+        </div>
+        
+        <div class="user-info">
+            <div class="avatar" id="sidebar-avatar">SA</div>
+            <div>
+                <div style="font-weight: bold; font-size: 0.9rem;" id="sidebar-name">Super Admin</div>
+                <div style="font-size: 0.75rem; color: #A0AEC0;" id="sidebar-title">System Owner</div>
+            </div>
+        </div>
     </div>
 
-    <div class="main-content">
-        <div class="header">
-            <h1>Overview Dashboard</h1>
-            <button class="btn">Add Product</button>
-        </div>
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <div class="topbar">
+            <h1 id="page-title">Welcome Back, Admin!</h1>
+            
+            <div style="flex: 1; display: flex; justify-content: center;">
+                <div style="background: #F4F7F6; border-radius: 20px; padding: 0.5rem 1rem; display: flex; align-items: center; width: 400px; border: 1px solid var(--border-color);">
+                    <i class="fa-solid fa-search" style="color: #A0AEC0; margin-right: 10px;"></i>
+                    <input type="text" placeholder="Search Bar" style="border: none; background: transparent; outline: none; width: 100%; font-size: 0.95rem;">
+                </div>
+            </div>
 
-        <div class="dashboard-cards">
-            <div class="card">
-                <h3>Total Sales</h3>
-                <div class="value">$42,150.80</div>
-            </div>
-            <div class="card">
-                <h3>New Orders</h3>
-                <div class="value">312</div>
-            </div>
-            <div class="card">
-                <h3>Low Stock Items</h3>
-                <div class="value" style="color: #E53E3E;">18</div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="position: relative; cursor: pointer;">
+                    <i class="fa-regular fa-bell" style="font-size: 1.2rem; color: #4A5568;"></i>
+                    <span style="position: absolute; top: -5px; right: -5px; background: #E53E3E; color: white; border-radius: 50%; font-size: 0.6rem; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <div class="avatar" id="topbar-avatar">SA</div>
+                    <div style="line-height: 1.2;">
+                        <div style="font-weight: bold; font-size: 0.9rem; color: #000;" id="topbar-name">Super Admin</div>
+                        <div style="font-size: 0.75rem; color: #718096;" id="topbar-title">System Owner</div>
+                    </div>
+                </div>
             </div>
         </div>
+        
+        <div class="main-content">
+            
+            <!-- SECTION A: DASHBOARD OVERVIEW -->
+            <div id="panel-dashboard" class="panel active">
+                <h2 style="margin-top: 0; color: #000; font-size: 1.4rem;">Store Dashboard Overview</h2>
+                <div class="grid-4">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3 class="stat-title">Today's Sales</h3>
+                            <span class="stat-pill">+5.2%</span>
+                        </div>
+                        <div class="stat-value">1,450,000 Ks</div>
+                        <div class="stat-footer"><i class="fa-solid fa-money-bill-trend-up"></i> Last 24 Hours</div>
+                    </div>
+                    <div class="stat-card alert-card">
+                        <div class="stat-header">
+                            <h3 class="stat-title" style="color: #E53E3E;">Pending Orders</h3>
+                            <span class="stat-pill" style="background: #FED7D7; color: #E53E3E;">Action Needed</span>
+                        </div>
+                        <div class="stat-value" style="color: #E53E3E;">15</div>
+                        <div class="stat-footer"><i class="fa-solid fa-clock"></i> Awaiting payment check</div>
+                    </div>
+                    <div class="stat-card alert-card">
+                        <div class="stat-header">
+                            <h3 class="stat-title" style="color: #E53E3E;">Low Stock Items</h3>
+                            <span class="stat-pill" style="background: #FED7D7; color: #E53E3E;">Warning</span>
+                        </div>
+                        <div class="stat-value" style="color: #E53E3E;">8</div>
+                        <div class="stat-footer"><i class="fa-solid fa-boxes-stacked"></i> Under 10 units left</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3 class="stat-title">Total Customers</h3>
+                            <span class="stat-pill" style="background: #EBF4FF; color: #3182CE;">+120 This Week</span>
+                        </div>
+                        <div class="stat-value">4,520</div>
+                        <div class="stat-footer"><i class="fa-solid fa-users"></i> Registered Accounts</div>
+                    </div>
+                </div>
+                
+                <!-- Mock Chart Area -->
+                <div class="grid-2" style="grid-template-columns: 2fr 1fr;">
+                    <div class="card-container" style="margin-bottom: 0;">
+                        <div class="card-header" style="border: none; margin-bottom: 0;">
+                            <div>
+                                <h2 style="color: #000;">Sales Performance (Last 30 Days)</h2>
+                                <div style="display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: #718096; margin-top: 5px;"><div style="width: 8px; height: 8px; background: #3182CE; border-radius: 50%;"></div> Blue line</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="display: flex; gap: 20px;">
+                                    <div>
+                                        <div style="font-size: 0.85rem; color: #718096; font-weight: 600;">Sales</div>
+                                        <div style="font-size: 1.4rem; font-weight: 900; color: #000;">45.3K Ks</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.85rem; color: #718096; font-weight: 600;">Orders</div>
+                                        <div style="font-size: 1.4rem; font-weight: 900; color: #000;">1.2K</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Mock SVG Line Chart -->
+                        <div style="height: 200px; width: 100%; display: flex; align-items: flex-end; position: relative;">
+                            <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+                                <defs>
+                                    <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stop-color="rgba(49, 130, 206, 0.2)"></stop>
+                                        <stop offset="100%" stop-color="rgba(49, 130, 206, 0)"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M0,100 Q25,20 50,80 T100,50 T150,120 T200,20 T250,100 T300,50 T350,110 T400,60 T450,120 T500,40 L500,150 L0,150 Z" fill="url(#chartGradient)"></path>
+                                <path d="M0,100 Q25,20 50,80 T100,50 T150,120 T200,20 T250,100 T300,50 T350,110 T400,60 T450,120 T500,40" fill="none" stroke="#3182CE" stroke-width="3"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="card-container" style="margin-bottom: 0;">
+                        <div class="card-header" style="border: none;">
+                            <h2 style="color: #000;">Sales by Category</h2>
+                        </div>
+                        <div style="height: 220px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <!-- Mock CSS Donut Chart -->
+                            <div style="width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(#3182CE 0% 35%, #48BB78 35% 60%, #FFD200 60% 80%, #ED8936 80% 90%, #A0AEC0 90% 100%); display: flex; align-items: center; justify-content: center;">
+                                <!-- Inner white circle removed for full pie chart -->
+                            </div>
+                            <div style="position: absolute; top: 10%; right: 10%; font-size: 0.75rem; font-weight: bold;">Notebooks<br>35%</div>
+                            <div style="position: absolute; bottom: 10%; left: 45%; font-size: 0.75rem; font-weight: bold;">Pens<br>25%</div>
+                            <div style="position: absolute; bottom: 30%; left: 5%; font-size: 0.75rem; font-weight: bold;">Art Supplies<br>20%</div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="table-container">
-            <h2>Recent Orders</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Date</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#ORD-88109</td>
-                        <td>Sarah J.</td>
-                        <td>Oct 26, 2023</td>
-                        <td>$45.99</td>
-                        <td><span class="status-shipped">Shipped</span></td>
-                    </tr>
-                    <tr>
-                        <td>#ORD-88108</td>
-                        <td>Mark L.</td>
-                        <td>Oct 26, 2023</td>
-                        <td>$120.50</td>
-                        <td>Processing</td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- Recent Orders Need Attention -->
+                <div class="card-container" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-circle-exclamation" style="color: #E53E3E;"></i> Recent Orders Needing Attention</h2>
+                        <button class="btn btn-outline" style="padding: 0.4rem 1rem;" onclick="switchTab('orders')">View All Orders</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total Amount</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a href="#" style="color: var(--secondary); font-weight: bold;">#ORD-10023</a></td>
+                                <td>Aung Aung</td>
+                                <td>45,000 Ks</td>
+                                <td>Today, 10:30 AM</td>
+                                <td><span class="badge" style="background: #FEFCBF; color: #975A16;">Pending Payment</span></td>
+                                <td><button class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Check Slip</button></td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" style="color: var(--secondary); font-weight: bold;">#ORD-10022</a></td>
+                                <td>Su Myat</td>
+                                <td>12,500 Ks</td>
+                                <td>Today, 09:15 AM</td>
+                                <td><span class="badge" style="background: #FEFCBF; color: #975A16;">Pending Payment</span></td>
+                                <td><button class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Check Slip</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- SECTION B.1: CATALOG - BANNERS -->
+            <div id="panel-catalog-banners" class="panel">
+                <div class="card-container">
+                    <div class="card-header">
+                        <h2><i class="fa-regular fa-image"></i> Storefront Banners Slider</h2>
+                        <button class="btn" onclick="toggleModal('addBannerModal')"><i class="fa-solid fa-plus"></i> Upload New Banner</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Preview</th>
+                                <th>Campaign Name</th>
+                                <th>Sequence</th>
+                                <th>Expiration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div style="width: 80px; height: 30px; background: #EBF3FA; border-radius: 4px; font-size: 0.6rem; display: flex; align-items:center; justify-content:center; color: #0B2149;">B2S Promo</div></td>
+                                <td>Back to School Mega Sale</td>
+                                <td>1</td>
+                                <td>Sep 01, 2026</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;" title="Edit Banner"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;" title="Delete Banner"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION B.2: CATALOG - CATEGORIES -->
+            <div id="panel-catalog-categories" class="panel">
+                <div class="card-container">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-tags"></i> Store Categories</h2>
+                        <button class="btn" onclick="toggleModal('addCategoryModal')"><i class="fa-solid fa-plus"></i> Create Category</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category ID</th>
+                                <th>Category Name</th>
+                                <th>Total Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CAT-01</td>
+                                <td>Stationery</td>
+                                <td>145</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CAT-02</td>
+                                <td>Notebooks & Paper</td>
+                                <td>89</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CAT-03</td>
+                                <td>School Uniforms</td>
+                                <td>120</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CAT-04</td>
+                                <td>Bags & Accessories</td>
+                                <td>65</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CAT-05</td>
+                                <td>Art & Craft Supplies</td>
+                                <td>45</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CAT-06</td>
+                                <td>Textbooks & Guides</td>
+                                <td>300</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION B.2A: CATALOG - BRANDS -->
+            <div id="panel-catalog-brands" class="panel">
+                <div class="card-container">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-copyright"></i> Product Brands</h2>
+                        <button class="btn" onclick="toggleModal('addBrandModal')"><i class="fa-solid fa-plus"></i> Add New Brand</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Brand Logo</th>
+                                <th>Brand Name</th>
+                                <th>Total Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><img src="https://placehold.co/80x40/E2E8F0/0B2149?text=M%26G" alt="M&G Logo" style="width: 60px; height: 30px; object-fit: contain; border-radius: 4px; border: 1px solid #E2E8F0;"></td>
+                                <td><div style="font-weight: bold; color: var(--secondary);">M&G Stationery</div></td>
+                                <td>45</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://placehold.co/80x40/E2E8F0/0B2149?text=DoubleA" alt="Double A Logo" style="width: 60px; height: 30px; object-fit: contain; border-radius: 4px; border: 1px solid #E2E8F0;"></td>
+                                <td><div style="font-weight: bold; color: var(--secondary);">Double A</div></td>
+                                <td>12</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION B.2B: CATALOG - TYPES -->
+            <div id="panel-catalog-types" class="panel">
+                <div class="card-container">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-sitemap"></i> Product Types (Sub-categories)</h2>
+                        <button class="btn" onclick="toggleModal('addTypeModal')"><i class="fa-solid fa-plus"></i> Create Type</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type ID</th>
+                                <th>Parent Category</th>
+                                <th>Type Name</th>
+                                <th>Total Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TYP-01</td>
+                                <td><span class="badge" style="background: #E2E8F0; color: #4A5568;">Stationery</span></td>
+                                <td><div style="font-weight: bold; color: var(--secondary);">Pens</div></td>
+                                <td>120</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>TYP-02</td>
+                                <td><span class="badge" style="background: #E2E8F0; color: #4A5568;">Notebooks & Paper</span></td>
+                                <td><div style="font-weight: bold; color: var(--secondary);">Lined Notebooks</div></td>
+                                <td>45</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION B.3: CATALOG - PRODUCTS -->
+            <div id="panel-catalog-products" class="panel">
+                <div class="card-container">
+                    <div class="card-header" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2><i class="fa-solid fa-boxes-stacked"></i> Product Inventory</h2>
+                            <button class="btn" onclick="toggleModal('addProductModal')"><i class="fa-solid fa-plus"></i> Add Inventory Unit</button>
+                        </div>
+                        <div style="display: flex; gap: 10px; background: #F7FAFC; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div class="form-group" style="margin-bottom: 0; flex: 2;">
+                                <input type="text" class="form-control" placeholder="Search by SKU or Product Title...">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                <select class="form-control">
+                                    <option>All Categories</option>
+                                    <option>Stationery</option>
+                                    <option>Notebooks & Paper</option>
+                                    <option>School Uniforms</option>
+                                    <option>Bags & Accessories</option>
+                                    <option>Art & Craft Supplies</option>
+                                    <option>Textbooks & Guides</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                <select class="form-control">
+                                    <option>All Status</option>
+                                    <option>Active</option>
+                                    <option>Out of Stock</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-outline"><i class="fa-solid fa-filter"></i> Filter</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Item Code</th>
+                                <th>Product Title</th>
+                                <th>Brand</th>
+                                <th>Category & Type</th>
+                                <th>Base Price</th>
+                                <th>Stock Allocation</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><img src="https://placehold.co/80x80/FFD200/0B2149?text=NB" alt="Notebook" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #E2E8F0;"></td>
+                                <td>ITM-001</td>
+                                <td>Eco-Friendly A5 Notebook</td>
+                                <td><span style="color: #718096; font-weight: bold; font-size: 0.85rem;">Generic</span></td>
+                                <td>Notebooks & Paper<br><small style="color: #718096; font-weight: 600;">Lined Notebooks</small></td>
+                                <td>8.99 Ks</td>
+                                <td>450 units</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;" onclick="window.open('product_detail.html', '_blank')" title="Preview in Store"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem;" title="Deactivate"><i class="fa-solid fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://placehold.co/80x80/FFD200/0B2149?text=PEN" alt="Pen" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #E2E8F0;"></td>
+                                <td>ITM-002</td>
+                                <td>Zebra Sarasa Gel Pen (Black)</td>
+                                <td><span style="color: var(--secondary); font-weight: bold; font-size: 0.85rem;">Zebra</span></td>
+                                <td>Stationery<br><small style="color: #718096; font-weight: 600;">Pens</small></td>
+                                <td>1.50 Ks</td>
+                                <td style="color: #E53E3E; font-weight: bold;">0 units</td>
+                                <td><span class="badge badge-inactive">Out of Dist.</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;" onclick="window.open('product_detail.html', '_blank')" title="Preview in Store"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; margin-right: 5px;"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn" style="padding: 0.3rem 0.6rem; background: #A0AEC0; color: white;" title="Reactivate"><i class="fa-solid fa-check"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <div class="page-info">Showing 1 to 10 of 450 Entries</div>
+                        <div class="page-controls">
+                            <button>&laquo; Prev</button>
+                            <button class="active">1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>Next &raquo;</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Product Modal -->
+                <div id="addProductModal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" onclick="toggleModal('addProductModal')">&times;</span>
+                        <h2 style="margin-top: 0; color: var(--secondary); border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block;"><i class="fa-solid fa-plus-circle"></i> Add New Product</h2>
+                        
+                        <form onsubmit="event.preventDefault(); toggleModal('addProductModal');">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label>Product Title</label>
+                                    <input type="text" class="form-control" placeholder="e.g. Spiral Bound Notebook" minlength="3" maxlength="100" required>
+                                </div>
+                                <div class="col form-group">
+                                    <label>Item Code (SKU)</label>
+                                    <input type="text" class="form-control" placeholder="e.g. ITM-003">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label>Category (အုပ်စုကြီး)</label>
+                                    <select class="form-control">
+                                        <option>Select Category...</option>
+                                        <option>Stationery</option>
+                                        <option>Notebooks & Paper</option>
+                                        <option>School Uniforms</option>
+                                        <option>Bags & Accessories</option>
+                                        <option>Art & Craft Supplies</option>
+                                        <option>Textbooks & Guides</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <label>Type (အမျိုးအစားခွဲ)</label>
+                                    <select class="form-control">
+                                        <option>Select Type...</option>
+                                        <option>Pens</option>
+                                        <option>Pencils</option>
+                                        <option>Notebooks</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <label>Brand (တံဆိပ်)</label>
+                                    <select class="form-control">
+                                        <option>Generic / No Brand</option>
+                                        <option>M&G</option>
+                                        <option>Deli</option>
+                                        <option>Double A</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label>Base Price (Ks) - Default Single Unit</label>
+                                    <input type="number" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                                </div>
+                                <div class="col form-group">
+                                    <label>Initial Stock Allocation (Base Units)</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 1000" min="0" step="1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Comprehensive Description</label>
+                                <textarea class="form-control" rows="4" placeholder="Enter full product details, specs, etc."></textarea>
+                            </div>
+                            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="isFeatured" style="width:18px; height:18px; cursor: pointer;">
+                                <label for="isFeatured" style="margin:0; cursor: pointer; color: #2B6CB0;"><i class="fa-solid fa-star" style="color: #ECC94B;"></i> Feature as "New Arrival" on Homepage</label>
+                            </div>
+                            
+                            <!-- Selling Units CRUD UI -->
+                            <div style="background: #F7FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h4 style="margin: 0; color: var(--secondary);"><i class="fa-solid fa-layer-group"></i> Selling Units / Packaging Variations</h4>
+                                    <button type="button" class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;"><i class="fa-solid fa-plus"></i> Add Package Type</button>
+                                </div>
+                                
+                                <!-- Base Unit (Cannot be deleted) -->
+                                <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px;">
+                                    <div class="form-group" style="margin-bottom: 0; flex: 2;">
+                                        <label style="font-size: 0.85rem;">Unit Name (e.g. Single, Piece)</label>
+                                        <input type="text" class="form-control" value="1 Book (Single)">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <label style="font-size: 0.85rem;">Qty Multiplier</label>
+                                        <input type="number" class="form-control" value="1" readonly style="background: #E2E8F0; color: #718096;" title="Base unit is always 1">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <label style="font-size: 0.85rem;">Price (Ks)</label>
+                                        <input type="number" class="form-control" value="8.99">
+                                    </div>
+                                    <button type="button" class="btn btn-outline" style="padding: 0.6rem; visibility: hidden;"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                                
+                                <!-- Additional Unit (Can be deleted) -->
+                                <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px;">
+                                    <div class="form-group" style="margin-bottom: 0; flex: 2;">
+                                        <input type="text" class="form-control" value="1 Pack (5 Books)">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <input type="number" class="form-control" value="5">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <input type="number" class="form-control" value="42.00">
+                                    </div>
+                                    <button type="button" class="btn btn-danger" style="padding: 0.6rem;" title="Remove Variation"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                                
+                                <!-- Additional Unit (Can be deleted) -->
+                                <div style="display: flex; gap: 10px; align-items: flex-end;">
+                                    <div class="form-group" style="margin-bottom: 0; flex: 2;">
+                                        <input type="text" class="form-control" value="1 Carton (20 Books)">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <input type="number" class="form-control" value="20">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                        <input type="number" class="form-control" value="160.00">
+                                    </div>
+                                    <button type="button" class="btn btn-danger" style="padding: 0.6rem;" title="Remove Variation"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                                
+                                <div style="margin-top: 10px; font-size: 0.85rem; color: #718096;">
+                                    <i class="fa-solid fa-circle-info"></i> Base Inventory will be automatically deducted based on the Qty Multiplier when sold.
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Product Images (Up to 5 images)</label>
+                                <!-- Simulated file input for validation -->
+                                <input type="file" id="productImages" accept=".jpg,.jpeg,.png" multiple style="display: none;">
+                                <div style="border: 2px dashed #CBD5E0; padding: 2rem; text-align: center; border-radius: 6px; cursor: pointer; color: #718096; background: #F7FAFC; margin-bottom: 15px;" onclick="document.getElementById('productImages').click();">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; margin-bottom: 10px; color: var(--primary);"></i>
+                                    <div>Drag & Drop or Click to upload multiple images</div>
+                                    <small>JPG, PNG only. Up to 2MB each (Max 5)</small>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <!-- Uploaded Preview Placeholders -->
+                                    <div style="width: 60px; height: 60px; border-radius: 4px; border: 2px solid var(--primary); background: #E2E8F0; display: flex; align-items:center; justify-content:center; color: #4A5568; font-size: 0.8rem; position: relative;">Main
+                                        <div style="position: absolute; top: -5px; right: -5px; background: #E53E3E; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items:center; justify-content:center; cursor: pointer;">&times;</div>
+                                    </div>
+                                    <div style="width: 60px; height: 60px; border-radius: 4px; border: 1px solid #CBD5E0; background: #E2E8F0; display: flex; align-items:center; justify-content:center; color: #4A5568; font-size: 0.8rem; position: relative;">Img 2
+                                        <div style="position: absolute; top: -5px; right: -5px; background: #E53E3E; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items:center; justify-content:center; cursor: pointer;">&times;</div>
+                                    </div>
+                                    <!-- Empty Slots -->
+                                    <div style="width: 60px; height: 60px; border-radius: 4px; border: 1px dashed #CBD5E0; display: flex; align-items:center; justify-content:center; color: #A0AEC0;"><i class="fa-solid fa-plus"></i></div>
+                                    <div style="width: 60px; height: 60px; border-radius: 4px; border: 1px dashed #CBD5E0; display: flex; align-items:center; justify-content:center; color: #A0AEC0;"><i class="fa-solid fa-plus"></i></div>
+                                    <div style="width: 60px; height: 60px; border-radius: 4px; border: 1px dashed #CBD5E0; display: flex; align-items:center; justify-content:center; color: #A0AEC0;"><i class="fa-solid fa-plus"></i></div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">
+                                <button type="button" class="btn btn-outline" onclick="toggleModal('addProductModal')">Cancel</button>
+                                <button type="submit" class="btn">Save Product</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+
+            </div>
+            
+            <!-- SECTION C: ORDERS & CUSTOMERS -->
+            <div id="panel-orders" class="panel">
+                <!-- Order Tracking -->
+                <div class="card-container">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-truck-fast"></i> Active Order Tracking & Fulfillment</h2>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Profile</th>
+                                <th>Total Value</th>
+                                <th>Date Received</th>
+                                <th>Lifecycle State</th>
+                                <th>Payment Info</th>
+                                <th>Logistics Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a href="#" onclick="toggleModal('orderDetailsModal')" style="color: var(--secondary); font-weight: bold; text-decoration: underline;">#ORD-99210</a></td>
+                                <td>Kyaw Min (CUS-102)</td>
+                                <td>45,500 Ks</td>
+                                <td>Today, 10:30 AM</td>
+                                <td>
+                                    <select class="select-state" style="background: #FEFCBF; color: #975A16;">
+                                        <option value="pending" selected>Pending</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.85rem; font-weight: bold; color: var(--secondary);">KPay</div>
+                                    <span class="badge" style="background: #C6F6D5; color: #22543D; padding: 0.2rem 0.5rem; font-size: 0.7rem;">Paid (Verified)</span>
+                                </td>
+                                <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem;" onclick="toggleShipping('ship-1')">View Dispatch</button></td>
+                            </tr>
+                            <tr id="ship-1" style="display: none; background: #F8F9FA;">
+                                <td colspan="6" style="padding: 1rem;">
+                                    <div class="shipping-card">
+                                        <h4>Dispatch Parameters</h4>
+                                        <div class="grid-2" style="margin-bottom: 0;">
+                                            <div>
+                                                <p><strong>Verified Recipient:</strong> Kyaw Min</p>
+                                                <p><strong>Primary Contact:</strong> 09-123456789</p>
+                                            </div>
+                                            <div>
+                                                <p><strong>Shipping Address:</strong> No 45, Hledan Road, Kamayut Township, Yangon</p>
+                                                <p><strong>Courier:</strong> Express Delivery Partner</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" onclick="toggleModal('orderDetailsModal')" style="color: var(--secondary); font-weight: bold; text-decoration: underline;">#ORD-99209</a></td>
+                                <td>Su Su (CUS-089)</td>
+                                <td>120,000 Ks</td>
+                                <td>Yesterday</td>
+                                <td>
+                                    <select class="select-state" style="background: #BEE3F8; color: #2B6CB0;">
+                                        <option value="pending">Pending</option>
+                                        <option value="shipped" selected>Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.85rem; font-weight: bold; color: var(--secondary);">COD</div>
+                                    <span class="badge" style="background: #FEFCBF; color: #975A16; padding: 0.2rem 0.5rem; font-size: 0.7rem;">Unpaid</span>
+                                </td>
+                                <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem;">View Dispatch</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION: CUSTOMERS -->
+            <div id="panel-customers" class="panel">
+                <!-- Customer Records -->
+                <div class="card-container">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-address-book"></i> Customer Database Profiles</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" class="form-control" placeholder="Search customer..." style="padding: 0.4rem; width: 250px;">
+                            <button class="btn btn-outline" style="padding: 0.4rem 0.8rem;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer ID</th>
+                                <th>Full Name</th>
+                                <th>Email Contact</th>
+                                <th>Phone Number</th>
+                                <th>Total Orders</th>
+                                <th>Lifetime Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CUS-102</td>
+                                <td><div style="font-weight: bold; color: var(--secondary);">Kyaw Min</div></td>
+                                <td>kyawmin@example.com</td>
+                                <td>09-123456789</td>
+                                <td>12</td>
+                                <td>450,000 Ks</td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; margin-right: 5px;" onclick="toggleModal('customerAddressesModal')"><i class="fa-solid fa-location-dot"></i> Addresses</button>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.8rem;" onclick="toggleModal('customerHistoryModal')"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CUS-089</td>
+                                <td><div style="font-weight: bold; color: var(--secondary);">Su Su</div></td>
+                                <td>susu.99@example.com</td>
+                                <td>09-777888999</td>
+                                <td>5</td>
+                                <td>185,500 Ks</td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; margin-right: 5px;" onclick="toggleModal('customerAddressesModal')"><i class="fa-solid fa-location-dot"></i> Addresses</button>
+                                    <button class="btn btn-outline" style="padding: 0.3rem 0.8rem;" onclick="toggleModal('customerHistoryModal')"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- SECTION D: STAFF ACCOUNTS & RBAC -->
+            <div id="panel-staff" class="panel">
+                <div class="grid-2">
+                    <!-- Staff Registration Form -->
+                    <div class="card-container" style="margin-bottom: 0;">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-user-plus"></i> Staff Registration Profile</h2>
+                        </div>
+                        <form onsubmit="event.preventDefault();">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" class="form-control" placeholder="e.g. Aung Aung">
+                                </div>
+                                <div class="col form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" class="form-control" placeholder="staff@campussupply.com">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Assign Role (RBAC Authorization Tier)</label>
+                                <select class="form-control">
+                                    <option>Select Role...</option>
+                                    <option value="2">Content Manager (Inventory only)</option>
+                                    <option value="3">Order Fulfillment Staff</option>
+                                    <option value="4">Customer Service Representative</option>
+                                    <option value="1">Super Administrator</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Password (Auto-generated or Manual)</label>
+                                <input type="password" class="form-control" placeholder="Enter password">
+                                <small style="color: #718096; display: block; margin-top: 5px;">* Confirm Password redundancy field excluded per optimization parameters.</small>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%; justify-content: center;">Create Administrator Profile</button>
+                        </form>
+                    </div>
+                    
+                    <!-- RBAC Directory -->
+                    <div class="card-container" style="margin-bottom: 0;">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-sitemap"></i> Active Staff & Access Tiers</h2>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Staff Name</th>
+                                    <th>Authorization Role</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 600;">System Admin</td>
+                                    <td><span class="badge" style="background: var(--secondary); color: var(--primary);">Super Admin</span></td>
+                                    <td><span class="badge badge-active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Content Team A</td>
+                                    <td><span class="badge" style="background: #E2E8F0; color: #4A5568;">Content Manager</span></td>
+                                    <td><span class="badge badge-active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Logistics Rep 1</td>
+                                    <td><span class="badge" style="background: #E2E8F0; color: #4A5568;">Order Staff</span></td>
+                                    <td><span class="badge badge-inactive">Suspended</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
+    <!-- Modals (Popups) -->
+
+    <!-- Add Banner Modal -->
+    <div id="addBannerModal" class="modal">
+        <div class="modal-content" style="width: 500px;">
+            <div class="modal-close" onclick="toggleModal('addBannerModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-image"></i> Upload New Banner</h2>
+            <form onsubmit="event.preventDefault(); toggleModal('addBannerModal');">
+                <div class="form-group">
+                    <label>Campaign Name</label>
+                    <input type="text" class="form-control" placeholder="e.g. Back to School Promo">
+                </div>
+                <div class="form-group">
+                    <label>Banner Image (Desktop & Mobile)</label>
+                    <div style="border: 2px dashed #CBD5E0; padding: 2rem; text-align: center; border-radius: 6px; cursor: pointer; color: #718096; background: #F7FAFC;">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; margin-bottom: 10px; color: var(--primary);"></i>
+                        <div>Click to upload banner image</div>
+                        <small>Recommended size: 1920x600px</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>Display Sequence</label>
+                        <input type="number" class="form-control" placeholder="e.g. 1">
+                    </div>
+                    <div class="col form-group">
+                        <label>Expiration Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control">
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal('addBannerModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Banner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-close" onclick="toggleModal('addCategoryModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-folder-plus"></i> Create New Category</h2>
+            <form onsubmit="event.preventDefault(); toggleModal('addCategoryModal');">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" class="form-control" placeholder="e.g. Stationery, Art Supplies">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control">
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal('addCategoryModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Brand Modal -->
+    <div id="addBrandModal" class="modal">
+        <div class="modal-content" style="width: 450px;">
+            <div class="modal-close" onclick="toggleModal('addBrandModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-copyright"></i> Add New Brand</h2>
+            <form onsubmit="event.preventDefault(); toggleModal('addBrandModal');">
+                <div class="form-group">
+                    <label>Brand Name</label>
+                    <input type="text" class="form-control" placeholder="e.g. M&G, Double A">
+                </div>
+                <div class="form-group">
+                    <label>Brand Logo Image</label>
+                    <div style="border: 2px dashed #CBD5E0; padding: 1.5rem; text-align: center; border-radius: 6px; cursor: pointer; color: #718096; background: #F7FAFC;">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.5rem; margin-bottom: 5px; color: var(--primary);"></i>
+                        <div style="font-size: 0.85rem;">Click to upload logo</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control">
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal('addBrandModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Type Modal -->
+    <div id="addTypeModal" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-close" onclick="toggleModal('addTypeModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-sitemap"></i> Create Product Type</h2>
+            <form onsubmit="event.preventDefault(); toggleModal('addTypeModal');">
+                <div class="form-group">
+                    <label>Parent Category</label>
+                    <select class="form-control">
+                        <option>Select Category...</option>
+                        <option>Stationery</option>
+                        <option>Notebooks & Paper</option>
+                        <option>Art & Craft Supplies</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type Name</label>
+                    <input type="text" class="form-control" placeholder="e.g. Pens, Colored Pencils">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control">
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal('addTypeModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Type</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Addresses Modal -->
+    <div id="customerAddressesModal" class="modal">
+        <div class="modal-content" style="width: 550px;">
+            <div class="modal-close" onclick="toggleModal('customerAddressesModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-location-dot"></i> Saved Addresses (Kyaw Min)</h2>
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 1.5rem;">
+                <!-- Address Card -->
+                <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1.2rem; position: relative;">
+                    <div style="position: absolute; top: 1.2rem; right: 1.2rem;">
+                        <span class="badge" style="background: #C6F6D5; color: #22543D; padding: 0.2rem 0.5rem; font-size: 0.7rem;">Default</span>
+                    </div>
+                    <h4 style="margin: 0 0 10px 0; color: var(--secondary); display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-house"></i> Home</h4>
+                    <p style="margin: 0 0 5px 0; color: #4A5568; font-size: 0.95rem;"><strong>Kyaw Min</strong> | 09-123456789</p>
+                    <p style="margin: 0; color: #718096; font-size: 0.9rem;">No 45, Hledan Road, Kamayut Township, Yangon, Myanmar</p>
+                </div>
+                <!-- Address Card -->
+                <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1.2rem; position: relative;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--secondary); display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-briefcase"></i> Office</h4>
+                    <p style="margin: 0 0 5px 0; color: #4A5568; font-size: 0.95rem;"><strong>Kyaw Min</strong> | 09-987654321</p>
+                    <p style="margin: 0; color: #718096; font-size: 0.9rem;">Level 5, ABC Tower, Sule Pagoda Road, Kyauktada Township, Yangon, Myanmar</p>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-outline" onclick="toggleModal('customerAddressesModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Order History Modal -->
+    <div id="customerHistoryModal" class="modal">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-close" onclick="toggleModal('customerHistoryModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-clock-rotate-left"></i> Order History (Kyaw Min)</h2>
+            <div style="margin-top: 1.5rem;">
+                <table style="width: 100%; font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="#" style="color: var(--secondary);"><strong>#ORD-99210</strong></a></td>
+                            <td>Today</td>
+                            <td>3 Items</td>
+                            <td>45,500 Ks</td>
+                            <td><span class="badge" style="background: #FEFCBF; color: #975A16; font-size: 0.75rem;">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" style="color: var(--secondary);"><strong>#ORD-98005</strong></a></td>
+                            <td>May 20, 2026</td>
+                            <td>12 Items</td>
+                            <td>125,000 Ks</td>
+                            <td><span class="badge" style="background: #C6F6D5; color: #22543D; font-size: 0.75rem;">Delivered</span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" style="color: var(--secondary);"><strong>#ORD-96540</strong></a></td>
+                            <td>Apr 05, 2026</td>
+                            <td>1 Item</td>
+                            <td>8,500 Ks</td>
+                            <td><span class="badge" style="background: #C6F6D5; color: #22543D; font-size: 0.75rem;">Delivered</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                <div style="color: #718096; font-size: 0.9rem;"><strong>Total Orders:</strong> 12 &nbsp;|&nbsp; <strong>LTV:</strong> 450,000 Ks</div>
+                <button type="button" class="btn btn-outline" onclick="toggleModal('customerHistoryModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details / Invoice Modal -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-close" onclick="toggleModal('orderDetailsModal')">&times;</div>
+            <h2 style="margin-top: 0; color: var(--secondary);"><i class="fa-solid fa-file-invoice"></i> Order Details: #ORD-99210</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1.5rem; background: #F7FAFC; padding: 1rem; border-radius: 8px;">
+                <div>
+                    <p style="margin: 0 0 5px 0; color: #718096; font-size: 0.85rem;">Customer Information</p>
+                    <p style="margin: 0 0 5px 0;"><strong>Kyaw Min</strong></p>
+                    <p style="margin: 0; font-size: 0.9rem;"><i class="fa-solid fa-phone" style="color: #A0AEC0;"></i> 09-123456789</p>
+                </div>
+                <div>
+                    <p style="margin: 0 0 5px 0; color: #718096; font-size: 0.85rem;">Shipping Method</p>
+                    <p style="margin: 0 0 5px 0;"><strong>Shan State (Taunggyi)</strong></p>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--secondary);"><i class="fa-solid fa-bus" style="color: #A0AEC0;"></i> Gate: Shwe Mandalar</p>
+                </div>
+                <div>
+                    <p style="margin: 0 0 5px 0; color: #718096; font-size: 0.85rem;">Payment Information</p>
+                    <p style="margin: 0 0 5px 0;"><strong>Wave Pay</strong> <span class="badge" style="background: #FEFCBF; color: #975A16; padding: 0.1rem 0.4rem; font-size: 0.7rem;">Verifying</span></p>
+                    <p style="margin: 0; font-size: 0.9rem;"><a href="#" style="color: var(--primary); text-decoration: underline;"><i class="fa-solid fa-image"></i> View Screenshot</a></p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h4 style="margin: 0 0 10px 0; color: var(--secondary); border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">Purchased Items</h4>
+                <table style="width: 100%; font-size: 0.9rem; margin-top: 10px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #EDF2F7;">
+                            <th style="padding: 8px; text-align: left;">Item Description</th>
+                            <th style="padding: 8px; text-align: center;">Unit Price</th>
+                            <th style="padding: 8px; text-align: center;">Qty</th>
+                            <th style="padding: 8px; text-align: right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">
+                                <div style="font-weight: bold; color: var(--secondary);">M&G Gel Pen (Blue)</div>
+                                <div style="font-size: 0.8rem; color: #718096;">SKU: MG-PEN-001 | Unit: Single</div>
+                            </td>
+                            <td style="padding: 8px; text-align: center; border-bottom: 1px solid #E2E8F0;">1,500 Ks</td>
+                            <td style="padding: 8px; text-align: center; border-bottom: 1px solid #E2E8F0;">10</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #E2E8F0;">15,000 Ks</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">
+                                <div style="font-weight: bold; color: var(--secondary);">Double A Copy Paper (A4)</div>
+                                <div style="font-size: 0.8rem; color: #718096;">SKU: DA-A4-500 | Unit: 1 Ream (500 sheets)</div>
+                            </td>
+                            <td style="padding: 8px; text-align: center; border-bottom: 1px solid #E2E8F0;">8,500 Ks</td>
+                            <td style="padding: 8px; text-align: center; border-bottom: 1px solid #E2E8F0;">3</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #E2E8F0;">25,500 Ks</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">
+                                <div style="font-weight: bold; color: var(--secondary);">Deli Clear File Folder</div>
+                                <div style="font-size: 0.8rem; color: #718096;">SKU: DL-FL-02 | Unit: Single</div>
+                            </td>
+                            <td style="padding: 8px; text-align: center; border-bottom: 1px solid #E2E8F0;">1,000 Ks</td>
+                            <td style="padding: 8px; text-align: center; border-bottom: 1px solid #E2E8F0;">5</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #E2E8F0;">5,000 Ks</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="padding: 8px; text-align: right; font-weight: bold;">Subtotal:</td>
+                            <td style="padding: 8px; text-align: right;">45,500 Ks</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding: 8px; text-align: right; font-weight: bold;">Shipping Fee:</td>
+                            <td style="padding: 8px; text-align: right;">0 Ks (Free)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding: 12px 8px; text-align: right; font-weight: bold; font-size: 1.1rem; color: var(--primary);">Grand Total:</td>
+                            <td style="padding: 12px 8px; text-align: right; font-weight: bold; font-size: 1.1rem; color: var(--primary);">45,500 Ks</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-outline"><i class="fa-solid fa-print"></i> Print Invoice</button>
+                <button type="button" class="btn btn-outline" onclick="toggleModal('orderDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for SPA Tab Switching -->
+    <script>
+        function toggleDropdown(id) {
+            document.getElementById(id).classList.toggle('show');
+            // Toggle chevron icon
+            const icon = document.querySelector(`[onclick="toggleDropdown('${id}')"] .fa-chevron-down, [onclick="toggleDropdown('${id}')"] .fa-chevron-up`);
+            if(icon) {
+                if(icon.classList.contains('fa-chevron-down')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            }
+        }
+
+        function switchTab(tabId) {
+            // Hide all panels
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            // Remove active class from all nav links
+            document.querySelectorAll('.sidebar a').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            // Show selected panel if it exists
+            const targetPanel = document.getElementById('panel-' + tabId);
+            if(targetPanel) {
+                targetPanel.classList.add('active');
+            }
+            // Highlight selected nav
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) {
+                activeNav.classList.add('active');
+                
+                // If this is a submenu item, ensure its parent dropdown is open
+                const parentDropdown = activeNav.closest('.dropdown-menu');
+                if (parentDropdown && !parentDropdown.classList.contains('show')) {
+                    parentDropdown.classList.add('show');
+                    // Update chevron
+                    const toggleBtn = parentDropdown.previousElementSibling;
+                    const icon = toggleBtn.querySelector('.fa-chevron-down');
+                    if(icon) {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    }
+                }
+            }
+            
+            // Update Page Title
+            const titles = {
+                'dashboard': 'Dashboard Overview',
+                'catalog-banners': 'Storefront Banners Management',
+                'catalog-brands': 'Product Brands Management',
+                'catalog-categories': 'Store Categories Management',
+                'catalog-types': 'Product Types Management',
+                'catalog-products': 'Product Inventory Management',
+                'orders': 'Orders Management',
+                'customers': 'Customer Database Profiles',
+                'staff': 'Staff Accounts & Access Control'
+            };
+            document.getElementById('page-title').innerText = titles[tabId] || 'Admin Dashboard';
+        }
+        
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if(modal.classList.contains('show')) {
+                modal.classList.remove('show');
+            } else {
+                modal.classList.add('show');
+            }
+        }
+        
+        function toggleShipping(id) {
+            const row = document.getElementById(id);
+            if(row.style.display === 'none' || row.style.display === '') {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+        
+        function simulateRole(role) {
+            // Hide/Show sidebar items
+            const items = document.querySelectorAll('.role-item');
+            items.forEach(item => {
+                const allowedRoles = item.getAttribute('data-roles').split(',');
+                if(allowedRoles.includes(role)) {
+                    item.style.display = item.classList.contains('has-dropdown') ? 'block' : 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Update user profile info
+            const profiles = {
+                'superadmin': { ava: 'SA', name: 'Super Admin', title: 'System Owner' },
+                'catalogadmin': { ava: 'CA', name: 'Catalog Admin', title: 'Product Manager' },
+                'orderstaff': { ava: 'OS', name: 'Order Staff', title: 'Logistics' },
+                'contentmanager': { ava: 'CM', name: 'Content Manager', title: 'Marketing' },
+                'customersupport': { ava: 'CS', name: 'Support Staff', title: 'Customer Service' }
+            };
+            
+            const profile = profiles[role];
+            document.getElementById('sidebar-avatar').innerText = profile.ava;
+            document.getElementById('sidebar-name').innerText = profile.name;
+            document.getElementById('sidebar-title').innerText = profile.title;
+            document.getElementById('topbar-avatar').innerText = profile.ava;
+            document.getElementById('topbar-name').innerText = profile.name;
+            document.getElementById('topbar-title').innerText = profile.title;
+            
+            // Auto switch to Dashboard when changing role
+            switchTab('dashboard');
+        }
+    </script>
 </body>
 </html>

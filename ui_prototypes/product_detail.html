@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco-Friendly A5 Notebook - School Stationary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FFD200; /* Yellow */
+            --secondary: #0B2149; /* Navy Blue */
+            --bg-light: #F4F7F6;
+            --text-dark: #333;
+            --text-light: #FFF;
+            --border-color: #E2E8F0;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; background-color: var(--bg-light); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navbar (Storefront) */
+        .navbar { background-color: var(--secondary); color: var(--text-light); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .navbar .brand { font-size: 1.5rem; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-light); text-decoration: none; font-weight: 600; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-icons { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-icons i { font-size: 1.2rem; cursor: pointer; transition: 0.3s; position: relative; }
+        .nav-icons i:hover { color: var(--primary); }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: #E53E3E; color: white; font-size: 0.7rem; padding: 2px 5px; border-radius: 50%; font-weight: bold; }
+
+        /* Main Container */
+        .container { width: 90%; max-width: 1200px; margin: 2rem auto; flex: 1; }
+        
+        /* Breadcrumb */
+        .breadcrumb { display: flex; gap: 10px; color: #718096; font-size: 0.9rem; margin-bottom: 2rem; font-weight: 600; }
+        .breadcrumb a { color: var(--secondary); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--primary); text-decoration: underline; }
+
+        /* Product Detail Layout */
+        .product-layout { display: flex; gap: 4rem; background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        
+        /* Image Gallery */
+        .product-gallery { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+        .main-image { width: 100%; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; aspect-ratio: 1/1; }
+        .thumbnail-list { display: flex; gap: 1rem; }
+        .thumbnail { width: 80px; height: 80px; border-radius: 6px; border: 2px solid transparent; cursor: pointer; object-fit: cover; transition: 0.2s; }
+        .thumbnail.active, .thumbnail:hover { border-color: var(--primary); }
+
+        /* Product Info */
+        .product-info { flex: 1.2; display: flex; flex-direction: column; }
+        .category-tag { font-size: 0.9rem; font-weight: 700; color: #A0AEC0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .product-title { font-size: 2.2rem; color: var(--secondary); margin: 0 0 1rem 0; line-height: 1.2; }
+        .rating { color: #F6E05E; font-size: 1.1rem; display: flex; align-items: center; gap: 5px; margin-bottom: 1.5rem; }
+        .rating-text { color: #718096; font-size: 0.9rem; margin-left: 5px; }
+        
+        .price-block { display: flex; align-items: baseline; gap: 15px; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .current-price { font-size: 2.5rem; font-weight: 900; color: var(--secondary); }
+        
+        .description { color: #4A5568; line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; }
+        
+        /* Action Area */
+        .stock-status { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #38A169; margin-bottom: 1.5rem; font-size: 1.1rem; }
+        .stock-indicator { width: 12px; height: 12px; background: #48BB78; border-radius: 50%; display: inline-block; }
+        
+        .action-row { display: flex; gap: 1.5rem; align-items: center; }
+        .qty-selector { display: flex; align-items: center; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden; height: 50px; }
+        .qty-btn { background: #F7FAFC; border: none; padding: 0 1.2rem; font-size: 1.2rem; font-weight: bold; color: var(--secondary); cursor: pointer; transition: 0.2s; height: 100%; }
+        .qty-btn:hover { background: #E2E8F0; }
+        .qty-input { width: 50px; text-align: center; border: none; font-size: 1.1rem; font-weight: bold; color: var(--secondary); border-left: 2px solid var(--border-color); border-right: 2px solid var(--border-color); outline: none; height: 100%; }
+        
+        .btn-add-cart { flex: 1; background: var(--primary); color: var(--secondary); font-size: 1.1rem; font-weight: bold; border: none; border-radius: 8px; height: 50px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-add-cart:hover { filter: brightness(0.95); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 210, 0, 0.4); }
+        
+        .btn-wishlist { background: transparent; border: 2px solid var(--border-color); color: var(--secondary); width: 50px; height: 50px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-wishlist:hover { border-color: #E53E3E; color: #E53E3E; }
+
+        /* Meta details */
+        .meta-details { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: #718096; display: flex; flex-direction: column; gap: 10px; }
+        .meta-details span { font-weight: bold; color: var(--secondary); margin-right: 5px; }
+
+        /* Unit Cards */
+        .unit-card:hover { border-color: #CBD5E0 !important; }
+        .unit-card.active { border-color: var(--primary) !important; background: #FFFDF0 !important; }
+        .unit-card.active .check-icon { color: var(--primary) !important; }
+
+        /* Footer */
+        .footer { background: var(--secondary); color: white; text-align: center; padding: 2rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Customer Storefront Navbar -->
+    <nav class="navbar">
+        <div class="brand">
+            <i class="fa-solid fa-graduation-cap"></i> CAMPUS SUPPLY
+        </div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#" style="color: var(--primary);">Shop Catalog</a>
+            <a href="#">Stationery</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="nav-icons">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <i class="fa-regular fa-heart"></i>
+            <div style="position: relative;">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge">2</span>
+            </div>
+            <a href="#" style="color: white; margin-left: 10px;"><i class="fa-regular fa-circle-user" style="font-size: 1.5rem;"></i></a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <div class="breadcrumb">
+            <a href="#">Home</a> &gt; 
+            <a href="#">Shop</a> &gt; 
+            <a href="#">Stationery</a> &gt; 
+            <a href="#">Notebooks</a> &gt; 
+            <span style="color: var(--text-dark);">Eco-Friendly A5 Notebook</span>
+        </div>
+
+        <!-- Product Detail Section -->
+        <div class="product-layout">
+            
+            <!-- Left: Images -->
+            <div class="product-gallery">
+                <img src="https://placehold.co/600x600/FFD200/0B2149?text=Notebook" alt="Eco-Friendly Notebook" class="main-image" id="mainImage">
+                <div class="thumbnail-list">
+                    <img src="https://placehold.co/600x600/FFD200/0B2149?text=Notebook" class="thumbnail active" onclick="changeImage(this)">
+                    <img src="https://placehold.co/600x600/E2E8F0/0B2149?text=Open+Page" class="thumbnail" onclick="changeImage(this)">
+                    <img src="https://placehold.co/600x600/0B2149/FFD200?text=Back+Cover" class="thumbnail" onclick="changeImage(this)">
+                </div>
+            </div>
+
+            <!-- Right: Details -->
+            <div class="product-info">
+                <div class="category-tag">Stationery &bull; Notebooks</div>
+                <h1 class="product-title">Eco-Friendly A5 Notebook</h1>
+                
+                <div class="rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span class="rating-text">(4.8 based on 124 reviews)</span>
+                </div>
+                
+                <div class="price-block">
+                    <div class="current-price" id="displayPrice">8.99 Ks</div>
+                </div>
+                
+                <p class="description">
+                    Premium quality eco-friendly A5 notebook designed for students, professionals, and writers. Features 100 pages of thick, acid-free recycled paper that prevents ink bleeding. The durable hardcover ensures your notes stay protected all year long. Perfect for journaling, sketching, or daily class notes.
+                </p>
+                
+                <div class="stock-status">
+                    <span class="stock-indicator"></span>
+                    450 Units In Stock — Ready to ship!
+                </div>
+                
+                <!-- Packaging / Selling Units -->
+                <div style="margin-bottom: 2rem;">
+                    <div style="font-size: 0.95rem; font-weight: bold; color: var(--secondary); margin-bottom: 10px;">Select Packaging Unit:</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        
+                        <label class="unit-card active" onclick="selectUnit(this, 8.99)" style="flex: 1; border: 2px solid var(--primary); padding: 15px; border-radius: 8px; cursor: pointer; background: #FFFDF0; position: relative; min-width: 140px;">
+                            <input type="radio" name="selling_unit" checked style="display: none;">
+                            <div style="font-weight: bold; color: var(--secondary); margin-bottom: 5px;">1 Book (Single)</div>
+                            <div style="color: #718096; font-size: 0.85rem;">Standard Price</div>
+                            <div class="check-icon" style="position: absolute; top: 10px; right: 10px; color: var(--primary);"><i class="fa-solid fa-circle-check"></i></div>
+                        </label>
+                        
+                        <label class="unit-card" onclick="selectUnit(this, 42.00)" style="flex: 1; border: 2px solid var(--border-color); padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: white; position: relative; min-width: 140px;">
+                            <input type="radio" name="selling_unit" style="display: none;">
+                            <div style="font-weight: bold; color: var(--secondary); margin-bottom: 5px;">1 Pack (5 Books)</div>
+                            <div style="color: #38A169; font-size: 0.85rem; font-weight: 600;">Save 6% (42.00 Ks)</div>
+                            <div class="check-icon" style="position: absolute; top: 10px; right: 10px; color: transparent;"><i class="fa-solid fa-circle-check"></i></div>
+                        </label>
+
+                        <label class="unit-card" onclick="selectUnit(this, 160.00)" style="flex: 1; border: 2px solid var(--border-color); padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: white; position: relative; min-width: 140px;">
+                            <input type="radio" name="selling_unit" style="display: none;">
+                            <div style="font-weight: bold; color: var(--secondary); margin-bottom: 5px;">1 Carton (20 Books)</div>
+                            <div style="color: #38A169; font-size: 0.85rem; font-weight: 600;">Save 11% (160.00 Ks)</div>
+                            <div class="check-icon" style="position: absolute; top: 10px; right: 10px; color: transparent;"><i class="fa-solid fa-circle-check"></i></div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="action-row">
+                    <!-- Quantity Adjuster -->
+                    <div class="qty-selector">
+                        <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                        <input type="text" class="qty-input" id="qtyInput" value="1" readonly>
+                        <button class="qty-btn" onclick="updateQty(1)">+</button>
+                    </div>
+                    
+                    <!-- Add to Cart -->
+                    <button class="btn-add-cart" onclick="addToCart()">
+                        <i class="fa-solid fa-cart-arrow-down"></i> Add to Cart
+                    </button>
+                    
+                    <!-- Wishlist -->
+                    <button class="btn-wishlist" title="Save to Wishlist">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+                
+                <div class="meta-details">
+                    <div><span>SKU:</span> ITM-001</div>
+                    <div><span>Dimensions:</span> 148 x 210 mm (A5 Size)</div>
+                    <div><span>Material:</span> 100% Recycled Paper</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2026 Campus Supply & School Stationary. All Rights Reserved.</p>
+    </div>
+
+    <!-- Interactive JS -->
+    <script>
+        function changeImage(element) {
+            // Update main image src
+            document.getElementById('mainImage').src = element.src;
+            // Update active state on thumbnails
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function selectUnit(element, price) {
+            // Remove active class and reset colors
+            document.querySelectorAll('.unit-card').forEach(c => {
+                c.classList.remove('active');
+                c.style.borderColor = 'var(--border-color)';
+                c.style.background = 'white';
+                c.querySelector('.check-icon').style.color = 'transparent';
+            });
+            
+            // Add active to selected
+            element.classList.add('active');
+            element.style.borderColor = 'var(--primary)';
+            element.style.background = '#FFFDF0';
+            element.querySelector('.check-icon').style.color = 'var(--primary)';
+            
+            // Update price display
+            document.getElementById('displayPrice').innerText = price.toFixed(2) + ' Ks';
+        }
+
+        function updateQty(change) {
+            const input = document.getElementById('qtyInput');
+            let val = parseInt(input.value) + change;
+            if(val < 1) val = 1;
+            input.value = val;
+        }
+
+        function addToCart() {
+            const btn = document.querySelector('.btn-add-cart');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Added to Cart!';
+            btn.style.background = '#48BB78';
+            btn.style.color = 'white';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'var(--secondary)';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
