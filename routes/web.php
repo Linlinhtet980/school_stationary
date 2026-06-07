@@ -22,6 +22,8 @@ Route::controller(AuthController::class)->group(function () {
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TypeController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\ItemController;
 
 // အကောင့်ဝင်ပြီးမှ သွားလို့ရမည့် စာမျက်နှာများ
 Route::middleware('auth')->group(function () {
@@ -29,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
     Route::resource('admin/categories', CategoryController::class)->names('admin.categories');
     Route::resource('admin/types', TypeController::class)->names('admin.types');
+    Route::resource('admin/brands', BrandController::class)->names('admin.brands');
+    Route::resource('admin/items', ItemController::class)->names('admin.items');
+    Route::delete('admin/items/image/{id}', [ItemController::class, 'destroyImage'])->name('admin.items.destroyImage');
 });
 
 // // မူလစာမျက်နှာ

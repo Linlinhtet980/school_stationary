@@ -31,10 +31,10 @@
                     <div class="menu-item-content"><i class="fa-solid fa-box-open"></i> Products</div>
                     <i class="fa-solid fa-chevron-down dropdown-icon"></i>
                 </div>
-                <div class="dropdown-menu {{ request()->routeIs('admin.categories.*') ? 'show' : '' }}" id="catalog-menu">
-                    <a href="#">All Products</a>
+                <div class="dropdown-menu {{ request()->routeIs('admin.categories.*') || request()->routeIs('admin.types.*') || request()->routeIs('admin.brands.*') || request()->routeIs('admin.items.*') ? 'show' : '' }}" id="catalog-menu">
+                    <a href="{{ route('admin.items.index') }}" class="{{ request()->routeIs('admin.items.*') ? 'active' : '' }}">All Products</a>
                     <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Categories</a>
-                    <a href="#">Brands</a>
+                    <a href="{{ route('admin.brands.index') }}" class="{{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">Brands</a>
                     <a href="{{ route('admin.types.index') }}" class="{{ request()->routeIs('admin.types.*') ? 'active' : '' }}">Types</a>
                 </div>
             </div>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Supply — UI Prototypes Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #FFD200; --secondary: #0B2149; --bg: #F4F7F6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--secondary); min-height: 100vh; padding: 2rem; }
+        .wrap { max-width: 960px; margin: 0 auto; }
+        .hero { text-align: center; margin-bottom: 2.5rem; }
+        .hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem; }
+        .hero p { color: #718096; max-width: 640px; margin: 0 auto; line-height: 1.6; }
+        .badge { display: inline-block; background: var(--primary); color: var(--secondary); font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 1rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: white; border-radius: 16px; padding: 1.5rem; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .card h2 { font-size: 1.1rem; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 10px; }
+        .card h2 i { color: var(--primary); background: var(--secondary); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .card .desc { color: #718096; font-size: 0.88rem; margin-bottom: 1rem; line-height: 1.5; }
+        .links { list-style: none; }
+        .links li { margin-bottom: 0.4rem; }
+        .links a { display: flex; align-items: center; gap: 8px; padding: 0.55rem 0.75rem; border-radius: 8px; text-decoration: none; color: var(--secondary); font-weight: 600; font-size: 0.9rem; transition: 0.2s; border: 1px solid transparent; }
+        .links a:hover { background: #FFFBEB; border-color: var(--primary); }
+        .links a i { color: #A0AEC0; width: 16px; }
+        .links a.primary { background: var(--secondary); color: white; justify-content: center; margin-bottom: 0.75rem; padding: 0.75rem; }
+        .links a.primary:hover { background: #091a3a; }
+        .note { margin-top: 2rem; padding: 1rem 1.25rem; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 10px; font-size: 0.88rem; color: #2B6CB0; line-height: 1.6; }
+        .note strong { color: var(--secondary); }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="hero">
+            <span class="badge">UI PROTOTYPE — Laravel မတိုင်မီ Preview</span>
+            <h1>Campus Supply E-commerce</h1>
+            <p>Guidance ဖိုင်မှာ ဆွေးနွေးထားတဲ့ Requirement အားလုံး (Admin + Customer) ကို HTML UI အဖြစ် ကြည့်ရှုနိုင်ပါသည်။ Laravel Code မပါ — Design Review အတွက်သာ။</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2><i class="fa-solid fa-shield-halved"></i> Admin Panel</h2>
+                <p class="desc">Single-page prototype — Sidebar Menu နှိပ်ပြီး Panel တွေ ပြောင်းကြည့်ပါ (Dashboard, Catalog, Variants, Orders, Staff RBAC)</p>
+                <ul class="links">
+                    <li><a href="admin/index.html" class="primary"><i class="fa-solid fa-arrow-right"></i> Admin Full UI (All-in-One)</a></li>
+                </ul>
+                <p class="desc" style="margin-top:1rem; margin-bottom:0.5rem; font-size:0.8rem;"><strong>ပါဝင်သည့် Features:</strong></p>
+                <ul class="links" style="font-size:0.82rem;">
+                    <li><span style="padding:0.4rem 0.75rem; color:#718096;">✓ Dashboard Analytics</span></li>
+                    <li><span style="padding:0.4rem 0.75rem; color:#718096;">✓ Categories / Types / Brands CRUD</span></li>
+                    <li><span style="padding:0.4rem 0.75rem; color:#718096;">✓ Items + Variants (Color/Size/Unit/SKU)</span></li>
+                    <li><span style="padding:0.4rem 0.75rem; color:#718096;">✓ Banner Slider Management</span></li>
+                    <li><span style="padding:0.4rem 0.75rem; color:#718096;">✓ Orders (Payment slip, Bus Gate)</span></li>
+                    <li><span style="padding:0.4rem 0.75rem; color:#718096;">✓ Customers + Staff RBAC</span></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-store"></i> Customer Storefront</h2>
+                <p class="desc">ဈေးဝယ်သူဘက် — Homepage, Shop, Cart, Checkout (KPay/Wave/COD), Profile, Order Success</p>
+                <ul class="links">
+                    <li><a href="customer/index.html" class="primary"><i class="fa-solid fa-house"></i> Homepage (Start Here)</a></li>
+                    <li><a href="customer/login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="customer/register.html"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+                    <li><a href="customer/shop.html"><i class="fa-solid fa-bag-shopping"></i> Shop / Browse</a></li>
+                    <li><a href="customer/product-detail.html"><i class="fa-solid fa-box-open"></i> Product Detail</a></li>
+                    <li><a href="customer/cart-checkout.html"><i class="fa-solid fa-cart-shopping"></i> Cart &amp; Checkout</a></li>
+                    <li><a href="customer/profile.html"><i class="fa-solid fa-user"></i> Profile &amp; Addresses</a></li>
+                    <li><a href="customer/order-success.html"><i class="fa-solid fa-circle-check"></i> Order Success</a></li>
+                    <li><a href="customer/new_arrivals.html"><i class="fa-solid fa-sparkles"></i> New Arrivals</a></li>
+                    <li><a href="customer/bestsellers.html"><i class="fa-solid fa-star"></i> Bestsellers</a></li>
+                    <li><a href="customer/b2s_deals.html"><i class="fa-solid fa-tags"></i> B2S Deals</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong><i class="fa-solid fa-lightbulb"></i> ဆွေးနွေးချက် Coverage:</strong>
+            Category 6 ခု · Type/Brand · Item Variants · Nationwide Shipping (COD=Yangon/Mandalay only) ·
+            KPay/Wave slip upload · Stripe Demo Flow (Place Order → Stripe redirect — Laravel phase) ·
+            Admin Bus Gate fill · Myanmar address format · RBAC roles
+        </div>
+    </div>
+</body>
+</html>
