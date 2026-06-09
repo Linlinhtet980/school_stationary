@@ -35,9 +35,14 @@
     gap: 8px;
     transition: color 0.2s;
 }
-.btn-back:hover { color: var(--primary); }
 
-.card-body { padding: 2rem; }
+.btn-back:hover {
+    color: var(--primary);
+}
+
+.card-body {
+    padding: 2rem;
+}
 
 .alert-error {
     background: #FFF5F5;
@@ -47,7 +52,12 @@
     margin-bottom: 2rem;
     border-left: 4px solid #E53E3E;
 }
-.alert-error ul { margin: 10px 0 0; padding-left: 20px; font-size: 0.95rem; }
+
+.alert-error ul {
+    margin: 10px 0 0;
+    padding-left: 20px;
+    font-size: 0.95rem;
+}
 
 /* Form Layout */
 .form-grid {
@@ -56,11 +66,82 @@
     gap: 2.5rem;
 }
 
-@media (max-width: 900px) {
-    .form-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+/* Variant Table Styles (Append to bottom of css file) */
+.variants-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #E2E8F0;
 }
 
-.form-column { display: flex; flex-direction: column; gap: 1.5rem; }
+.variants-table-container {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.variants-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.variants-table th {
+    background: #F8FAFC;
+    padding: 12px;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #4A5568;
+    border: 1px solid #E2E8F0;
+}
+
+.variants-table td {
+    padding: 8px;
+    border: 1px solid #E2E8F0;
+    vertical-align: top;
+}
+
+.variants-table .form-control {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.btn-add-variant {
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-remove-row {
+    background: #E53E3E;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.btn-remove-row:hover {
+    background: #C53030;
+}
+
+@media (max-width: 900px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
 
 .form-row {
     display: grid;
@@ -69,10 +150,16 @@
 }
 
 @media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 }
 
-.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 
 .form-group label {
     font-weight: 600;
@@ -80,7 +167,9 @@
     font-size: 0.95rem;
 }
 
-.text-required { color: #E53E3E; }
+.text-required {
+    color: #E53E3E;
+}
 
 .form-control {
     padding: 0.8rem 1rem;
@@ -92,12 +181,26 @@
     background: #fff;
     transition: all 0.2s;
 }
-.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 210, 0, 0.15); }
-select.form-control { cursor: pointer; }
-textarea.form-control { resize: vertical; }
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 210, 0, 0.15);
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+textarea.form-control {
+    resize: vertical;
+}
 
 /* Image Upload Container */
-.image-upload-group { flex: 1; }
+.image-upload-group {
+    flex: 1;
+}
+
 .image-preview-container {
     position: relative;
     border: 2px dashed #CBD5E0;
@@ -111,23 +214,41 @@ textarea.form-control { resize: vertical; }
     cursor: pointer;
     transition: all 0.2s;
 }
-.image-preview-container:hover { border-color: var(--primary); background: #FFFAEB; }
+
+.image-preview-container:hover {
+    border-color: var(--primary);
+    background: #FFFAEB;
+}
 
 .placeholder-content {
     text-align: center;
     color: #718096;
     pointer-events: none;
 }
-.placeholder-content i { font-size: 3rem; color: #A0AEC0; margin-bottom: 10px; }
-.placeholder-content p { margin: 0 0 5px; font-weight: 600; color: #4A5568; }
-.placeholder-content span { font-size: 0.8rem; }
+
+.placeholder-content i {
+    font-size: 3rem;
+    color: #A0AEC0;
+    margin-bottom: 10px;
+}
+
+.placeholder-content p {
+    margin: 0 0 5px;
+    font-weight: 600;
+    color: #4A5568;
+}
+
+.placeholder-content span {
+    font-size: 0.8rem;
+}
 
 #imagePreview {
     width: 100%;
     height: 100%;
     object-fit: cover;
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     z-index: 1;
 }
 
@@ -135,7 +256,10 @@ textarea.form-control { resize: vertical; }
 .image-preview-container::after {
     content: "Click to replace image";
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(11, 33, 73, 0.6);
     color: #fff;
     display: flex;
@@ -147,18 +271,28 @@ textarea.form-control { resize: vertical; }
     z-index: 2;
     pointer-events: none;
 }
-.image-preview-container:hover::after { opacity: 1; }
+
+.image-preview-container:hover::after {
+    opacity: 1;
+}
 
 .file-input {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
     cursor: pointer;
     z-index: 3;
 }
 
-.status-group { background: #F8FAFC; padding: 1.5rem; border-radius: 12px; border: 1px solid #E2E8F0; }
+.status-group {
+    background: #F8FAFC;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+}
 
 /* Form Actions */
 .form-actions {
@@ -185,7 +319,12 @@ textarea.form-control { resize: vertical; }
     gap: 8px;
     box-shadow: 0 4px 6px rgba(255, 210, 0, 0.3);
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(255, 210, 0, 0.4); background: #FFC000; }
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 210, 0, 0.4);
+    background: #FFC000;
+}
 
 .btn-outline {
     background: transparent;
@@ -201,8 +340,15 @@ textarea.form-control { resize: vertical; }
     align-items: center;
     transition: all 0.2s;
 }
-.btn-outline:hover { background: #F7FAFC; color: #1A202C; }
-.mt-3 { margin-top: 1rem; }
+
+.btn-outline:hover {
+    background: #F7FAFC;
+    color: #1A202C;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
 
 /* Gallery Images */
 .gallery-grid {
@@ -244,4 +390,7 @@ textarea.form-control { resize: vertical; }
     transition: all 0.2s;
 }
 
-.btn-remove-image:hover { background: #C53030; transform: scale(1.1); }
+.btn-remove-image:hover {
+    background: #C53030;
+    transform: scale(1.1);
+}

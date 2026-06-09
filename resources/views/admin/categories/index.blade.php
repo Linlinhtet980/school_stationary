@@ -38,7 +38,7 @@
                 <tr>
                     <th>Category ID</th>
                     <th>Category Name</th>
-                    <th>Total Products</th>
+                    <th>Total Types</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -53,7 +53,7 @@
                             <div class="cat-desc">{{ $category->description }}</div>
                         @endif
                     </td>
-                    <td class="product-count">{{ $category->products_count ?? 0 }}</td>
+                    <td class="product-count">{{ $category->types_count ?? 0 }}</td>
                     <td>
                         @if($category->status === 'active')
                             <span class="badge badge-active">Active</span>

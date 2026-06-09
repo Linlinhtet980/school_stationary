@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\Type;
 use App\Models\Brand;
 use App\Models\ItemImage;
+use App\Models\ItemVariant; // Variant Model ကို ထည့်သွင်းထားပါသည်
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,7 +18,8 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::with(['type', 'brand'])->latest()->paginate(10);
+        // Variant များကိုပါ ကြိုတင်ဆွဲထုတ်ထားရန် with() တွင် 'variants' ကို ထည့်ထားပါသည်
+        $items = Item::with(['type', 'brand', 'variants'])->latest()->paginate(5);
         return view('admin.items.index', compact('items'));
     }
 
@@ -26,7 +28,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        $types = Type::where('status', 'active')->get();
+        $types = Type::where(['status' => 'active'])->get();
         $brands = Brand::orderBy('name', 'asc')->get();
         return view('admin.items.create', compact('types', 'brands'));
     }
@@ -37,24 +39,45 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type_id'        => 'required|exists:types,id',
-            'brand_id'       => 'nullable|exists:brands,id',
-            'name'           => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'price'          => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'type_id'          => 'required|exists:types,id',
+            'brand_id'         => 'nullable|exists:brands,id',
+            'name'             => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            // Main Item ၏ စျေးနှင့် စတော့ခ်ကို Variant ဘက်ရွှေ့မည်ဖြစ်၍ nullable ပေးထားပါသည်
+            'price'            => 'nullable|numeric|min:0',
+            'stock_quantity'   => 'nullable|integer|min:0',
+            'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status'         => 'required|in:active,inactive,out_of_stock',
+            'status'           => 'required|in:active,inactive,out_of_stock',
+            
+            // Variants အတွက် Validation များ
+            'variants'             => 'required|array|min:1',
+            'variants.*.price'     => 'required|numeric|min:0',
+            'variants.*.stock_qty' => 'required|integer|min:0',
         ]);
 
-        $data = $request->except(['image', 'gallery_images']);
+        $data = $request->except(['image', 'gallery_images', 'variants']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('items', 'public');
         }
 
         $item = Item::create($data);
+
+        // Handle Variants သိမ်းဆည်းခြင်း
+        if ($request->has('variants')) {
+            foreach ($request->variants as $variantData) {
+                $item->variants()->create([
+                    'unit_label' => $variantData['unit_label'] ?? null,
+                    'unit_qty'   => $variantData['unit_qty'] ?? null,
+                    'color'      => $variantData['color'] ?? null,
+                    'size'       => $variantData['size'] ?? null,
+                    'price'      => $variantData['price'],
+                    'stock_qty'  => $variantData['stock_qty'],
+                    'sku'        => $variantData['sku'] ?? null,
+                ]);
+            }
+        }
 
         // Handle Gallery Images
         if ($request->hasFile('gallery_images')) {
@@ -67,7 +90,7 @@ class ItemController extends Controller
             }
         }
 
-        return redirect()->route('admin.items.index')->with('success', 'Item created successfully.');
+        return redirect()->route('admin.items.index')->with('success', 'Item and variants created successfully.');
     }
 
     /**
@@ -75,7 +98,8 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        $item->load(['type', 'brand']);
+        // View တွင် ပြသရန် variants နှင့် images များကိုပါ load လုပ်ပါသည်
+        $item->load(['type', 'brand', 'variants', 'images']);
         return view('admin.items.show', compact('item'));
     }
 
@@ -86,6 +110,8 @@ class ItemController extends Controller
     {
         $types = Type::where('status', 'active')->get();
         $brands = Brand::orderBy('name', 'asc')->get();
+        // Edit Form တွင် Variant အဟောင်းများကို ပြန်ပြရန် load လုပ်ပါသည်
+        $item->load(['variants', 'images']); 
         return view('admin.items.edit', compact('item', 'types', 'brands'));
     }
 
@@ -95,18 +121,23 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         $request->validate([
-            'type_id'        => 'required|exists:types,id',
-            'brand_id'       => 'nullable|exists:brands,id',
-            'name'           => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'price'          => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'type_id'          => 'required|exists:types,id',
+            'brand_id'         => 'nullable|exists:brands,id',
+            'name'             => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'price'            => 'nullable|numeric|min:0',
+            'stock_quantity'   => 'nullable|integer|min:0',
+            'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status'         => 'required|in:active,inactive,out_of_stock',
+            'status'           => 'required|in:active,inactive,out_of_stock',
+            
+            // Variants အတွက် Validation များ
+            'variants'             => 'required|array|min:1',
+            'variants.*.price'     => 'required|numeric|min:0',
+            'variants.*.stock_qty' => 'required|integer|min:0',
         ]);
 
-        $data = $request->except(['image', 'gallery_images']);
+        $data = $request->except(['image', 'gallery_images', 'variants']);
 
         if ($request->hasFile('image')) {
             // Delete old image
@@ -118,9 +149,25 @@ class ItemController extends Controller
 
         $item->update($data);
 
+        // Handle Variants ပြင်ဆင်ခြင်း (အဟောင်းများကိုဖျက်၍ အသစ်များ အစားထိုးခြင်း)
+        if ($request->has('variants')) {
+            $item->variants()->delete(); 
+            
+            foreach ($request->variants as $variantData) {
+                $item->variants()->create([
+                    'unit_label' => $variantData['unit_label'] ?? null,
+                    'unit_qty'   => $variantData['unit_qty'] ?? null,
+                    'color'      => $variantData['color'] ?? null,
+                    'size'       => $variantData['size'] ?? null,
+                    'price'      => $variantData['price'],
+                    'stock_qty'  => $variantData['stock_qty'],
+                    'sku'        => $variantData['sku'] ?? null,
+                ]);
+            }
+        }
+
         // Handle Gallery Images
         if ($request->hasFile('gallery_images')) {
-            // Check current images count to enforce max 4 logic if desired, or just add
             foreach ($request->file('gallery_images') as $file) {
                 $path = $file->store('items/gallery', 'public');
                 ItemImage::create([
@@ -130,7 +177,7 @@ class ItemController extends Controller
             }
         }
 
-        return redirect()->route('admin.items.index')->with('success', 'Item updated successfully.');
+        return redirect()->route('admin.items.index')->with('success', 'Item and variants updated successfully.');
     }
 
     /**
@@ -149,7 +196,7 @@ class ItemController extends Controller
             }
         }
 
-        $item->delete();
+        Item::destroy($item->id); // Database မှ ဖျက်သည့်အခါ Cascade ဖြစ်၍ variants များပါ အလိုအလျောက် ပျက်သွားပါမည်
 
         return redirect()->route('admin.items.index')->with('success', 'Item deleted successfully.');
     }
@@ -157,7 +204,7 @@ class ItemController extends Controller
     /**
      * Remove the specified gallery image.
      */
-    public function destroyImage($id)
+    public function destroyImage(int $id)
     {
         $image = ItemImage::findOrFail($id);
         

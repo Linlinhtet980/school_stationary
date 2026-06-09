@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'type_id', 
         'brand_id', 
@@ -30,5 +32,10 @@ class Item extends Model
     public function images()
     {
         return $this->hasMany(ItemImage::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ItemVariant::class);
     }
 }

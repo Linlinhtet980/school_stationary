@@ -24,16 +24,27 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TypeController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ItemController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\StaffController;
 
-// အကောင့်ဝင်ပြီးမှ သွားလို့ရမည့် စာမျက်နှာများ
+// Customer
 Route::middleware('auth')->group(function () {
-    Route::get('/home', function () { return view('home'); })->name('home');
+    Route::get('/home', function () { return view('login'); })->name('home');
+});
+
+// admin/staff
+Route::middleware(['auth', 'admin'])->group(function () {
+    
     Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
+    
     Route::resource('admin/categories', CategoryController::class)->names('admin.categories');
     Route::resource('admin/types', TypeController::class)->names('admin.types');
     Route::resource('admin/brands', BrandController::class)->names('admin.brands');
     Route::resource('admin/items', ItemController::class)->names('admin.items');
+    Route::resource('admin/banners', BannerController::class)->names('admin.banners');
+    Route::resource('admin/staff', StaffController::class)->names('admin.staff');
     Route::delete('admin/items/image/{id}', [ItemController::class, 'destroyImage'])->name('admin.items.destroyImage');
+    
 });
 
 // // မူလစာမျက်နှာ

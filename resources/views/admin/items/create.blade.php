@@ -30,11 +30,10 @@
             @csrf
             
             <div class="form-grid">
-                <!-- Left Column -->
                 <div class="form-column">
                     <div class="form-group">
                         <label for="name">Item Name <span class="text-required">*</span></label>
-                        <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required placeholder="e.g. A4 Copy Paper">
+                        <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required>
                     </div>
 
                     <div class="form-row">
@@ -62,53 +61,67 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="price">Price (Ks) <span class="text-required">*</span></label>
-                            <input type="number" id="price" name="price" class="form-control" value="{{ old('price', 0) }}" min="0" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="stock_quantity">Initial Stock <span class="text-required">*</span></label>
-                            <input type="number" id="stock_quantity" name="stock_quantity" class="form-control" value="{{ old('stock_quantity', 0) }}" min="0" required>
-                        </div>
-                    </div>
-
                     <div class="form-group">
                         <label for="description">Description (Optional)</label>
-                        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Product details...">{{ old('description') }}</textarea>
+                        <textarea id="description" name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
+                    </div>
+                    
+                    <div class="form-group status-group">
+                        <label for="status">Availability Status <span class="text-required">*</span></label>
+                        <select id="status" name="status" class="form-control" required>
+                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="out_of_stock" {{ old('status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Right Column (Image & Status) -->
                 <div class="form-column">
                     <div class="form-group image-upload-group">
-                        <label for="image">Main Image (Optional)</label>
-                        <div class="image-preview-container" id="imagePreviewContainer">
-                            <div class="placeholder-content" id="placeholderContent">
+                        <label>Main Image (Optional)</label>
+                        <div class="image-preview-container" onclick="document.getElementById('image').click()">
+                            <div class="placeholder-content" id="imagePlaceholder">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
                                 <p>Click to upload image</p>
                                 <span>Max 2MB (JPG, PNG)</span>
                             </div>
                             <img id="imagePreview" src="" alt="Preview" style="display: none;">
-                            <input type="file" id="image" name="image" class="file-input" accept="image/jpeg,image/png,image/jpg,image/gif">
+                            <input type="file" id="image" name="image" class="file-input" accept="image/jpeg,image/png,image/jpg" onchange="previewMainImage(this)">
                         </div>
                     </div>
 
                     <div class="form-group mt-3">
-                        <label for="gallery_images">Gallery Images (Max 4)</label>
-                        <input type="file" id="gallery_images" name="gallery_images[]" class="form-control" multiple accept="image/jpeg,image/png,image/jpg,image/gif">
-                        <small class="text-muted">You can select multiple images to show in the details page.</small>
-                    </div>
-
-                    <div class="form-group status-group mt-3">
-                        <label for="status">Availability Status <span class="text-required">*</span></label>
-                        <select id="status" name="status" class="form-control" required>
-                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active (Available for sale)</option>
-                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive (Hidden)</option>
-                            <option value="out_of_stock" {{ old('status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock (Visible but not purchasable)</option>
-                        </select>
+                        <label>Gallery Images (Multiple)</label>
+                        <input type="file" name="gallery_images[]" class="form-control" accept="image/jpeg,image/png,image/jpg" multiple>
                     </div>
                 </div>
+            </div>
+
+            <div class="variants-section">
+                <h3><i class="fa-solid fa-sitemap"></i> Item Variants (Pricing & Stock)</h3>
+                
+                <div class="variants-table-container">
+                    <table class="variants-table">
+                        <thead>
+                            <tr>
+                                <th>Unit Label</th>
+                                <th>Unit Qty</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Price <span class="text-required">*</span></th>
+                                <th>Stock Qty <span class="text-required">*</span></th>
+                                <th>SKU</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variantsBody">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <button type="button" class="btn-outline btn-add-variant" onclick="addVariantRow()">
+                    <i class="fa-solid fa-plus"></i> Add Another Variant
+                </button>
             </div>
 
             <div class="form-actions">

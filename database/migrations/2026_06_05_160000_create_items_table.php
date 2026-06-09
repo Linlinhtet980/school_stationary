@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->integer('stock_quantity')->default(0);
+            $table->decimal('price', 10, 2)->nullable();
+            $table->integer('stock_quantity')->nullable()->default(0);
             $table->string('image')->nullable();
             $table->string('status')->default('active'); // active, inactive, out_of_stock
             $table->timestamps();
