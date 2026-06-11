@@ -26,16 +26,22 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\DashboardController;
 
 // Customer
 Route::middleware('auth')->group(function () {
+    // Customer profile & order history
+    Route::get('/profile', function () { return view('profile'); })->name('profile');
+    
     Route::get('/home', function () { return view('login'); })->name('home');
 });
 
 // admin/staff
 Route::middleware(['auth', 'admin'])->group(function () {
     
-    Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     
     Route::resource('admin/categories', CategoryController::class)->names('admin.categories');
     Route::resource('admin/types', TypeController::class)->names('admin.types');
@@ -45,6 +51,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('admin/staff', StaffController::class)->names('admin.staff');
     Route::delete('admin/items/image/{id}', [ItemController::class, 'destroyImage'])->name('admin.items.destroyImage');
     
+    Route::resource('admin/orders', OrderController::class)->only(['index', 'show', 'update'])->names('admin.orders');
+    Route::resource('admin/customers', CustomerController::class)->only(['index', 'show'])->names('admin.customers');
+    Route::post('admin/customers/{customer}/block', [CustomerController::class, 'block'])->name('admin.customers.block');
 });
 
 // // မူလစာမျက်နှာ

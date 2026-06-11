@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;    
 use App\Models\Banner;
 use Illuminate\Http\Request;
-use Illumination\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
@@ -24,10 +24,11 @@ class BannerController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'image'=> 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'=> 'required|image|mimes:jpeg,png,jpg|max:2048',
             'link'=> 'nullable|string',
             'sequence' => 'nullable|integer',
             'status' => 'required|in:active,inactive',
+            'expires_at' => 'nullable|date',
         ]);
 
         $data = $request->except('image');
@@ -50,10 +51,11 @@ class BannerController extends Controller
     {
         $request->validate([
             'title' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // အဟောင်းရှိပြီးသားမို့ မပါလည်းရသည်
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // အဟောင်းရှိပြီးသားမို့ မပါလည်းရသည်
             'link' => 'nullable|string',
             'sequence' => 'nullable|integer',
             'status' => 'required|in:active,inactive',
+            'expires_at' => 'nullable|date',
         ]);
 
         $data = $request->except('image');

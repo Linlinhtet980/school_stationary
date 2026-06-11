@@ -67,17 +67,50 @@
 
                 <div class="price-stock-box">
                     <div class="price-block">
-                        <span class="label">Price</span>
-                        <span class="value">{{ number_format($item->price, 2) }} Ks</span>
+                        <span class="label">Price Range</span>
+                        <span class="value">{{ $item->price_range }}</span>
                     </div>
                     <div class="divider"></div>
                     <div class="stock-block">
-                        <span class="label">Current Stock</span>
-                        <span class="value {{ $item->stock_quantity <= 0 ? 'text-danger' : 'text-success' }}">
-                            {{ $item->stock_quantity }} Units
+                        <span class="label">Total Stock</span>
+                        <span class="value {{ $item->total_stock <= 0 ? 'text-danger' : 'text-success' }}">
+                            {{ number_format($item->total_stock) }} Units
                         </span>
                     </div>
                 </div>
+
+                <!-- Variants Table -->
+                @if($item->variants->count() > 0)
+                <div class="variants-box mt-4">
+                    <h4 class="mb-3"><i class="fa-solid fa-list"></i> Item Variants</h4>
+                    <table class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                <th style="padding: 10px; text-align: left;">Unit/Label</th>
+                                <th style="padding: 10px; text-align: left;">Color</th>
+                                <th style="padding: 10px; text-align: left;">Size</th>
+                                <th style="padding: 10px; text-align: right;">Price</th>
+                                <th style="padding: 10px; text-align: right;">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($item->variants as $variant)
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 10px;">{{ $variant->unit_label }} (x{{ $variant->unit_qty }})</td>
+                                <td style="padding: 10px;">{{ $variant->color ?: '-' }}</td>
+                                <td style="padding: 10px;">{{ $variant->size ?: '-' }}</td>
+                                <td style="padding: 10px; text-align: right;">{{ number_format($variant->price, 2) }} Ks</td>
+                                <td style="padding: 10px; text-align: right;">
+                                    <span class="{{ $variant->stock_quantity <= 0 ? 'text-danger' : 'text-success' }}">
+                                        {{ $variant->stock_quantity }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
 
                 <div class="info-list">
                     <div class="info-item">

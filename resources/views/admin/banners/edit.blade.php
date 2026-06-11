@@ -43,6 +43,11 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label for="expires_at">Expiration Date & Time (Optional)</label>
+                        <input type="datetime-local" id="expires_at" name="expires_at" class="form-control" value="{{ $banner->expires_at ? \Carbon\Carbon::parse($banner->expires_at)->format('Y-m-d\TH:i') : '' }}">
+                    </div>
                 </div>
 
                 <div class="form-column">

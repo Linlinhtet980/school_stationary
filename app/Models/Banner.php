@@ -15,5 +15,6 @@ class Banner extends Model
         'link',
         'sequence',
         'status',
+        'expires_at',
     ];
 }

@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="{{ asset('css/layouts/admin.css') }}">
 
     @stack('styles')
+
+    <!-- Global theme overrides — MUST be last to override hardcoded colors -->
+    <link rel="stylesheet" href="{{ asset('css/admin/theme.css') }}">
 </head>
 
 <body>
@@ -20,7 +23,9 @@
     <aside class="sidebar" id="sidebar">
 
         <div class="sb-brand">
-            <div class="sb-logo">CS</div>
+            <div class="sb-logo">
+                <img src="{{ asset('logo.png') }}" alt="CampusSupply Logo" class="sb-logo-img">
+            </div>
             <div class="sb-brand-text">
                 <strong>CampusSupply</strong>
                 <small>Admin Portal</small>
@@ -69,20 +74,21 @@
                 <span class="sb-tooltip">Types</span>
             </a>
 
+            @if(in_array(auth()->user()->role_id, [1, 3, 5]))
             <div class="sb-divider"></div>
-            <div class="sb-section-label">Sales</div>
+            <div class="sb-section-label">Sales & Orders</div>
 
-            <a href="#" class="sb-item">
+            <a href="{{ route('admin.orders.index') }}" class="sb-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                 <i class="sb-item-icon fa-solid fa-receipt"></i>
                 <span class="sb-item-label">Orders</span>
-                <span class="sb-badge">0</span>
                 <span class="sb-tooltip">Orders</span>
             </a>
-            <a href="#" class="sb-item">
+            <a href="{{ route('admin.customers.index') }}" class="sb-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                 <i class="sb-item-icon fa-solid fa-users"></i>
                 <span class="sb-item-label">Customers</span>
                 <span class="sb-tooltip">Customers</span>
             </a>
+            @endif
 
             <div class="sb-divider"></div>
             <div class="sb-section-label">Store</div>
@@ -102,11 +108,6 @@
                 <span class="sb-tooltip">Staff</span>
             </a>
 
-            <a href="#" class="sb-item">
-                <i class="sb-item-icon fa-solid fa-gear"></i>
-                <span class="sb-item-label">Settings</span>
-                <span class="sb-tooltip">Settings</span>
-            </a>
         </nav>
 
         <div class="sb-bottom" id="sbBottom">
@@ -114,10 +115,6 @@
                 <a class="pop-item" href="#">
                     <i class="pop-item-icon fa-regular fa-circle-user"></i>
                     <span class="pop-item-label">My Profile</span>
-                </a>
-                <a class="pop-item" href="#">
-                    <i class="pop-item-icon fa-solid fa-gear"></i>
-                    <span class="pop-item-label">Account Settings</span>
                 </a>
 
                 <div class="pop-divider"></div>

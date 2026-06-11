@@ -14,7 +14,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        $types = Type::with('category')->latest()->paginate(10);
+        $types = Type::with('category')->latest()->paginate(5);
         $categories = Category::where('status', 'active')->get();
         return view('admin.types.index', compact('types', 'categories'));
     }

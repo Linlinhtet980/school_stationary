@@ -4,6 +4,7 @@
 @section('header_title', 'Create Item')
 
 @push('styles')
+    <!-- Pure CSS သီးသန့်ဖိုင်ကို ချိတ်ဆက်ခြင်း -->
     <link rel="stylesheet" href="{{ asset('css/admin/items_create.css') }}">
 @endpush
 
@@ -30,6 +31,7 @@
             @csrf
             
             <div class="form-grid">
+                <!-- Left Column -->
                 <div class="form-column">
                     <div class="form-group">
                         <label for="name">Item Name <span class="text-required">*</span></label>
@@ -76,6 +78,7 @@
                     </div>
                 </div>
 
+                <!-- Right Column (Images Uploder) -->
                 <div class="form-column">
                     <div class="form-group image-upload-group">
                         <label>Main Image (Optional)</label>
@@ -97,14 +100,15 @@
                 </div>
             </div>
 
+            <!-- Dynamic Variants Section -->
             <div class="variants-section">
                 <h3><i class="fa-solid fa-sitemap"></i> Item Variants (Pricing & Stock)</h3>
                 
                 <div class="variants-table-container">
-                    <table class="variants-table">
+                    <table class="variants-table" id="variantsTable">
                         <thead>
                             <tr>
-                                <th>Unit Label</th>
+                                <th>Unit Label <span class="text-required">*</span></th>
                                 <th>Unit Qty</th>
                                 <th>Color</th>
                                 <th>Size</th>
@@ -115,7 +119,42 @@
                             </tr>
                         </thead>
                         <tbody id="variantsBody">
-                            </tbody>
+                            <!-- Validation Error တက်၍ ပြန်ပွင့်လာပါက ယခင်ဖြည့်ထားသော Data များကို ပြန်ပြရန် -->
+                            @if(old('variants'))
+                                @foreach(old('variants') as $index => $variant)
+                                    <tr class="variant-row">
+                                        <td><input type="text" name="variants[{{ $index }}][unit_label]" class="form-control" value="{{ $variant['unit_label'] }}" placeholder="e.g. Box" required></td>
+                                        <td><input type="number" name="variants[{{ $index }}][unit_qty]" class="form-control" value="{{ $variant['unit_qty'] }}" placeholder="10"></td>
+                                        <td><input type="text" name="variants[{{ $index }}][color]" class="form-control" value="{{ $variant['color'] }}" placeholder="Red"></td>
+                                        <td><input type="text" name="variants[{{ $index }}][size]" class="form-control" value="{{ $variant['size'] }}" placeholder="XL"></td>
+                                        <td><input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant['price'] }}" placeholder="0.00" step="0.01" required></td>
+                                        <td><input type="number" name="variants[{{ $index }}][stock_qty]" class="form-control" value="{{ $variant['stock_qty'] }}" placeholder="100" min="0"></td>
+                                        <td><input type="text" name="variants[{{ $index }}][sku]" class="form-control" value="{{ $variant['sku'] }}" placeholder="SKU-001"></td>
+                                        <td>
+                                            <button type="button" class="btn-delete" onclick="removeVariantRow(this)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <!-- ပထမဆုံးအကြိမ် စတင်ဝင်ရောက်ချိန်တွင် default တစ်ခု အမြဲပြထားမည် -->
+                                <tr class="variant-row">
+                                    <td><input type="text" name="variants[0][unit_label]" class="form-control" placeholder="e.g. Box" required></td>
+                                    <td><input type="number" name="variants[0][unit_qty]" class="form-control" placeholder="10"></td>
+                                    <td><input type="text" name="variants[0][color]" class="form-control" placeholder="Red"></td>
+                                    <td><input type="text" name="variants[0][size]" class="form-control" placeholder="XL"></td>
+                                    <td><input type="number" name="variants[0][price]" class="form-control" placeholder="0.00" step="0.01" required></td>
+                                    <td><input type="number" name="variants[0][stock_qty]" class="form-control" placeholder="100" min="0"></td>
+                                    <td><input type="text" name="variants[0][sku]" class="form-control" placeholder="SKU-001"></td>
+                                    <td>
+                                        <button type="button" class="btn-delete" onclick="removeVariantRow(this)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
                     </table>
                 </div>
                 
@@ -134,5 +173,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/admin/items.js') }}"></script>
+    <!-- Dynamic JS သီးသန့်ဖိုင်ကို ချိတ်ဆက်ခြင်း -->
+    <script src="{{ asset('js/admin/items.js') }}"></script>
 @endpush

@@ -88,17 +88,24 @@ body {
 }
 
 .sb-logo {
-    width: 38px;
-    height: 38px;
-    background: var(--primary);
-    border-radius: 10px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--secondary);
-    font-size: 0.85rem;
-    font-weight: 900;
     flex-shrink: 0;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.sb-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 .sb-brand-text {
