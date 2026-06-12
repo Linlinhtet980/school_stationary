@@ -13,11 +13,38 @@ use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $staffUsers = User::whereHas('role', function($query){
+        $query = User::whereHas('role', function($query){
             $query->where('name', '!=', 'Customer');
-        })->with(['staff', 'role'])->get();
+        })->with(['staff', 'role']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('email', 'like', "%{$search}%")
+                  ->orWhereHas('staff', function($sq) use ($search) {
+                      $sq->where('name', 'like', "%{$search}%")
+                         ->orWhere('phone', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id');
+            } else {
+                $query->latest('id');
+            }
+        } else {
+            $query->latest();
+        }
+
+        $staffUsers = $query->paginate(5)->appends($request->except('page'));
 
         return view('admin.staff.index', compact('staffUsers'));
     }

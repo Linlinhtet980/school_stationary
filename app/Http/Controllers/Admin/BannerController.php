@@ -9,9 +9,31 @@ use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $banners = Banner::orderBy('sequence', 'asc')->get();
+        $query = Banner::orderBy('sequence', 'asc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id');
+            } else {
+                $query->latest('id');
+            }
+        } else {
+            $query->orderBy('sequence', 'asc');
+        }
+
+        $banners = $query->paginate(5)->appends($request->except('page'));
         return view('admin.banners.index', compact('banners'));
     }
 

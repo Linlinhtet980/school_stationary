@@ -11,9 +11,45 @@
 <div class="category-card">
     <div class="card-header">
         <h2><i class="fa-solid fa-tags"></i> Store Categories</h2>
-        <button class="btn-primary" onclick="openModal('addCategoryModal')">
-            <i class="fa-solid fa-plus"></i> Create Category
-        </button>
+        <div class="header-actions">
+            <form action="{{ route('admin.categories.index') }}" method="GET" class="search-form live-search-form">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" name="search" placeholder="Search categories..." value="{{ request('search') }}">
+                
+                <!-- Custom Dropdown Filter -->
+                <div class="custom-dropdown">
+                    <button type="button" class="btn-filter dropdown-toggle">
+                        <i class="fa-solid fa-sliders"></i> Filter
+                    </button>
+                    <div class="custom-dropdown-menu">
+                        <div class="filter-section">
+                            <span class="filter-label">Sort By</span>
+                            <label class="filter-option">
+                                <input type="radio" name="sort" value="newest" onchange="applyFilters()" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}> Newest First
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="sort" value="oldest" onchange="applyFilters()" {{ request('sort') == 'oldest' ? 'checked' : '' }}> Oldest First
+                            </label>
+                        </div>
+                        <div class="filter-section">
+                            <span class="filter-label">Status</span>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="all" onchange="applyFilters()" {{ request('status') == 'all' || !request('status') ? 'checked' : '' }}> All Statuses
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="active" onchange="applyFilters()" {{ request('status') == 'active' ? 'checked' : '' }}> Active
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="inactive" onchange="applyFilters()" {{ request('status') == 'inactive' ? 'checked' : '' }}> Inactive
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <button class="btn-primary" onclick="openModal('addCategoryModal')">
+                <i class="fa-solid fa-plus"></i> Create Category
+            </button>
+        </div>
     </div>
 
     @if(session('success'))
@@ -32,68 +68,71 @@
         </div>
     @endif
 
-    <div class="table-responsive">
-        <table class="category-table">
-            <thead>
-                <tr>
-                    <th>Category ID</th>
-                    <th>Category Name</th>
-                    <th>Total Types</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($categories as $category)
-                <tr>
-                    <td class="id-column">CAT-{{ str_pad($category->id, 2, '0', STR_PAD_LEFT) }}</td>
-                    <td>
-                        <div class="cat-name">{{ $category->name }}</div>
-                        @if($category->description)
-                            <div class="cat-desc">{{ $category->description }}</div>
-                        @endif
-                    </td>
-                    <td class="product-count">{{ $category->types_count ?? 0 }}</td>
-                    <td>
-                        @if($category->status === 'active')
-                            <span class="badge badge-active">Active</span>
-                        @else
-                            <span class="badge badge-inactive">Inactive</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-icon btn-edit" onclick="openEditModal({{ $category->id }}, '{{ addslashes($category->name) }}', '{{ addslashes($category->description) }}', '{{ $category->status }}')" title="Edit">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');" class="form-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-icon btn-delete" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
+    <div id="tableDataContainer">
+        <div class="table-responsive">
+            <table class="category-table">
+                <thead>
+                    <tr>
+                        <th>Category ID</th>
+                        <th>Category Name</th>
+                        <th>Total Types</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($categories as $category)
+                    <tr>
+                        <td class="id-column">CAT-{{ str_pad($category->id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td>
+                            <div class="cat-name">{{ $category->name }}</div>
+                            @if($category->description)
+                                <div class="cat-desc">{{ $category->description }}</div>
+                            @endif
+                        </td>
+                        <td class="product-count">{{ $category->types_count ?? 0 }}</td>
+                        <td>
+                            @if($category->status === 'active')
+                                <span class="status-badge status-active"><i class="fa-solid fa-circle-check"></i> Active</span>
+                            @else
+                                <span class="status-badge status-inactive"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon btn-edit" onclick="openEditModal({{ $category->id }}, '{{ addslashes($category->name) }}', '{{ addslashes($category->description) }}', '{{ $category->status }}')" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
                                 </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="empty-state">
-                        <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
-                        <h3>No Categories Found</h3>
-                        <p>Start by creating your first product category.</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');" class="form-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-icon btn-delete" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
+                            <h3>No Categories Found</h3>
+                            <p>Start by creating your first product category.</p>
+                            <button class="btn-outline mt-3" onclick="openModal('addCategoryModal')">Add First Category</button>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        @if($categories->hasPages())
+        <div class="pagination-container">
+            {{ $categories->links() }}
+        </div>
+        @endif
     </div>
-    
-    @if($categories->hasPages())
-    <div class="pagination-container">
-        {{ $categories->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Add Category Modal -->

@@ -11,9 +11,30 @@ class CategoryController extends Controller
     /**
      * Display a listing of the categories.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('types')->with('staff')->latest()->paginate(5);
+        $query = Category::withCount('types')->with('staff')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id');
+            } else {
+                $query->latest('id');
+            }
+        } else {
+            $query->latest();
+        }
+
+        $categories = $query->paginate(5)->appends($request->except('page'));
         return view('admin.categories.index', compact('categories'));
     }
 

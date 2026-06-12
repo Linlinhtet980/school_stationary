@@ -11,9 +11,45 @@
 <div class="brand-card">
     <div class="card-header">
         <h2><i class="fa-solid fa-copyright"></i> Store Brands</h2>
-        <button class="btn-primary" onclick="openModal('addBrandModal')">
-            <i class="fa-solid fa-plus"></i> Create Brand
-        </button>
+        <div class="header-actions">
+            <form action="{{ route('admin.brands.index') }}" method="GET" class="search-form live-search-form">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" name="search" placeholder="Search brands..." value="{{ request('search') }}">
+                
+                <!-- Custom Dropdown Filter -->
+                <div class="custom-dropdown">
+                    <button type="button" class="btn-filter dropdown-toggle">
+                        <i class="fa-solid fa-sliders"></i> Filter
+                    </button>
+                    <div class="custom-dropdown-menu">
+                        <div class="filter-section">
+                            <span class="filter-label">Sort By</span>
+                            <label class="filter-option">
+                                <input type="radio" name="sort" value="newest" onchange="applyFilters()" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}> Newest First
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="sort" value="oldest" onchange="applyFilters()" {{ request('sort') == 'oldest' ? 'checked' : '' }}> Oldest First
+                            </label>
+                        </div>
+                        <div class="filter-section">
+                            <span class="filter-label">Status</span>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="all" onchange="applyFilters()" {{ request('status') == 'all' || !request('status') ? 'checked' : '' }}> All Statuses
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="active" onchange="applyFilters()" {{ request('status') == 'active' ? 'checked' : '' }}> Active
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="inactive" onchange="applyFilters()" {{ request('status') == 'inactive' ? 'checked' : '' }}> Inactive
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <button class="btn-primary" onclick="openModal('addBrandModal')">
+                <i class="fa-solid fa-plus"></i> Add New Brand
+            </button>
+        </div>
     </div>
 
     @if(session('success'))
@@ -32,63 +68,76 @@
         </div>
     @endif
 
-    <div class="table-responsive">
-        <table class="brand-table">
-            <thead>
-                <tr>
-                    <th>Brand ID</th>
-                    <th>Logo</th>
-                    <th>Brand Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($brands as $brand)
-                <tr>
-                    <td class="id-column">BRD-{{ str_pad($brand->id, 2, '0', STR_PAD_LEFT) }}</td>
-                    <td>
-                        @if($brand->logo)
-                            <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}" class="brand-logo-small">
-                        @else
-                            <div class="brand-logo-placeholder">
-                                <i class="fa-solid fa-image"></i>
-                            </div>
-                        @endif
-                    </td>
-                    <td class="brand-name">{{ $brand->name }}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-icon btn-edit" onclick="openEditModal({{ $brand->id }}, '{{ addslashes($brand->name) }}')" title="Edit">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this brand?');" class="form-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-icon btn-delete" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="empty-state">
-                        <div class="empty-state-icon"><i class="fa-solid fa-copyright"></i></div>
-                        <h3>No Brands Found</h3>
-                        <p>Start by creating your first product brand.</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+    <div id="tableDataContainer">
+        <div class="table-responsive">
+            <table class="brand-table">
+                <thead>
+                    <tr>
+                        <th>Brand ID</th>
+                        <th>Logo</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($brands as $brand)
+                        <tr>
+                            <td class="id-column">BRD-{{ str_pad($brand->id, 4, '0', STR_PAD_LEFT) }}</td>
+                            <td>
+                                @if($brand->logo)
+                                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}" class="brand-logo-small">
+                                @else
+                                    <div class="brand-logo-placeholder">
+                                        <i class="fa-solid fa-image"></i>
+                                    </div>
+                                @endif
+                            </td>
+                            <td><div class="brand-name">{{ $brand->name }}</div></td>
+                            <td><span class="text-muted">{{ Str::limit($brand->description ?? 'No description', 40) }}</span></td>
+                            <td>
+                                @if($brand->status === 'active')
+                                    <span class="status-badge status-active"><i class="fa-solid fa-circle-check"></i> Active</span>
+                                @else
+                                    <span class="status-badge status-inactive"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button onclick="editBrand({{ $brand->id }}, '{{ htmlspecialchars($brand->name, ENT_QUOTES) }}', '{{ htmlspecialchars($brand->description, ENT_QUOTES) }}', '{{ $brand->status }}')" class="btn-icon btn-edit" title="Edit Brand">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" class="form-inline" onsubmit="return confirm('Are you sure you want to delete this brand?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-delete" title="Delete Brand">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <div class="empty-state-icon"><i class="fa-solid fa-copyright"></i></div>
+                                <h3>No Brands Found</h3>
+                                <p>You haven't added any brands yet.</p>
+                                <button class="btn-outline mt-3" onclick="openModal('addBrandModal')">Add First Brand</button>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-    @if($brands instanceof \Illuminate\Pagination\LengthAwarePaginator && $brands->hasPages())
-    <div class="pagination-container">
-        {{ $brands->links() }}
+        @if($brands instanceof \Illuminate\Pagination\LengthAwarePaginator && $brands->hasPages())
+            <div class="pagination-container">
+                {{ $brands->links() }}
+            </div>
+        @endif
     </div>
-    @endif
 </div>
 
 <!-- Add Brand Modal -->

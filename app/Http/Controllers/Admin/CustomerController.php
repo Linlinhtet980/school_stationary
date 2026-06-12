@@ -9,9 +9,35 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::with('user')->latest()->paginate(5);
+        $query = Customer::with('user')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            })->orWhere('phone', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            });
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id');
+            } else {
+                $query->latest('id');
+            }
+        } else {
+            $query->latest();
+        }
+
+        $customers = $query->paginate(5)->appends($request->except('page'));
         return view('admin.customers.index', compact('customers'));
     }
 

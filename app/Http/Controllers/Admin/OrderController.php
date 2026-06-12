@@ -8,9 +8,33 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('customer')->latest()->paginate(5);
+        $query = Order::with('customer')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('order_number', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id');
+            } else {
+                $query->latest('id');
+            }
+        } else {
+            $query->latest();
+        }
+
+        $orders = $query->paginate(5)->appends($request->except('page'));
         return view('admin.orders.index', compact('orders'));
     }
 

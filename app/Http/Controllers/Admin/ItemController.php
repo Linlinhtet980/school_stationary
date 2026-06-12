@@ -18,9 +18,40 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::with(['type', 'brand', 'variants'])->latest()->paginate(5);
+        $query = \App\Models\Item::with(['brand', 'category', 'type']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('stock') && $request->stock !== 'all') {
+            if ($request->stock === 'in_stock') {
+                $query->where('stock_quantity', '>', 5);
+            } elseif ($request->stock === 'low_stock') {
+                $query->whereBetween('stock_quantity', [1, 5]);
+            } elseif ($request->stock === 'out_of_stock') {
+                $query->where('stock_quantity', '<=', 0);
+            }
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id'); // Ascending
+            } else {
+                $query->latest('id'); // Descending
+            }
+        } else {
+            $query->latest(); // Default sort
+        }
+
+        $items = $query->paginate(5)->appends($request->except('page'));
         return view('admin.items.index', compact('items'));
     }
 

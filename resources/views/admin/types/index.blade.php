@@ -10,10 +10,46 @@
 @section('content')
 <div class="type-card">
     <div class="card-header">
-        <h2><i class="fa-solid fa-layer-group"></i> Store Types</h2>
-        <button class="btn-primary" onclick="openModal('addTypeModal')">
-            <i class="fa-solid fa-plus"></i> Create Type
-        </button>
+        <h2><i class="fa-solid fa-layer-group"></i> Item Types</h2>
+        <div class="header-actions">
+            <form action="{{ route('admin.types.index') }}" method="GET" class="search-form live-search-form">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" name="search" placeholder="Search types..." value="{{ request('search') }}">
+                
+                <!-- Custom Dropdown Filter -->
+                <div class="custom-dropdown">
+                    <button type="button" class="btn-filter dropdown-toggle">
+                        <i class="fa-solid fa-sliders"></i> Filter
+                    </button>
+                    <div class="custom-dropdown-menu">
+                        <div class="filter-section">
+                            <span class="filter-label">Sort By</span>
+                            <label class="filter-option">
+                                <input type="radio" name="sort" value="newest" onchange="applyFilters()" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}> Newest First
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="sort" value="oldest" onchange="applyFilters()" {{ request('sort') == 'oldest' ? 'checked' : '' }}> Oldest First
+                            </label>
+                        </div>
+                        <div class="filter-section">
+                            <span class="filter-label">Status</span>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="all" onchange="applyFilters()" {{ request('status') == 'all' || !request('status') ? 'checked' : '' }}> All Statuses
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="active" onchange="applyFilters()" {{ request('status') == 'active' ? 'checked' : '' }}> Active
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="status" value="inactive" onchange="applyFilters()" {{ request('status') == 'inactive' ? 'checked' : '' }}> Inactive
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <button class="btn-primary" onclick="openModal('addTypeModal')">
+                <i class="fa-solid fa-plus"></i> Add New Type
+            </button>
+        </div>
     </div>
 
     @if(session('success'))
@@ -32,67 +68,74 @@
         </div>
     @endif
 
-    <div class="table-responsive">
-        <table class="type-table">
-            <thead>
-                <tr>
-                    <th>Type ID</th>
-                    <th>Type Name</th>
-                    <th>Category</th>
-                    <th>Total Items</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($types as $type)
-                <tr>
-                    <td class="id-column">TYP-{{ str_pad($type->id, 2, '0', STR_PAD_LEFT) }}</td>
-                    <td class="type-name">{{ $type->name }}</td>
-                    <td>
-                        <span class="category-badge">{{ $type->category->name ?? 'Unknown' }}</span>
-                    </td>
-                    <td class="item-count">{{ $type->items_count ?? 0 }}</td>
-                    <td>
-                        @if($type->status === 'active')
-                            <span class="badge badge-active">Active</span>
-                        @else
-                            <span class="badge badge-inactive">Inactive</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-icon btn-edit" onclick="openEditModal({{ $type->id }}, '{{ $type->category_id }}', '{{ addslashes($type->name) }}', '{{ $type->status }}')" title="Edit">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <form action="{{ route('admin.types.destroy', $type->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this type?');" class="form-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-icon btn-delete" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="empty-state">
-                        <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
-                        <h3>No Types Found</h3>
-                        <p>Start by creating your first product type.</p>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+    <div id="tableDataContainer">
+        <div class="table-responsive">
+            <table class="type-table">
+                <thead>
+                    <tr>
+                        <th>Type ID</th>
+                        <th>Name</th>
+                        <th>Parent Category</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($types as $type)
+                        <tr>
+                            <td class="id-column">TYP-{{ str_pad($type->id, 4, '0', STR_PAD_LEFT) }}</td>
+                            <td><div class="type-name">{{ $type->name }}</div></td>
+                            <td>
+                                @if($type->category)
+                                    <span class="category-badge">{{ $type->category->name }}</span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td><span class="text-muted">{{ Str::limit($type->description ?? 'No description', 40) }}</span></td>
+                            <td>
+                                @if($type->status === 'active')
+                                    <span class="status-badge status-active"><i class="fa-solid fa-circle-check"></i> Active</span>
+                                @else
+                                    <span class="status-badge status-inactive"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button onclick="editType({{ $type->id }}, '{{ htmlspecialchars($type->name, ENT_QUOTES) }}', '{{ $type->category_id }}', '{{ htmlspecialchars($type->description, ENT_QUOTES) }}', '{{ $type->status }}')" class="btn-icon btn-edit" title="Edit Type">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <form action="{{ route('admin.types.destroy', $type->id) }}" method="POST" class="form-inline" onsubmit="return confirm('Are you sure you want to delete this item type?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-delete" title="Delete Type">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <div class="empty-state-icon"><i class="fa-solid fa-layer-group"></i></div>
+                                <h3>No Types Found</h3>
+                                <p>You haven't added any item types yet.</p>
+                                <button class="btn-outline mt-3" onclick="openModal('addTypeModal')">Add First Type</button>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-    @if($types instanceof \Illuminate\Pagination\LengthAwarePaginator && $types->hasPages())
-    <div class="pagination-container">
-        {{ $types->links() }}
+        @if($types instanceof \Illuminate\Pagination\LengthAwarePaginator && $types->hasPages())
+            <div class="pagination-container">
+                {{ $types->links() }}
+            </div>
+        @endif
     </div>
-    @endif
 </div>
 
 <!-- Add Type Modal -->

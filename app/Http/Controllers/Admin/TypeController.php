@@ -12,9 +12,30 @@ class TypeController extends Controller
     /**
      * Display a listing of the types.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $types = Type::with('category')->latest()->paginate(5);
+        $query = Type::with('category')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest('id');
+            } else {
+                $query->latest('id');
+            }
+        } else {
+            $query->latest();
+        }
+
+        $types = $query->paginate(5)->appends($request->except('page'));
         $categories = Category::where('status', 'active')->get();
         return view('admin.types.index', compact('types', 'categories'));
     }

@@ -38,6 +38,63 @@
     color: var(--text-main) !important;
 }
 
+/* ── Header Actions (Search & Buttons) ──────────────────────────────── */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-form input {
+    padding: 0.5rem 1rem 0.5rem 2.2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--text-main);
+    width: 250px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.search-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 210, 0, 0.2);
+    width: 280px;
+}
+
+.search-form .search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-form input,
+    .search-form input:focus {
+        width: 100%;
+    }
+}
+
 /* ── Tables (universal) ─────────────────────────────────────────────── */
 table {
     width: 100%;
@@ -188,13 +245,28 @@ label {
 
 /* ── Buttons ────────────────────────────────────────────────────────── */
 .btn-outline,
-.btn-outline:link {
+.btn-outline:link,
+.btn-filter {
     background: transparent !important;
     border-color: var(--border-color) !important;
     color: var(--text-main) !important;
 }
 
-.btn-outline:hover {
+.btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-outline:hover,
+.btn-filter:hover {
     background: var(--bg-color) !important;
     border-color: var(--secondary) !important;
     color: var(--secondary) !important;
@@ -274,16 +346,51 @@ label {
 }
 
 /* ── Pagination ─────────────────────────────────────────────────────── */
-.pagination .page-link {
-    background: var(--card-bg) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-main) !important;
+.pure-pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+    align-items: center;
+    justify-content: flex-end;
 }
 
-.pagination .page-item.active .page-link {
+.pure-pagination .page-item {
+    margin: 0;
+}
+
+.pure-pagination .page-link {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.pure-pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+    background: var(--bg-color) !important;
+    color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+}
+
+.pure-pagination .page-item.active .page-link {
     background: var(--primary) !important;
     border-color: var(--primary) !important;
     color: var(--secondary) !important;
+    font-weight: 700;
+}
+
+.pure-pagination .page-item.disabled .page-link {
+    color: var(--text-muted) !important;
+    background: var(--bg-color) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* ── Profile Grid (Customers Show) ─────────────────────────────────── */
