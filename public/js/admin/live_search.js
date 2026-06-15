@@ -118,3 +118,93 @@ window.applyFilters = function() {
     })
     .catch(error => console.error('Error fetching filter results:', error));
 };
+
+// =====================================================
+// Filter Dropdown Toggle (.filter-toggle / .filter-dropdown)
+// Used by: Bundles, Reviews pages
+// =====================================================
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Toggle open/close
+    document.addEventListener('click', function(e) {
+        const toggleBtn = e.target.closest('.filter-toggle');
+        const isInsideMenu = e.target.closest('.filter-menu');
+
+        if (toggleBtn) {
+            e.preventDefault();
+            const wrapper = toggleBtn.closest('.filter-dropdown');
+            if (wrapper) wrapper.classList.toggle('open');
+        } else if (!isInsideMenu) {
+            // Close all filter dropdowns if clicking outside
+            document.querySelectorAll('.filter-dropdown.open').forEach(d => d.classList.remove('open'));
+        }
+    });
+
+    // Reset filter button: clear all radios to default then submit
+    document.querySelectorAll('.reset-filter').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = this.closest('.filter-form');
+            if (!form) return;
+            // Reset radios to first option in each group
+            const groups = {};
+            form.querySelectorAll('input[type="radio"]').forEach(radio => {
+                if (!groups[radio.name]) {
+                    groups[radio.name] = radio;
+                    radio.checked = true;
+                } else {
+                    radio.checked = false;
+                }
+            });
+            // Clear search field in URL
+            const url = new URL(window.location.href);
+            url.searchParams.delete('sort');
+            url.searchParams.delete('status');
+            url.searchParams.delete('stock');
+            url.searchParams.delete('search');
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+    });
+
+    // Auto-submit filter form on radio change (AJAX)
+    document.querySelectorAll('.filter-form input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const form = this.closest('.filter-form');
+            if (!form) return;
+
+            const url = new URL(form.action || window.location.href);
+
+            // Apply all current radio values
+            form.querySelectorAll('input[type="radio"]:checked').forEach(r => {
+                url.searchParams.set(r.name, r.value);
+            });
+
+            // Preserve search
+            const searchInput = document.querySelector('.live-search-form input[name="search"]');
+            if (searchInput && searchInput.value) {
+                url.searchParams.set('search', searchInput.value);
+            }
+
+            url.searchParams.set('page', 1);
+
+            fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContainer = doc.getElementById('tableDataContainer');
+                const currentContainer = document.getElementById('tableDataContainer');
+                if (newContainer && currentContainer) {
+                    currentContainer.innerHTML = newContainer.innerHTML;
+                    window.history.pushState({}, '', url.toString());
+                }
+                // Close dropdown after applying
+                document.querySelectorAll('.filter-dropdown.open').forEach(d => d.classList.remove('open'));
+            })
+            .catch(err => console.error('Filter error:', err));
+        });
+    });
+});
+

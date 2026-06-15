@@ -1,0 +1,206 @@
+/* css/shop.css */
+
+/* =========================================
+   SHOP LAYOUT (Grid System)
+========================================= */
+.shop-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 280px 1fr; /* ဘယ်ဘက် 280px, ညာဘက်က ကျန်တဲ့နေရာအကုန် */
+    gap: 3rem;
+    align-items: start;
+}
+
+/* =========================================
+   BREADCRUMB & HEADER
+========================================= */
+.page-header {
+    background: var(--secondary);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+
+.breadcrumb {
+    font-size: 0.9rem;
+    color: #A0AEC0;
+}
+
+.breadcrumb a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+/* =========================================
+   SIDEBAR (Filters)
+========================================= */
+.sidebar {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.filter-group {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #EDF2F7;
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+/* Checkbox Styles */
+.filter-list {
+    list-style: none;
+}
+
+.filter-list li {
+    margin-bottom: 0.8rem;
+}
+
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #4A5568;
+    transition: color 0.2s;
+}
+
+.custom-checkbox:hover {
+    color: var(--primary);
+}
+
+.custom-checkbox input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+/* Price Range Slider */
+.price-range-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.price-slider {
+    width: 100%;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: var(--secondary);
+    font-size: 0.9rem;
+}
+
+/* =========================================
+   MAIN CONTENT (Products)
+========================================= */
+.shop-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.results-count {
+    font-weight: 600;
+    color: #4A5568;
+}
+
+.sort-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--secondary);
+    outline: none;
+    cursor: pointer;
+}
+
+.sort-select:focus {
+    border-color: var(--primary);
+}
+
+/* Product Grid (Reuse styles from home but adjust columns) */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: var(--secondary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.page-btn:hover, .page-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--secondary);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .shop-container {
+        grid-template-columns: 1fr;
+    }
+    .shop-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 576px) {
+    .shop-grid {
+        grid-template-columns: 1fr;
+    }
+}

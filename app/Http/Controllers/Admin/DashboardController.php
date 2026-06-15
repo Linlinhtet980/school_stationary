@@ -48,4 +48,10 @@ class DashboardController extends Controller
             'recentOrders'
         ));
     }
+
+    public function markAllRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back();
+    }
 }

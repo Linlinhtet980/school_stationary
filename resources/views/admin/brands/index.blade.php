@@ -76,7 +76,6 @@
                         <th>Brand ID</th>
                         <th>Logo</th>
                         <th>Name</th>
-                        <th>Description</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -95,7 +94,6 @@
                                 @endif
                             </td>
                             <td><div class="brand-name">{{ $brand->name }}</div></td>
-                            <td><span class="text-muted">{{ Str::limit($brand->description ?? 'No description', 40) }}</span></td>
                             <td>
                                 @if($brand->status === 'active')
                                     <span class="status-badge status-active"><i class="fa-solid fa-circle-check"></i> Active</span>
@@ -105,7 +103,7 @@
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <button onclick="editBrand({{ $brand->id }}, '{{ htmlspecialchars($brand->name, ENT_QUOTES) }}', '{{ htmlspecialchars($brand->description, ENT_QUOTES) }}', '{{ $brand->status }}')" class="btn-icon btn-edit" title="Edit Brand">
+                                    <button onclick="editBrand({{ $brand->id }}, '{{ htmlspecialchars($brand->name, ENT_QUOTES) }}', '{{ $brand->status }}')" class="btn-icon btn-edit" title="Edit Brand">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
                                     <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" class="form-inline" onsubmit="return confirm('Are you sure you want to delete this brand?');">
@@ -159,6 +157,13 @@
                     <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
                     <small class="text-muted">Recommended size: 200x200px. Max size: 2MB.</small>
                 </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-outline" onclick="closeModal('addBrandModal')">Cancel</button>
@@ -187,6 +192,13 @@
                     <label for="edit_logo">Brand Logo</label>
                     <input type="file" id="edit_logo" name="logo" class="form-control" accept="image/*">
                     <small class="text-muted">Upload a new image to replace the current logo.</small>
+                </div>
+                <div class="form-group">
+                    <label for="edit_status">Status</label>
+                    <select name="status" id="edit_status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">

@@ -43,10 +43,15 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        // Load the customer's orders and user data
-        $customer->load(['user', 'orders' => function($query) {
-            $query->latest();
-        }]);
+        // Load the customer's orders, addresses, wishlists and user data
+        $customer->load([
+            'user',
+            'orders' => function($query) {
+                $query->latest();
+            },
+            'addresses',
+            'wishlists.item',
+        ]);
         return view('admin.customers.show', compact('customer'));
     }
 

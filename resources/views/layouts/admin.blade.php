@@ -101,6 +101,20 @@
                 <span class="sb-tooltip">Banners</span>
             </a>
 
+            <a href="{{ route('admin.bundles.index') }}"
+                class="sb-item {{ request()->routeIs('admin.bundles.*') ? 'active' : '' }}">
+                <i class="sb-item-icon fa-solid fa-boxes-stacked"></i>
+                <span class="sb-item-label">Bundles</span>
+                <span class="sb-tooltip">Bundles</span>
+            </a>
+
+            <a href="{{ route('admin.reviews.index') }}"
+                class="sb-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                <i class="sb-item-icon fa-solid fa-star-half-stroke"></i>
+                <span class="sb-item-label">Reviews</span>
+                <span class="sb-tooltip">Reviews</span>
+            </a>
+
             <a href="{{ route('admin.staff.index') }}"
                 class="sb-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                 <i class="sb-item-icon fa-solid fa-users-gear"></i>
@@ -162,9 +176,38 @@
             <h1 id="page-title">@yield('header_title', 'Welcome Back, Admin!')</h1>
 
             <div class="topbar-actions">
-                <div class="notification-bell">
+                <div class="notification-bell" id="notificationTrigger" onclick="toggleNotifications(event)">
                     <i class="fa-regular fa-bell bell-icon"></i>
-                    <span class="notification-badge">2</span>
+                    @php $unreadCount = Auth::user()->unreadNotifications->count(); @endphp
+                    @if($unreadCount > 0)
+                        <span class="notification-badge">{{ $unreadCount }}</span>
+                    @endif
+                    
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h4>Notifications</h4>
+                            @if($unreadCount > 0)
+                                <a href="{{ route('admin.notifications.markAllRead') }}" class="mark-all-read">Mark all read</a>
+                            @endif
+                        </div>
+                        <div class="notification-list">
+                            @forelse(Auth::user()->unreadNotifications as $notification)
+                                <a href="{{ $notification->data['link'] ?? '#' }}" class="notification-item unread">
+                                    <div class="notification-icon {{ $notification->data['icon_bg'] ?? 'bg-primary' }}">
+                                        <i class="{{ $notification->data['icon'] ?? 'fa-solid fa-bell' }}"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p class="notification-message">{{ $notification->data['message'] }}</p>
+                                        <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="notification-empty">
+                                    <p>No new notifications</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="profile-menu" id="topbarProfileTrigger" onclick="toggleTopbarProfile(event)">

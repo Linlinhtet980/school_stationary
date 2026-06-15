@@ -20,7 +20,8 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = \App\Models\Item::with(['brand', 'category', 'type']);
+        // ဒီစာကြောင်းလေးကို အရင်ဆုံး ထည့်ပေးပါ
+        $query = Item::query(); 
 
         if ($request->filled('search')) {
             $search = $request->search;

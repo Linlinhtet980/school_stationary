@@ -56,6 +56,30 @@ class OrderController extends Controller
             'payment_status' => $request->payment_status,
         ]);
 
-        return redirect()->route('admin.orders.show', $order->id)->with('success', 'Order status updated successfully.');
+        return redirect()->route('admin.orders.show', $order->id)
+                         ->with('success', 'Order status updated successfully.');
+    }
+
+    public function verifyPayment(Request $request, Order $order)
+    {
+        $request->validate([
+            'action' => 'required|in:verify,reject',
+        ]);
+
+        if ($order->payment) {
+            if ($request->action === 'verify') {
+                $order->payment->update(['status' => 'verified']);
+                $order->update(['payment_status' => 'paid', 'status' => 'processing']);
+                $msg = 'Payment verified and order status updated to processing.';
+            } else {
+                $order->payment->update(['status' => 'rejected']);
+                $order->update(['payment_status' => 'failed']);
+                $msg = 'Payment rejected.';
+            }
+
+            return redirect()->route('admin.orders.show', $order->id)->with('success', $msg);
+        }
+
+        return redirect()->route('admin.orders.show', $order->id)->with('error', 'Payment details not found.');
     }
 }

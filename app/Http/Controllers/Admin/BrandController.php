@@ -47,9 +47,10 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
+            'status'=> 'required|in:active,inactive',
         ]);
 
-        $data = $request->only('name');
+        $data = $request->only('name','status');
 
         if ($request->hasFile('logo')) {
             $path = $request->file('logo')->store('brands', 'public');
@@ -64,14 +65,16 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, Brand $brand)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
+            'status'=> 'required|in:active,inactive',
         ]);
 
-        $data = $request->only('name');
+        $data = $request->only('name','status');
 
         if ($request->hasFile('logo')) {
             // Delete old image if exists

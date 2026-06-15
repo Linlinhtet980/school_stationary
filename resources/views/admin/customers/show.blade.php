@@ -108,4 +108,62 @@
         </div>
     </div>
 </div>
+
+{{-- Delivery Addresses & Wishlist (full-width below the grid) --}}
+<div class="mt-4" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    {{-- Delivery Addresses --}}
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-map-location-dot"></i> Delivery Addresses</h2>
+        </div>
+        <div class="card-body">
+            @forelse($customer->addresses as $address)
+                <div class="info-box mb-3" style="background: var(--bg-color); border-radius: 10px; padding: 14px 16px;">
+                    @if($address->is_default)
+                        <span class="badge bg-primary mb-1" style="font-size:11px;">Default</span>
+                    @endif
+                    <p class="mb-1 fw-bold">{{ $address->label ?? 'Address' }}</p>
+                    <p class="mb-1 text-muted">{{ $address->full_address }}</p>
+                    <p class="mb-0 text-muted small">
+                        {{ $address->city }}{{ $address->state ? ', '.$address->state : '' }}
+                        {{ $address->country ?? '' }}
+                    </p>
+                </div>
+            @empty
+                <p class="text-center text-muted">No saved addresses found.</p>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- Wishlist --}}
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-heart"></i> Wishlist Items</h2>
+        </div>
+        <div class="card-body">
+            @forelse($customer->wishlists as $wishlist)
+                <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom: 1px solid var(--border-color);">
+                    @if($wishlist->item && $wishlist->item->firstImage)
+                        <img src="{{ Storage::url($wishlist->item->firstImage->image_path) }}" alt="{{ $wishlist->item->name }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
+                    @else
+                        <div style="width:48px; height:48px; background:var(--bg-color); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); border:1px solid var(--border-color);">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                    @endif
+                    <div>
+                        <div class="fw-bold">{{ $wishlist->item->name ?? 'Unknown' }}</div>
+                        <div class="text-muted small">{{ number_format($wishlist->item->price ?? 0, 0) }} Ks</div>
+                    </div>
+                    @if($wishlist->item)
+                        <a href="{{ route('admin.items.show', $wishlist->item->id) }}" class="btn btn-outline btn-sm ms-auto" style="margin-left:auto;">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    @endif
+                </div>
+            @empty
+                <p class="text-center text-muted">No wishlist items found.</p>
+            @endforelse
+        </div>
+    </div>
+</div>
 @endsection

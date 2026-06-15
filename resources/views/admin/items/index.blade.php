@@ -112,14 +112,14 @@
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
-                                <td>{{ number_format($item->price, 2) }} MMK</td>
                                 <td>
-                                    @if($item->stock_quantity > 5)
-                                        <span class="stock-badge in-stock"><i class="fa-solid fa-check"></i> {{ $item->stock_quantity }} In Stock</span>
-                                    @elseif($item->stock_quantity > 0)
-                                        <span class="stock-badge low-stock"><i class="fa-solid fa-triangle-exclamation"></i> {{ $item->stock_quantity }} Low</span>
+                                    {{ $item->price_range }}
+                                </td>
+                                <td>
+                                    @if($item->total_stock > 0)
+                                        {{ $item->total_stock }} In Stock
                                     @else
-                                        <span class="stock-badge out-stock"><i class="fa-solid fa-xmark"></i> Out of Stock</span>
+                                        Out of Stock
                                     @endif
                                 </td>
                                 <td>

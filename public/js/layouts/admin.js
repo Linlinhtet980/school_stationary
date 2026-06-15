@@ -52,6 +52,15 @@ function toggleTopbarProfile(event) {
     }
 }
 
+// ၃.၂။ Notifications Dropdown ကို ပြသ/ဖျောက် လုပ်သည့် စနစ်
+function toggleNotifications(event) {
+    if (event) event.stopPropagation();
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('open');
+    }
+}
+
 // ၄။ စနစ်စတင်ချိန် အလိုအလျောက် အလုပ်လုပ်မည့် စနစ်များ
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -83,6 +92,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (topbarPopup && topbarPopup.classList.contains('open')) {
             if (!topbarPopup.contains(event.target) && !topbarTrigger.contains(event.target)) {
                 topbarPopup.classList.remove('open');
+            }
+        }
+
+        const notifDropdown = document.getElementById('notificationDropdown');
+        const notifTrigger = document.getElementById('notificationTrigger');
+        if (notifDropdown && notifDropdown.classList.contains('open')) {
+            if (!notifDropdown.contains(event.target) && !notifTrigger.contains(event.target)) {
+                notifDropdown.classList.remove('open');
             }
         }
     });

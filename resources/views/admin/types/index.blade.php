@@ -76,7 +76,6 @@
                         <th>Type ID</th>
                         <th>Name</th>
                         <th>Parent Category</th>
-                        <th>Description</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -93,7 +92,6 @@
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td><span class="text-muted">{{ Str::limit($type->description ?? 'No description', 40) }}</span></td>
                             <td>
                                 @if($type->status === 'active')
                                     <span class="status-badge status-active"><i class="fa-solid fa-circle-check"></i> Active</span>

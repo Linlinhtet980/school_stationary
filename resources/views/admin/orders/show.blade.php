@@ -81,6 +81,40 @@
                     </p>
                 </div>
 
+                <!-- Payment Details -->
+                <div class="info-box mb-4">
+                    <h4><i class="fa-solid fa-money-check-dollar"></i> Payment Details</h4>
+                    @if($order->payment)
+                        <p><strong>Method:</strong> {{ strtoupper($order->payment->payment_method) }}</p>
+                        <p><strong>Transaction ID:</strong> {{ $order->payment->transaction_id ?: 'N/A' }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {{ $order->payment->status === 'verified' ? 'bg-success' : ($order->payment->status === 'rejected' ? 'bg-danger' : 'bg-warning') }}">
+                                {{ ucfirst($order->payment->status) }}
+                            </span>
+                        </p>
+                        
+                        @if($order->payment->screenshot_image)
+                            <div class="mt-2 mb-3">
+                                <a href="{{ Storage::url($order->payment->screenshot_image) }}" target="_blank">
+                                    <img src="{{ Storage::url($order->payment->screenshot_image) }}" alt="Payment Screenshot" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+                                </a>
+                            </div>
+                        @endif
+
+                        @if($order->payment->status === 'pending')
+                            <form action="{{ route('admin.orders.verifyPayment', $order->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" name="action" value="verify" class="btn btn-success btn-sm"><i class="fa-solid fa-check"></i> Verify Payment</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm"><i class="fa-solid fa-times"></i> Reject</button>
+                            </form>
+                        @endif
+                    @else
+                        <p class="text-muted">No advanced payment details found.</p>
+                        <p><strong>Basic Method:</strong> {{ $order->payment_method ?: 'N/A' }}</p>
+                        <p><strong>Basic Status:</strong> {{ ucfirst($order->payment_status) }}</p>
+                    @endif
+                </div>
+
                 <!-- Status Update Form -->
                 <div class="status-box">
                     <h4><i class="fa-solid fa-pen-to-square"></i> Update Status</h4>

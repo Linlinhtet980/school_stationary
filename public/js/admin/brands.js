@@ -22,14 +22,14 @@ window.onclick = function(event) {
     }
 }
 
-function openEditModal(id, name) {
-    document.getElementById('edit_name').value = name;
-    
-    // reset file input visually
-    document.getElementById('edit_logo').value = '';
-
+function editBrand(id, name, status) {
     const form = document.getElementById('editForm');
     form.action = `/admin/brands/${id}`;
+
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_status').value = status;
+    
+    document.getElementById('edit_logo').value = '';
 
     openModal('editBrandModal');
 }
