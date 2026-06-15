@@ -33,6 +33,10 @@ class AuthController extends Controller
 
         $customerRole = Role::query()->where('name', 'Customer')->first();
 
+        if (!$customerRole) {
+            return back()->withInput()->withErrors(['role' => 'Customer role not found. Please run seeder.']);
+        }
+
         $user = User::create([
             'role_id' => $customerRole->id,
             'email' => $request->email,
