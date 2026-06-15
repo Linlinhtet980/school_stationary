@@ -63,18 +63,18 @@ class User extends Authenticatable
         return $this->hasOne(Staff::class);
     }
 
-    public function isSuperAdmin() { return $this->role->name === 'Super Admin'; }
-    public function isInventoryManager() { return $this->role->name === 'Inventory Manager'; }
-    public function isOrderStaff() { return $this->role->name === 'Order Staff'; }
-    public function isCustomerSupport() { return $this->role->name === 'Customer Support'; }
-    public function isFinanceManager() { return $this->role->name === 'Finance Manager'; }
-    public function isCustomer() { return $this->role->name === 'Customer'; }
+    public function isSuperAdmin() { return $this->role?->name === 'Super Admin'; }
+    public function isInventoryManager() { return $this->role?->name === 'Inventory Manager'; }
+    public function isOrderStaff() { return $this->role?->name === 'Order Staff'; }
+    public function isCustomerSupport() { return $this->role?->name === 'Customer Support'; }
+    public function isFinanceManager() { return $this->role?->name === 'Finance Manager'; }
+    public function isCustomer() { return $this->role?->name === 'Customer'; }
 
     public function isStaff() { 
-        return $this->role->name !== 'Customer'; 
+        return $this->role?->name !== 'Customer'; 
     }
 
     public function hasRole($roleName) {
-        return $this->role->name === $roleName;
+        return $this->role?->name === $roleName;
     }
 }

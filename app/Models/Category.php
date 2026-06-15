@@ -18,11 +18,6 @@ class Category extends Model
         return $this->belongsTo(Staff::class);
     }
 
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
-
     public function types()
     {
         return $this->hasMany(Type::class);
