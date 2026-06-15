@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/reviews.css') }}">
+@endpush
+
 @section('title', 'Reviews Moderation')
 
 @section('content')

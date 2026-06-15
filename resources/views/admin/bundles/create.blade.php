@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/bundles.css') }}">
+@endpush
+
 @section('title', 'Add New Bundle')
 
 @section('content')

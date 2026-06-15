@@ -1,0 +1,30 @@
+/* ================================================
+   Reviews Admin Pages
+   ================================================ */
+@import url('bundles.css');
+
+/* Reviews-specific overrides */
+.badge.bg-success { background: #C6F6D5; color: #22543D; }
+.badge.bg-secondary { background: #E2E8F0; color: #4A5568; }
+.badge.bg-warning { background: #FEFCBF; color: #744210; }
+.badge.bg-danger  { background: #FED7D7; color: #742A2A; }
+.badge.bg-primary { background: var(--primary); color: var(--secondary); }
+
+.btn-success { background: #38A169; color: #fff; border: none; }
+.btn-success:hover { background: #2F855A; }
+.btn-danger  { background: #E53E3E; color: #fff; border: none; }
+.btn-danger:hover  { background: #C53030; }
+.btn-warning { background: #D69E2E; color: #fff; border: none; }
+.btn-warning:hover { background: #B7791F; }
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
