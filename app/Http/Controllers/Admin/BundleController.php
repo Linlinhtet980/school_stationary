@@ -13,7 +13,7 @@ class BundleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Bundle::query();
+        $query = Bundle::with('bundleItems.item');
 
         if ($request->filled('search')) {
             $search = $request->search;

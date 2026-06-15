@@ -123,11 +123,13 @@
                         <span class="badge bg-primary mb-1" style="font-size:11px;">Default</span>
                     @endif
                     <p class="mb-1 fw-bold">{{ $address->label ?? 'Address' }}</p>
-                    <p class="mb-1 text-muted">{{ $address->full_address }}</p>
-                    <p class="mb-0 text-muted small">
-                        {{ $address->city }}{{ $address->state ? ', '.$address->state : '' }}
-                        {{ $address->country ?? '' }}
-                    </p>
+                    <p class="mb-1 text-muted">{{ $address->address_line }}</p>
+                    @if($address->city)
+                        <p class="mb-0 text-muted small">{{ $address->city }}</p>
+                    @endif
+                    @if($address->phone)
+                        <p class="mb-0 text-muted small"><i class="fa-solid fa-phone fa-xs"></i> {{ $address->phone }}</p>
+                    @endif
                 </div>
             @empty
                 <p class="text-center text-muted">No saved addresses found.</p>
