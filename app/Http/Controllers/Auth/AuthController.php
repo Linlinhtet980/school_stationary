@@ -62,9 +62,15 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Debug: Log login attempt
+        \Log::info('Login attempt for email: ' . $request->email);
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
+
+            // Debug: Log user info
+            \Log::info('User authenticated: ' . $user->email . ', Status: ' . $user->status . ', Role ID: ' . $user->role_id);
 
             if ($user->status !== 'active') {
                 Auth::logout();
@@ -72,11 +78,16 @@ class AuthController extends Controller
             }
 
             if ($user->isCustomer()) {
-                return redirect()->route('home');
+                \Log::info('Redirecting customer to home page');
+                return redirect()->route('home')->with('success', 'Login successful!');
             } else {
-                return redirect()->route('admin.dashboard');
+                \Log::info('Redirecting to admin dashboard');
+                return redirect()->route('admin.dashboard')->with('success', 'Welcome back!');
             }
         }
+
+        // Debug: Log failed attempt
+        \Log::info('Login failed for email: ' . $request->email);
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',

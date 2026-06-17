@@ -1,8 +1,14 @@
-/* css/home.css */
+/* Home Page CSS - Extracted from UI Prototypes */
 
-/* =========================================
-   HERO SLIDER
-========================================= */
+/* CSS Variables */
+:root {
+    --primary: #FFD200;
+    --secondary: #0B2149;
+    --text-dark: #0B2149;
+    --text-light: #FFFFFF;
+}
+
+/* Hero Slider */
 .hero-container {
     padding: 2rem;
 }
@@ -12,7 +18,7 @@
     border-radius: 20px;
     height: 450px;
     overflow: hidden;
-    background: #EBF3FA;
+    background: #0B2149;
 }
 
 .slide {
@@ -32,31 +38,17 @@
     z-index: 1;
 }
 
-/* Slide Background Colors (Replaced inline styles) */
 .slide-promo {
-    background-color: #EBF3FA;
+    background: #FFD200;
 }
 
-.slide-new {
-    background-color: var(--secondary);
-}
-
-.slide-shipping {
-    background-color: var(--primary);
-}
-
-.slide-clearance {
-    background-color: #ffebee;
-}
-
-/* Background Shapes */
 .hero-bg-shape1 {
     position: absolute;
     top: -50px;
     left: -50px;
     width: 300px;
     height: 300px;
-    background: var(--primary);
+    background: #0B2149;
     border-radius: 50%;
     opacity: 0.9;
 }
@@ -67,7 +59,7 @@
     right: -50px;
     width: 400px;
     height: 300px;
-    background: var(--primary);
+    background: #0B2149;
     border-radius: 100px 0 0 0;
 }
 
@@ -77,9 +69,8 @@
     left: 100px;
     width: 250px;
     height: 250px;
-    background: var(--primary);
+    background: #0B2149;
     border-radius: 50%;
-    opacity: 0.2;
 }
 
 .hero-bg-shape4 {
@@ -88,25 +79,10 @@
     right: 0;
     width: 300px;
     height: 100%;
-    background: var(--secondary);
+    background: #FFD200;
     border-radius: 0 20px 20px 200px;
-    opacity: 0.2;
 }
 
-.slide-new .hero-bg-shape4 {
-    background: var(--primary);
-}
-
-.slide-shipping .hero-bg-shape4 {
-    background: white;
-}
-
-.slide-clearance .hero-bg-shape1,
-.slide-clearance .hero-bg-shape2 {
-    background: #ffcdd2;
-}
-
-/* Hero Content */
 .hero-content {
     position: relative;
     z-index: 10;
@@ -126,35 +102,22 @@
     margin-bottom: 2rem;
 }
 
-/* Dynamic Text Colors */
-.text-secondary {
-    color: var(--secondary);
-}
-
-.text-primary {
-    color: var(--primary);
-}
-
+/* Text Utility Classes */
 .text-white {
     color: white;
 }
 
+.text-secondary {
+    color: #0B2149;
+}
+
 .text-dark {
-    color: #333;
+    color: #0B2149;
 }
 
-.text-danger {
-    color: #d32f2f;
-}
-
-.text-danger-light {
-    color: #c62828;
-}
-
-/* Buttons */
 .btn-shop {
-    background: var(--primary);
-    color: var(--secondary);
+    background: #FFD200;
+    color: #0B2149;
     padding: 1rem 2.5rem;
     border-radius: 30px;
     font-weight: 800;
@@ -163,29 +126,12 @@
     display: inline-block;
     border: none;
     cursor: pointer;
-    transition: transform 0.2s;
 }
 
 .btn-shop:hover {
-    transform: translateY(-2px);
+    background: #e6bd00;
 }
 
-.btn-white {
-    background: white;
-    color: var(--secondary);
-}
-
-.btn-secondary {
-    background: var(--secondary);
-    color: white;
-}
-
-.btn-danger {
-    background: #d32f2f;
-    color: white;
-}
-
-/* Slider Controls */
 .slider-nav {
     position: absolute;
     top: 50%;
@@ -205,15 +151,10 @@
     border-radius: 50%;
     background: white;
     border: none;
-    color: var(--secondary);
+    color: #0B2149;
     font-size: 1.2rem;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: 0.3s;
-}
-
-.slider-nav button:hover {
-    background: var(--primary);
 }
 
 .slider-dots {
@@ -237,82 +178,48 @@
 }
 
 .dot.active {
-    background: var(--primary);
-    border-color: var(--primary);
+    background: #FFD200;
+    border-color: #FFD200;
 }
 
-/* Infinite Carousel Container */
+/* Infinite Carousel/Marquee */
 .infinite-carousel-section {
-    padding: 30px 0;
-    overflow: hidden;
-    border-bottom: 1px solid #2d2d2d;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    height: auto;
+    padding: 2rem 0;
+    background: white;
 }
 
-/* Marquee Wrapper */
 .marquee {
-    position: relative;
-    display: flex;
-    width: 100vw;
-    overflow-x: hidden;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-
-/* Marquee Track (ရွေ့လျားမည့် လမ်းကြောင်း) */
 .marquee-content {
-    display: flex;
-    gap: 60px;
-    /* Logo တစ်ခုနှင့်တစ်ခု ကြားအကွာအဝေး */
-    animation: marquee-scroll 25s linear infinite;
-    /* 25s သည် အမြန်နှုန်း ဖြစ်သည် */
-    padding-left: 30px;
+    display: inline-flex;
+    animation: marquee 30s linear infinite;
 }
 
-/* Mouse Hover လုပ်လျှင် ရပ်သွားစေရန် (User Experience ကောင်းမွန်စေရန်) */
-.marquee:hover .marquee-content {
-    animation-play-state: paused;
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
-/* Individual Logo Item */
 .marquee-item {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
+    margin: 0 2rem;
 }
 
-.card-img {
-    width: 100%;
-    height: 100%;
-    object-fit:cover;
-    transition: all 0.3s ease;
+.marquee-item img {
+    width: 120px;
+    height: 60px;
+    object-fit: contain;
+    opacity: 0.7;
+    transition: opacity 0.3s;
 }
 
-/* Hover လုပ်လျှင် မူလအရောင်အတိုင်း ပြန်လည်တောက်ပလာစေရန် */
-.card-img:hover {
-    filter: grayscale(0%) opacity(100%);
-    transform: scale(1.1);
+.marquee-item img:hover {
+    opacity: 1;
 }
 
-/* 💡 Infinite Animation Keyframes */
-@keyframes marquee-scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(calc(-50% - 30px));
-        /* အလယ်တည့်တည့်သို့ ရောက်လျှင် အစမှ ပြန်ပတ်ရန် */
-    }
-}
-
-/* =========================================
-   SECTIONS & PRODUCT GRID
-========================================= */
+/* Sections */
 .section {
     padding: 3rem 2rem;
 }
@@ -322,15 +229,13 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    position: relative;
-    z-index: 2;
 }
 
 .section-title {
     font-size: 1.8rem;
     font-weight: 900;
     text-transform: uppercase;
-    color: var(--secondary);
+    color: #0B2149;
 }
 
 .arrows {
@@ -346,21 +251,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--secondary);
+    color: #0B2149;
     cursor: pointer;
-    transition: 0.3s;
+    border: none;
 }
 
 .arrow:hover {
-    background: var(--primary);
+    background: #FFD200;
 }
 
+/* Product Grid */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
-    position: relative;
-    z-index: 2;
 }
 
 .card {
@@ -369,31 +273,12 @@
     padding: 1.5rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
     text-align: left;
-    position: relative;
-    transition: transform 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .card:hover {
     transform: translateY(-5px);
-}
-
-/* Product Badges */
-.badge-new {
-    position: absolute;
-    top: 1.5rem;
-    left: 1.5rem;
-    background: var(--primary);
-    color: var(--secondary);
-    font-size: 0.7rem;
-    font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 4px;
-    z-index: 10;
-}
-
-.card-img-link {
-    display: block;
-    margin-bottom: 1rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .card-img {
@@ -402,12 +287,8 @@
     object-fit: contain;
     background: #F8F9FA;
     border-radius: 12px;
+    margin-bottom: 1rem;
     padding: 1rem;
-    transition: 0.3s;
-}
-
-.card-img-link:hover .card-img {
-    transform: scale(1.05);
 }
 
 .card-title {
@@ -425,175 +306,73 @@
 .card-price-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 1rem;
     margin-bottom: 1rem;
 }
 
 .card-price {
     font-size: 1.2rem;
     font-weight: 900;
-    color: var(--secondary);
+    color: #0B2149;
 }
 
-.text-primary-price {
-    color: var(--primary);
+.card-old-price {
+    font-size: 0.9rem;
+    color: #999;
+    text-decoration: line-through;
 }
 
-.stars {
-    color: var(--primary);
+.card-variant {
     font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
 }
 
-.mb-small {
-    margin-bottom: 0.2rem;
-}
-
-.mb-medium {
-    margin-bottom: 1rem;
-}
-
-.btn-add {
+.btn-card {
     width: 100%;
-    background: var(--primary);
-    color: var(--secondary);
-    padding: 0.8rem;
-    border-radius: 8px;
+    padding: 0.75rem;
+    background: #0B2149;
+    color: white;
     border: none;
-    font-weight: 800;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border-radius: 10px;
+    font-weight: 700;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.3s;
 }
 
-.btn-add:hover {
-    background: #E6BE00;
+.btn-card:hover {
+    background: #091a3a;
 }
 
-/* =========================================
-   DARK SECTION
-========================================= */
-.dark-section {
-    background: var(--secondary);
-    color: white;
-    position: relative;
-    overflow: hidden;
-    padding-bottom: 5rem;
+/* Responsive */
+@media (max-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
-.dark-section .section-title {
-    color: white;
+@media (max-width: 768px) {
+    .hero-slider {
+        height: 300px;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
 }
 
-.dark-shape1 {
-    position: absolute;
-    bottom: 0;
-    right: -50px;
-    width: 300px;
-    height: 200px;
-    background: var(--primary);
-    border-radius: 200px 0 0 0;
-}
-
-.dark-shape2 {
-    position: absolute;
-    top: 100px;
-    left: -50px;
-    width: 150px;
-    height: 150px;
-    background: var(--primary);
-    border-radius: 50%;
-}
-
-.dark-section .card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-}
-
-.dark-section .card-img {
-    background: white;
-}
-
-.dark-section .card-desc {
-    color: #DDD;
-}
-
-.arrow-dark {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-}
-
-.arrow-primary {
-    background: var(--primary);
-    color: var(--secondary);
-}
-
-/* =========================================
-   CONTACT SECTION
-========================================= */
-.contact-section {
-    background: #EBF3FA;
-    padding: 4rem 2rem;
-    text-align: center;
-}
-
-.contact-container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
-.contact-container h2 {
-    font-size: 2rem;
-    color: var(--secondary);
-    margin-bottom: 1rem;
-    font-weight: 900;
-}
-
-.contact-container p {
-    color: #555;
-    margin-bottom: 2rem;
-}
-
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 1rem;
-    border: 1px solid #CCC;
-    border-radius: 8px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    transition: 0.3s;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-    border-color: var(--secondary);
-}
-
-.btn-submit {
-    background: var(--primary);
-    color: var(--secondary);
-    border: none;
-    padding: 1rem;
-    border-radius: 8px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-submit:hover {
-    background: #E6BE00;
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
 }

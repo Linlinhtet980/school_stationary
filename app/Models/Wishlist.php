@@ -3,17 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Wishlist extends Model
 {
     protected $fillable = [
-        'customer_id',
+        'user_id',
         'item_id',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->hasOneThrough(Customer::class, User::class);
     }
 
     public function item()

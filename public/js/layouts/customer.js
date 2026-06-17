@@ -36,3 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+
+function toggleProfileDropdown() {
+    document.getElementById('profileDropdown').classList.toggle('show');
+}
+
+// Click outside => close dropdown
+document.addEventListener('click', function (event) {
+    const dropdown = document.querySelector('.profile-dropdown');
+    const menu = document.getElementById('profileDropdown');
+
+    if (!dropdown.contains(event.target)) {
+        menu.classList.remove('show');
+    }
+});

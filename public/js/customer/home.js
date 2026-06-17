@@ -1,49 +1,66 @@
-// js/home.js
+// Home Page JavaScript - Extracted from UI Prototypes
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Slider Elements များကို ဆွဲယူခြင်း
+document.addEventListener('DOMContentLoaded', function() {
+    // Hero Slider Logic
+    let slideIndex = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
-    const btnPrev = document.getElementById('btnPrev');
-    const btnNext = document.getElementById('btnNext');
-    
-    let currentSlideIndex = 0;
-    const totalSlides = slides.length;
+    let slideInterval;
 
-    // 2. Slide ပြောင်းပေးမည့် Function
-    function showSlide(index) {
-        // Index ကို limit အတွင်းရှိအောင် ထိန်းချုပ်ခြင်း (ဥပမာ - နောက်ဆုံးကနေ ကျော်သွားရင် အစပြန်ရောက်)
-        if (index >= totalSlides) currentSlideIndex = 0;
-        else if (index < 0) currentSlideIndex = totalSlides - 1;
-        else currentSlideIndex = index;
+    if (slides.length > 0) {
+        function showSlide(n) {
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            slideIndex = (n + slides.length) % slides.length;
+            slides[slideIndex].classList.add('active');
+            if (dots[slideIndex]) {
+                dots[slideIndex].classList.add('active');
+            }
+        }
 
-        // Slide အားလုံးကို ဖျောက်ပြီး, လက်ရှိ Slide ကိုသာ ပြခြင်း
-        slides.forEach(slide => slide.classList.remove('active'));
-        slides[currentSlideIndex].classList.add('active');
+        function moveSlide(n) { 
+            showSlide(slideIndex + n); 
+            resetInterval(); 
+        }
 
-        // Dot အားလုံးကို ဖျောက်ပြီး, လက်ရှိ Dot ကိုသာ Highlight လုပ်ခြင်း
-        dots.forEach(dot => dot.classList.remove('active'));
-        dots[currentSlideIndex].classList.add('active');
+        function currentSlide(n) { 
+            showSlide(n); 
+            resetInterval(); 
+        }
+
+        function startInterval() { 
+            slideInterval = setInterval(() => { moveSlide(1); }, 5000); 
+        }
+
+        function resetInterval() { 
+            clearInterval(slideInterval); 
+            startInterval(); 
+        }
+
+        // Initialize slider
+        startInterval();
+
+        // Add navigation buttons
+        const prevBtn = document.querySelector('.slider-nav button:first-child');
+        const nextBtn = document.querySelector('.slider-nav button:last-child');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                moveSlide(-1);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                moveSlide(1);
+            });
+        }
+
+        // Add dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', function() {
+                currentSlide(index);
+            });
+        });
     }
-
-    // 3. နောက်တစ်ပုံ သွားရန်
-    function nextSlide() {
-        showSlide(currentSlideIndex + 1);
-    }
-
-    // 4. အရှေ့တစ်ပုံ သွားရန်
-    function prevSlide() {
-        showSlide(currentSlideIndex - 1);
-    }
-
-    // 5. Event Listeners များ ချိတ်ဆက်ခြင်း
-    if(btnNext) btnNext.addEventListener('click', nextSlide);
-    if(btnPrev) btnPrev.addEventListener('click', prevSlide);
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => showSlide(index));
-    });
-
-    // 6. Auto Play လုပ်ခြင်း (၅ စက္ကန့်တစ်ခါ အလိုအလျောက် ပြောင်းမည်)
-    setInterval(nextSlide, 5000);
 });

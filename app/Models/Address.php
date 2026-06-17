@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Address extends Model
 {
     protected $fillable = [
-        'customer_id',
+        'user_id',
         'label',
         'address_line',
         'city',
@@ -15,8 +16,13 @@ class Address extends Model
         'is_default',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->hasOneThrough(Customer::class, User::class);
     }
 }

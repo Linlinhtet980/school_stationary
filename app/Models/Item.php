@@ -39,6 +39,11 @@ class Item extends Model
         return $this->hasMany(ItemVariant::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
      public function getPriceRangeAttribute()
     {
         // အကယ်၍ variant မရှိပါက 0.00 ပြမည်

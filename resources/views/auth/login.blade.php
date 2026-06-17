@@ -28,6 +28,20 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="alert-error">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert-error">
+                    @foreach($errors->all() as $error)
+                        {{ $error }}
+                    @endforeach
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('login.post') }}">
                 @csrf
                 <div class="form-group">

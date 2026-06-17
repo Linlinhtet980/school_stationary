@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Supply - Store</title>
+    <title>@yield('title', 'Campus Supply - Store')</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -12,41 +12,82 @@
     
     <!-- External Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/layouts/customer.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/customer/home.css') }}">
+    
+    @stack('styles')
 </head>
 <body>
 
     <!-- 1. NAVBAR (Global) -->
     <nav class="navbar">
-        <a href="index.html" class="logo-container">
+        <a href="{{ route('default') }}" class="logo-container">
             <div class="logo">
                 <img src="{{ asset('logo.png') }}" alt="CampusSupply Logo" class="logo-img">
             </div>
-            <div class="logo-text">CAMPUS<br>SUPPLY</div>
+            <div class="logo-text">CAMPUS<span>SUPPLY</span></div>
         </a>
         <div class="nav-right-bg">
             <div class="nav-links">
-                <a href="home.blade.php" class="active">HOME</a>
-                <a href="shop.html">PRODUCTS</a>
-                <a href="new_arrivals.html">NEW ARRIVALS</a>
-                <a href="bestsellers.html">BESTSELLERS</a>
-                <a href="bundles_plans.html">Bundles Plan</a>
+                @auth
+                    <a href="{{ route('home') }}" class="active">HOME</a>
+                @else
+                    <a href="{{ route('shop.index') }}" class="active">HOME</a>
+                @endauth
+                <a href="{{ route('shop.index') }}">PRODUCTS</a>
+                <a href="{{ route('shop.new-arrivals') }}">NEW ARRIVALS</a>
+                <a href="{{ route('shop.bestsellers') }}">BESTSELLERS</a>
+                <a href="{{ route('shop.b2s-deals') }}">Bundles DEALS</a>
             </div>
             <div class="nav-actions">
                 <div class="search-bar">
-                    <input type="text" placeholder="Search">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <form action="{{ route('shop.search') }}" method="GET">
+                        <input type="text" name="q" placeholder="Search products...">
+                        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
                 </div>
                 <div class="icons">
-                    <a href="login.html" class="icon-link"><i class="fa-regular fa-user"></i></a>
-                    <a href="wishlist.html" class="icon-link"><i class="fa-regular fa-heart"></i></a>
-                    <!-- ID added for JS trigger -->
-                    <a href="#" id="cartIconBtn" class="icon-link">
-                        <div class="cart-wrapper">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span class="cart-badge">3</span>
+                    @auth
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown">
+                            <button class="icon-link" title="My Profile" onclick="toggleProfileDropdown()">
+                                <i class="fa-regular fa-user"></i>
+                            </button>
+                            <div class="dropdown-menu" id="profileDropdown">
+                                <a href="{{ route('profile.index') }}" class="dropdown-item">
+                                    <i class="fa-regular fa-user"></i> My Profile
+                                </a>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </a>
+                        <a href="{{ route('profile.wishlist') }}" class="icon-link" title="Wishlist">
+                            <i class="fa-regular fa-heart"></i>
+                        </a>
+                        <!-- Cart (guests can view but need to login to add) -->
+                        <a href="{{ route('cart.index') }}" class="icon-link" title="Cart">
+                            <div class="cart-wrapper">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
+                            </div>
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="icon-link" title="Login">
+                            <i class="fa-regular fa-user"></i>
+                        </a>
+                        <a href="{{ route('login') }}" class="icon-link" title="Wishlist">
+                            <i class="fa-regular fa-heart"></i>
+                        </a>
+                        <!-- Cart (guests can view but need to login to add) -->
+                        <a href="{{ route('cart.index') }}" class="icon-link" title="Cart">
+                            <div class="cart-wrapper">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
+                            </div>
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -54,9 +95,7 @@
 
     <!-- 2. MAIN CONTENT WRAPPER (Dynamic Content) -->
     <main class="main-wrapper">
-        
         @yield('content')
-
     </main>
 
     <!-- 3. FOOTER (Global) -->
@@ -74,19 +113,24 @@
             <div class="footer-col">
                 <h3>QUICK LINKS</h3>
                 <ul class="footer-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="shop.html">Shop All</a></li>
-                    <li><a href="new_arrivals.html">New Arrivals</a></li>
-                    <li><a href="bestsellers.html">Bestsellers</a></li>
+                    <li><a href="{{ route('shop.index') }}">Shop All</a></li>
+                    <li><a href="{{ route('shop.new-arrivals') }}">New Arrivals</a></li>
+                    <li><a href="{{ route('shop.bestsellers') }}">Bestsellers</a></li>
+                    <li><a href="{{ route('shop.b2s-deals') }}">B2S Deals</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>CUSTOMER SERVICE</h3>
                 <ul class="footer-links">
+                    @auth
+                        <li><a href="{{ route('profile.orders') }}">Track Order</a></li>
+                        <li><a href="{{ route('profile.index') }}">My Profile</a></li>
+                    @else
+                        <li><a href="{{ route('login') }}">Track Order</a></li>
+                        <li><a href="{{ route('login') }}">My Profile</a></li>
+                    @endauth
                     <li><a href="#">FAQ</a></li>
                     <li><a href="#">Shipping & Returns</a></li>
-                    <li><a href="#">Track Order</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -101,28 +145,10 @@
         </div>
     </footer>
 
-    <!-- 4. SLIDE-OUT CART DRAWER (Global) -->
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-drawer" id="cartDrawer">
-        <div class="cart-header">
-            <h3>Your Cart</h3>
-            <!-- ID added for JS trigger -->
-            <button class="close-cart" id="closeCartBtn"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="cart-items">
-            <p style="text-align:center; color:#888; margin-top:2rem;">Cart is empty.</p>
-            <!-- Cart items will be injected here dynamically -->
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>Total</span>
-                <span>0 Ks</span>
-            </div>
-            <a href="cart-checkout.html" class="btn-checkout-drawer">Checkout</a>
-        </div>
-    </div>
-
-    <!-- External Custom JS -->
-    <script src="/js/customer.js"></script>
+    <!-- 4. External Custom JS -->
+    <script src="{{ asset('js/layouts/customer.js') }}"></script>
+    <script src="{{ asset('js/customer/layout.js') }}"></script>
+    
+    @stack('scripts')
 </body>
 </html>

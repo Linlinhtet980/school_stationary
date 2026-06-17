@@ -10,18 +10,31 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'customer_id',
+        'user_id',
         'order_number',
         'total_amount',
+        'stripe_session_id',
+        'payment_status',
         'status',
         'shipping_address',
-        'payment_method',
-        'payment_status',
+        'shipping_city',
+        'shipping_phone',
+        'bus_gate',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->hasOneThrough(Customer::class, User::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     public function orderItems()

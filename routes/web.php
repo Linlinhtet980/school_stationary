@@ -14,6 +14,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BundleController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Customer\HomeController;
+use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\ShopController;
+use App\Http\Controllers\Customer\CheckoutController;
+use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
+use App\Http\Controllers\Customer\ProfileController;
 
 Route::controller(AuthController::class)->group(function () {
     
@@ -31,14 +36,79 @@ Route::controller(AuthController::class)->group(function () {
     });
 });
 
+// Default route - redirect based on auth status
+Route::get('/', function () {
+    if (Auth::check()) {
+        if (Auth::user()->isCustomer()) {
+            return redirect()->route('home');
+        } else {
+            return redirect()->route('admin.dashboard');
+        }
+    }
+    return redirect()->route('login');
+})->name('default');
 
 
-// Customer
+
+// Customer - Public access (guests can view)
+Route::controller(HomeController::class)->group(function () {
+    Route::get('/home', 'index')->name('home');
+});
+
+Route::controller(ShopController::class)->group(function () {
+    Route::get('/shop', 'index')->name('shop.index');
+    Route::get('/product/{id}', 'show')->name('shop.show');
+    Route::get('/new-arrivals', 'newArrivals')->name('shop.new-arrivals');
+    Route::get('/bestsellers', 'bestsellers')->name('shop.bestsellers');
+    Route::get('/b2s-deals', 'b2sDeals')->name('shop.b2s-deals');
+    Route::get('/search', 'search')->name('shop.search');
+});
+
+// Customer - Authentication required
 Route::middleware('auth')->group(function () {
-    // Customer profile & order history
-    Route::get('/profile', function () { return view('profile'); })->name('profile');
+    // Cart routes
+    Route::controller(CartController::class)->group(function () {
+        Route::get('/cart', 'index')->name('cart.index');
+        Route::post('/cart/add', 'add')->name('cart.add');
+        Route::post('/cart/update', 'update')->name('cart.update');
+        Route::post('/cart/remove', 'remove')->name('cart.remove');
+        Route::post('/cart/clear', 'clear')->name('cart.clear');
+    });
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    // Checkout routes
+    Route::controller(CheckoutController::class)->group(function () {
+        Route::get('/checkout', 'index')->name('checkout.index');
+        Route::post('/checkout/process', 'process')->name('checkout.process');
+        Route::get('/checkout/success/{id}', 'success')->name('checkout.success');
+        Route::post('/checkout/address', 'addAddress')->name('checkout.add-address');
+        Route::post('/checkout/coupon', 'validateCoupon')->name('checkout.validate-coupon');
+    });
+
+    // Customer order routes
+    Route::controller(CustomerOrderController::class)->group(function () {
+        Route::get('/orders', 'index')->name('profile.orders');
+        Route::get('/orders/{id}', 'show')->name('profile.order-detail');
+        Route::post('/orders/{id}/cancel', 'cancel')->name('profile.order-cancel');
+    });
+
+    // Profile routes
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'index')->name('profile.index');
+        Route::post('/profile/update', 'updateProfile')->name('profile.update');
+        Route::post('/profile/image', 'updateImage')->name('profile.update-image');
+        Route::post('/profile/password', 'changePassword')->name('profile.change-password');
+        
+        // Address routes
+        Route::post('/profile/address', 'addAddress')->name('profile.add-address');
+        Route::post('/profile/address/{id}', 'updateAddress')->name('profile.update-address');
+        Route::delete('/profile/address/{id}', 'deleteAddress')->name('profile.delete-address');
+        Route::post('/profile/address/{id}/default', 'setDefaultAddress')->name('profile.set-default-address');
+        
+        // Wishlist routes
+        Route::get('/wishlist', 'wishlist')->name('profile.wishlist');
+        Route::post('/wishlist/add', 'addToWishlist')->name('profile.add-wishlist');
+        Route::delete('/wishlist/{id}', 'removeFromWishlist')->name('profile.remove-wishlist');
+    });
 });
 
 // admin/staff
