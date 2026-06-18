@@ -108,6 +108,8 @@
                             @else
                                 {{ number_format($item->price) }} Ks
                             @endif
+                        </span>
+                    </div>
                     @if($item->status === 'active')
                         <button class="btn-card btn-add" data-id="{{ $item->id }}">Add to Cart</button>
                     @else
@@ -119,6 +121,34 @@
             @endforelse
         </div>
     </div>
+
+    <!-- Categories Section -->
+    @if($categories && $categories->count() > 0)
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">SHOP BY CATEGORY</h2>
+            <a href="{{ route('shop.index') }}" class="view-all-link">View All &rarr;</a>
+        </div>
+
+        <div class="categories-slider">
+            @foreach($categories as $category)
+                <a href="{{ route('shop.index') }}?category={{ $category->id }}" class="category-card">
+                    <div class="category-image">
+                        @if($category->image)
+                            <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
+                        @else
+                            <div class="category-placeholder">
+                                <i class="fa-solid fa-box"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="category-name">{{ $category->name }}</div>
+                    <div class="category-count">{{ $category->items->where('status', 'active')->count() }} items</div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
 @endsection
 
 @push('scripts')

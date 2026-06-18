@@ -67,12 +67,12 @@
                             <i class="fa-regular fa-heart"></i>
                         </a>
                         <!-- Cart (guests can view but need to login to add) -->
-                        <a href="{{ route('cart.index') }}" class="icon-link" title="Cart">
+                        <button class="icon-link" title="Cart" id="cartIconBtn">
                             <div class="cart-wrapper">
                                 <i class="fa-solid fa-cart-shopping"></i>
                                 <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
                             </div>
-                        </a>
+                        </button>
                     @else
                         <a href="{{ route('login') }}" class="icon-link" title="Login">
                             <i class="fa-regular fa-user"></i>
@@ -81,12 +81,12 @@
                             <i class="fa-regular fa-heart"></i>
                         </a>
                         <!-- Cart (guests can view but need to login to add) -->
-                        <a href="{{ route('cart.index') }}" class="icon-link" title="Cart">
+                        <button class="icon-link" title="Cart" id="cartIconBtn">
                             <div class="cart-wrapper">
                                 <i class="fa-solid fa-cart-shopping"></i>
                                 <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
                             </div>
-                        </a>
+                        </button>
                     @endauth
                 </div>
             </div>
@@ -144,6 +144,74 @@
             &copy; 2026 Campus Supply. All rights reserved.
         </div>
     </footer>
+
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart" id="closeCartBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            @php
+                $cart = session('cart', []);
+                $cartTotal = 0;
+            @endphp
+            @if(empty($cart))
+                <div class="empty-cart">
+                    <i class="fa-solid fa-shopping-cart"></i>
+                    <p>Your cart is empty</p>
+                    <a href="{{ route('shop.index') }}" class="btn-primary">Continue Shopping</a>
+                </div>
+            @else
+                @foreach($cart as $itemId => $item)
+                    @php
+                        $variant = \App\Models\ItemVariant::with('item')->find($item['variant_id']);
+                        if($variant) {
+                            $itemTotal = $variant->price * $item['quantity'];
+                            $cartTotal += $itemTotal;
+                        }
+                    @endphp
+                    @if($variant)
+                        <div class="cart-item">
+                            <div class="cart-item-image">
+                                <img src="{{ asset($variant->item->image) }}" alt="{{ $variant->item->name }}">
+                            </div>
+                            <div class="cart-item-details">
+                                <h4>{{ $variant->item->name }}</h4>
+                                <p>{{ $variant->variant_name }}</p>
+                                <div class="cart-item-price">
+                                    <span class="price">Ks {{ number_format($variant->price) }}</span>
+                                    <span class="quantity">x{{ $item['quantity'] }}</span>
+                                </div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <button type="button" class="quantity-btn" data-action="decrease" data-variant-id="{{ $item['variant_id'] }}">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <span class="item-quantity">{{ $item['quantity'] }}</span>
+                                <button type="button" class="quantity-btn" data-action="increase" data-variant-id="{{ $item['variant_id'] }}">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            @endif
+        </div>
+        @if(!empty($cart))
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span class="total-price">Ks {{ number_format($cartTotal) }}</span>
+                </div>
+                <a href="{{ route('checkout.index') }}" class="btn-primary btn-full">Proceed to Checkout</a>
+                <a href="{{ route('cart.index') }}" class="btn-secondary btn-full">View Full Cart</a>
+            </div>
+        @endif
+    </div>
 
     <!-- 4. External Custom JS -->
     <script src="{{ asset('js/layouts/customer.js') }}"></script>

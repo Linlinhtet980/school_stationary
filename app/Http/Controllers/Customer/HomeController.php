@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Item;
+use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,6 +38,19 @@ class HomeController extends Controller
             $featuredItems = collect();
         }
 
-        return view('customer.home', compact('banners', 'featuredItems'));
+        try {
+            $categories = Type::with('items')
+                              ->whereHas('items', function($query) {
+                                  $query->where('status', 'active');
+                              })
+                              ->take(8)
+                              ->get();
+            \Log::info('Categories loaded: ' . $categories->count());
+        } catch (\Exception $e) {
+            \Log::error('Categories query error: ' . $e->getMessage());
+            $categories = collect();
+        }
+
+        return view('customer.home', compact('banners', 'featuredItems', 'categories'));
     }
 }

@@ -50,6 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Global changeQty function for onclick attributes
+    window.changeQty = function(delta) {
+        const qtyInput = document.getElementById('qtyInput');
+        if (qtyInput) {
+            let currentValue = parseInt(qtyInput.value);
+            const newValue = currentValue + delta;
+            const max = parseInt(qtyInput.getAttribute('max')) || 10;
+            
+            if (newValue >= 1 && newValue <= max) {
+                qtyInput.value = newValue;
+            }
+        }
+    };
+
     // --- 3. Tabs Logic ---
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -72,4 +86,55 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // ShowTab function for direct onclick calls
+    window.showTab = function(tabId) {
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        const targetContent = document.getElementById(tabId);
+        if(targetContent) {
+            targetContent.classList.add('active');
+        }
+
+        // Find and activate the corresponding button
+        const targetBtn = Array.from(tabBtns).find(btn => 
+            btn.textContent.toLowerCase().includes(tabId.replace('Tab', '').toLowerCase())
+        );
+        if(targetBtn) {
+            targetBtn.classList.add('active');
+        }
+    };
+
+    // --- 4. Variant Selection Logic ---
+    window.selectVariant = function(element) {
+        const variantOptions = document.querySelectorAll('.variant-option');
+        variantOptions.forEach(opt => opt.classList.remove('selected'));
+        
+        element.classList.add('selected');
+        
+        const variantId = element.dataset.variantId;
+        const price = element.dataset.price;
+        const stock = element.dataset.stock;
+        
+        const selectedVariantId = document.getElementById('selectedVariantId');
+        const displayPrice = document.getElementById('displayPrice');
+        
+        if (selectedVariantId) {
+            selectedVariantId.value = variantId;
+        }
+        
+        if (displayPrice) {
+            displayPrice.textContent = price + ' Ks';
+        }
+        
+        // Update stock status
+        const qtyInput = document.getElementById('qtyInput');
+        if (qtyInput) {
+            qtyInput.max = stock;
+        }
+    };
 });

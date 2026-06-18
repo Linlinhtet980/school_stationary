@@ -39,6 +39,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Quantity buttons in cart drawer
+    const quantityBtns = document.querySelectorAll('.quantity-btn');
+    quantityBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const action = this.dataset.action;
+            const variantId = this.dataset.variantId;
+            const quantitySpan = this.parentElement.querySelector('.item-quantity');
+            let quantity = parseInt(quantitySpan.textContent);
+
+            if (action === 'increase') {
+                quantity++;
+            } else if (action === 'decrease' && quantity > 1) {
+                quantity--;
+            }
+
+            // Update display
+            quantitySpan.textContent = quantity;
+
+            // Update cart via AJAX (you'll need to implement this endpoint)
+            // For now, just update display
+            // You can add AJAX call here to update session
+        });
+    });
+
     // Profile Dropdown Logic
     window.toggleProfileDropdown = function() {
         const dropdown = document.getElementById('profileDropdown');
@@ -58,4 +82,67 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Add to wishlist function
+    window.addToWishlist = function(itemId) {
+        // Check if user is authenticated
+        const isAuthenticated = document.body.classList.contains('authenticated');
+        
+        if (!isAuthenticated) {
+            alert('Please login to add items to wishlist');
+            window.location.href = '/login';
+            return;
+        }
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('item_id', itemId);
+
+        // Send AJAX request to add to wishlist
+        fetch('/profile/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            },
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Try to parse as HTML response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'text/html');
+            
+            // Check for success message
+            const successAlert = doc.querySelector('.alert-success');
+            const errorAlert = doc.querySelector('.alert-error');
+            
+            if (successAlert) {
+                alert('Item added to wishlist successfully!');
+            } else if (errorAlert) {
+                alert(errorAlert.textContent || 'Failed to add to wishlist');
+            } else {
+                alert('Item added to wishlist!');
+            }
+        })
+        .catch(error => {
+            console.error('Error adding to wishlist:', error);
+            alert('An error occurred. Please try again.');
+        });
+    };
+
+    // Add to cart function for shop page
+    window.addToCart = function(itemId) {
+        // Check if user is authenticated
+        const isAuthenticated = document.querySelector('.profile-dropdown') !== null;
+        
+        if (!isAuthenticated) {
+            alert('Please login to add items to cart');
+            window.location.href = '/login';
+            return;
+        }
+
+        // Redirect to product detail page to select variant
+        window.location.href = `/shop/${itemId}`;
+    };
 });
