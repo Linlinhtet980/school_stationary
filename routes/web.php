@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/checkout/success/{id}', 'success')->name('checkout.success');
         Route::post('/checkout/address', 'addAddress')->name('checkout.add-address');
         Route::post('/checkout/coupon', 'validateCoupon')->name('checkout.validate-coupon');
+        Route::get('/checkout/stripe-success', [CheckoutController::class, 'stripeSuccess'])->name('checkout.stripe-success');
     });
 
     // Customer order routes
