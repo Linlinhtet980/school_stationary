@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/banners_create.css') }}">
+@endpush
+
 
 @section('title', 'Edit Banner')
 @section('header_title', 'Modify Banner')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/banners_create.css') }}">
-@endpush
+
 
 @section('content')
 <div class="form-card">
@@ -73,3 +75,4 @@
 @push('scripts')
     <script src="{{ asset('js/admin/banners.js') }}"></script>
 @endpush
+

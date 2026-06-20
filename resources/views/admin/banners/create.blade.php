@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/banners_create.css') }}">
+@endpush
+
 
 @section('title', 'Add New Banner')
 @section('header_title', 'Create Banner')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/banners_create.css') }}">
-@endpush
+
 
 @section('content')
 <div class="form-card">
@@ -58,7 +60,7 @@
                                 <p>Select Campaign Banner</p>
                                 <span>Max 2MB (JPG, PNG, WEBP)</span>
                             </div>
-                            <img id="bannerPreview" src="" alt="Preview" style="display: none;">
+                            <img id="bannerPreview" src="" alt="Preview" class="inline-style-1">
                             <input type="file" id="image" name="image" class="file-input" accept="image/*" required onchange="previewBannerImage(this)">
                         </div>
                     </div>
@@ -77,3 +79,4 @@
 @push('scripts')
     <script src="{{ asset('js/admin/banners.js') }}"></script>
 @endpush
+

@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/orders.css') }}">
+@endpush
+
 
 @section('title', 'Order Invoice')
 @section('header_title', 'Order Invoice')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/orders.css') }}">
-@endpush
+
 
 @section('content')
     <div class="card">
@@ -80,7 +82,7 @@
                     <div class="info-box mb-4">
                         <h4><i class="fa-solid fa-truck"></i> Shipping Address</h4>
                         <p>
-                            {{ $order->shipping_address ?: 'No address provided.' }}
+                            {!! nl2br(e($order->shipping_address ?: 'No address provided.')) !!}
                         </p>
                     </div>
 

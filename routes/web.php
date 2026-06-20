@@ -53,11 +53,14 @@ Route::get('/', function () {
 // Customer - Public access (guests can view)
 Route::controller(HomeController::class)->group(function () {
     Route::get('/home', 'index')->name('home');
+    Route::post('/contact', 'submitContact')->name('contact.submit');
 });
 
 Route::controller(ShopController::class)->group(function () {
     Route::get('/shop', 'index')->name('shop.index');
     Route::get('/product/{id}', 'show')->name('shop.show');
+    Route::get('/item/{id}/first-variant', 'getFirstVariant')->name('shop.first-variant');
+    Route::get('/shop/filter', 'filter')->name('shop.filter');
     Route::get('/new-arrivals', 'newArrivals')->name('shop.new-arrivals');
     Route::get('/bestsellers', 'bestsellers')->name('shop.bestsellers');
     Route::get('/b2s-deals', 'b2sDeals')->name('shop.b2s-deals');
@@ -70,9 +73,17 @@ Route::middleware('auth')->group(function () {
     Route::controller(CartController::class)->group(function () {
         Route::get('/cart', 'index')->name('cart.index');
         Route::post('/cart/add', 'add')->name('cart.add');
+        Route::post('/cart/add/{item}', 'addByItem')->name('cart.add-item');
         Route::post('/cart/update', 'update')->name('cart.update');
+        Route::post('/cart/update-ajax', 'updateAjax')->name('cart.update-ajax');
+        Route::post('/cart/remove-ajax', 'removeAjax')->name('cart.remove-ajax');
         Route::post('/cart/remove', 'remove')->name('cart.remove');
+        Route::delete('/cart/remove/{variantId}', 'removeByVariant')->name('cart.remove-variant');
         Route::post('/cart/clear', 'clear')->name('cart.clear');
+        // AJAX endpoints
+        Route::post('/cart/add-ajax', 'addAjax')->name('cart.add-ajax');
+        Route::get('/cart/count-ajax', 'getCountAjax')->name('cart.count-ajax');
+        Route::get('/cart/get-items', 'getItemsAjax')->name('cart.get-items');
     });
 
     // Checkout routes

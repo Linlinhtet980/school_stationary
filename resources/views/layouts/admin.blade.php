@@ -9,12 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Link to external CSS file instead of inline styles -->
-    <link rel="stylesheet" href="{{ asset('css/layouts/admin.css?v=' . time()) }}">
-
+    
     @stack('styles')
 
     <!-- Global theme overrides — MUST be last to override hardcoded colors -->
-    <link rel="stylesheet" href="{{ asset('css/admin/theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/theme.css') }}">
 </head>
 
 <body>
@@ -144,7 +145,7 @@
 
                 <div class="pop-divider"></div>
 
-                <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
+                <form method="POST" action="{{ route('logout') }}" id="logout-form" class="inline-style-121">
                     @csrf
                 </form>
                 <a class="pop-item pop-signout" href="#"
@@ -243,6 +244,7 @@
     <script src="{{ asset('js/admin/sidebar_rbac.js') }}"></script>
     <script src="{{ asset('js/admin/live_search.js?v=' . time()) }}"></script>
     @stack('scripts')
+
 </body>
 
 </html>

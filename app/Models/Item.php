@@ -44,22 +44,41 @@ class Item extends Model
         return $this->hasMany(Review::class);
     }
 
-     public function getPriceRangeAttribute()
+    public function orderItems()
     {
-        // အကယ်၍ variant မရှိပါက 0.00 ပြမည်
+        return $this->hasManyThrough(OrderItem::class, ItemVariant::class);
+    }
+
+    public function getPriceRangeAttribute()
+    {
         if ($this->variants->isEmpty()) {
-            return '0.00 Ks';
+            return number_format($this->price ?? 0) . ' Ks';
         }
 
         $minPrice = $this->variants->min('price');
         $maxPrice = $this->variants->max('price');
 
-        // စျေးနှုန်း တူညီနေပါက တစ်ခုတည်းပြမည်၊ မတူပါက Range (ဥပမာ - 1,000 - 5,000 Ks) ပြမည်
         if ($minPrice == $maxPrice) {
-            return number_format($minPrice, 2) . ' Ks';
+            return number_format($minPrice) . ' Ks';
         }
 
-        return number_format($minPrice, 2) . ' - ' . number_format($maxPrice, 2) . ' Ks';
+        return number_format($minPrice) . ' - ' . number_format($maxPrice) . ' Ks';
+    }
+
+    /**
+     * Get display price (uses variant min price if item price is null)
+     */
+    public function getDisplayPriceAttribute()
+    {
+        if (!is_null($this->price)) {
+            return (float) $this->price;
+        }
+
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            return (float) $this->variants->min('price');
+        }
+
+        return 0;
     }
 
     /**

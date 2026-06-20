@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/orders.css') }}">
+@endpush
+
 
 @section('title', 'Orders')
 @section('header_title', 'Orders Management')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/orders.css') }}">
-@endpush
+
 
 @section('content')
 <div class="card">

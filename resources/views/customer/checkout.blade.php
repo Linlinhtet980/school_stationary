@@ -1,345 +1,227 @@
 @extends('layouts.customer')
-
-@section('title', 'Checkout - Campus Supply')
-
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/customer/checkout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/checkout.css') }}">
 @endpush
 
+@section('title', 'Campus Supply - Checkout')
+
+
+
 @section('content')
-<div class="page-container">
-    <div class="page-header">
-        <h1>Checkout</h1>
-        <p>Complete your order</p>
+<div class="checkout-container">
+    <!-- Left Column: Cart & Details -->
+    <div class="left-col">
+        <a href="{{ route('shop.index') }}" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
+        <h2 class="section-title">1. Your Cart</h2>
+        
+        @foreach($cartItems as $index => $item)
+        <div class="cart-item">
+            <img src="{{ $item['variant']->item->images->first() ? asset('storage/' . $item['variant']->item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="cart-item-img" alt="Item">
+            <div class="cart-item-info">
+                <div class="cart-item-title">{{ $item['variant']->item->name }}</div>
+                <div class="cart-item-desc">Variant: {{ $item['variant']->color_name ?? $item['variant']->item_code }}</div>
+            </div>
+            <div class="qty-selector">
+                <span class="qty-input">{{ $item['quantity'] }}</span>
+            </div>
+            <div class="cart-item-price">{{ number_format($item['subtotal']) }} Ks</div>
+            <form action="{{ route('cart.remove', $item['variant']->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-remove"><i class="fa-solid fa-trash-can"></i></button>
+            </form>
+        </div>
+        @endforeach
+
+        <form action="{{ route('checkout.process') }}" method="POST" enctype="multipart/form-data" id="checkoutForm">
+            @csrf
+            
+            <h2 class="section-title inline-style-48" >2. Shipping Information</h2>
+            
+            @if(count($addresses) > 0)
+            <div class="form-group inline-style-49" >
+                <label>Select Saved Address</label>
+                <select id="savedAddressSelect" onchange="fillAddressForm()" class="inline-style-50">
+                    <option value="">-- Enter New Address Below --</option>
+                    @foreach($addresses as $address)
+                    <option value="{{ $address->id }}" 
+                        data-line="{{ $address->address_line }}" 
+                        data-city="{{ $address->city }}" 
+                        data-phone="{{ $address->phone }}">
+                        {{ $address->label ?? 'Saved Address' }} ({{ $address->address_line }}, {{ $address->city }})
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" value="{{ old('full_name', Auth::user()->name) }}" placeholder="e.g. Kyaw Min" required>
+                    @error('full_name') <span class="error-msg">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" placeholder="09xxxxxxxxx" pattern="09[0-9]{7,9}" required>
+                    @error('phone') <span class="error-msg">{{ $message }}</span> @enderror
+                </div>
+            </div>
+            <div class="form-group inline-style-51" >
+                <label>Email Address</label>
+                <input type="email" name="email" value="{{ old('email', Auth::user()->email) }}" placeholder="user@example.com" required>
+                @error('email') <span class="error-msg">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-group inline-style-52" >
+                <label>Detailed Address (No, Street, Ward)</label>
+                <input type="text" name="address_line" id="address_line" value="{{ old('address_line') }}" placeholder="No.12, Zay Street..." required>
+                @error('address_line') <span class="error-msg">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Township</label>
+                    <input type="text" name="township" id="township" value="{{ old('township') }}" placeholder="e.g. Kamayut" required>
+                    @error('township') <span class="error-msg">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    <label>City / Region</label>
+                    <input type="text" name="region" id="regionSelect" list="regionOptions" value="{{ old('region') }}" class="inline-style-53" placeholder="Select or type region..." required oninput="handleRegionChange()">
+                    <datalist id="regionOptions">
+                        <option value="Yangon">
+                        <option value="Mandalay">
+                        <option value="Naypyidaw">
+                        <option value="Bago">
+                        <option value="Shan State">
+                    </datalist>
+                    @error('region') <span class="error-msg">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <h2 class="section-title inline-style-54" >3. Payment Method</h2>
+            
+            <input type="hidden" name="payment_method" id="payment_method" value="kpay">
+            <div class="payment-methods">
+                <div class="payment-method active" id="btnKPay" onclick="selectPayment('kpay')">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <div class="inline-style-55">KPay</div>
+                </div>
+                <div class="payment-method" id="btnWavePay" onclick="selectPayment('wave')">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <div class="inline-style-56">Wave Pay</div>
+                </div>
+                <div class="payment-method" id="btnCOD" onclick="selectPayment('cod')">
+                    <i class="fa-solid fa-truck"></i>
+                    <div class="inline-style-57">Cash on Delivery</div>
+                    <div class="inline-style-58" id="codWarning">Only available for Yangon & Mandalay</div>
+                </div>
+            </div>
+
+            <div class="form-group inline-style-59"  id="paymentProofSection">
+                <p class="inline-style-60">Please transfer the total amount to <strong>09-123456789 (Campus Supply)</strong> and upload the transaction screenshot below.</p>
+                <label>Upload Payment Screenshot</label>
+                <input type="file" name="payment_slip" id="payment_slip" accept=".jpg,.jpeg,.png" class="inline-style-61">
+                @error('payment_slip') <span class="error-msg">{{ $message }}</span> @enderror
+            </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-error">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <form action="{{ route('checkout.process') }}" method="POST" enctype="multipart/form-data" id="checkoutForm">
-        @csrf
-        
-        <div class="checkout-container">
-            <!-- Left Column: Shipping & Payment -->
-            <div class="checkout-main">
-                
-                <!-- Shipping Address -->
-                <div class="checkout-section">
-                    <h2 class="section-title">
-                        <i class="fa-solid fa-location-dot"></i> Shipping Address
-                    </h2>
-                    
-                    @if($addresses->count() > 0)
-                        <div class="address-list">
-                            @foreach($addresses as $address)
-                                <div class="address-card {{ $address->is_default ? 'selected' : '' }}">
-                                    <label class="address-radio">
-                                        <input type="radio" 
-                                               name="address_id" 
-                                               value="{{ $address->id }}" 
-                                               {{ $address->is_default ? 'checked' : '' }}
-                                               required>
-                                        <div class="address-content">
-                                            @if($address->label)
-                                                <div class="address-label">{{ $address->label }}</div>
-                                            @endif
-                                            <div class="address-line">{{ $address->address_line }}</div>
-                                            <div class="address-city">{{ $address->city }}</div>
-                                            <div class="address-phone">
-                                                <i class="fa-solid fa-phone"></i> {{ $address->phone }}
-                                            </div>
-                                            @if($address->is_default)
-                                                <span class="default-badge">Default</span>
-                                            @endif
-                                        </div>
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                        
-                        <button type="button" class="btn-add-address" onclick="showAddressForm()">
-                            <i class="fa-solid fa-plus"></i> Add New Address
-                        </button>
-                    @else
-                        <div class="no-address">
-                            <p>No saved addresses found. Please add a shipping address.</p>
-                        </div>
-                    @endif
-
-                    <!-- Add Address Form (Hidden by default) -->
-                    <div class="add-address-form" id="addAddressForm" hidden>
-                        <h3>Add New Address</h3>
-                        <form action="{{ route('checkout.add-address') }}" method="POST" class="address-form">
-                            @csrf
-                            <div class="form-group">
-                                <label>Label (Optional)</label>
-                                <input type="text" name="label" placeholder="e.g., Home, Office">
-                            </div>
-                            <div class="form-group">
-                                <label>Address Line *</label>
-                                <textarea name="address_line" rows="2" required placeholder="Full address"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>City *</label>
-                                <input type="text" name="city" required placeholder="City">
-                            </div>
-                            <div class="form-group">
-                                <label>Phone *</label>
-                                <input type="text" name="phone" required placeholder="09xxxxxxxxx">
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" name="is_default"> Set as default address
-                                </label>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn-save">Save Address</button>
-                                <button type="button" class="btn-cancel" onclick="hideAddressForm()">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Contact Information -->
-                <div class="checkout-section">
-                    <h2 class="section-title">
-                        <i class="fa-solid fa-phone"></i> Contact Information
-                    </h2>
-                    <div class="form-group">
-                        <label>Phone Number *</label>
-                        <input type="text" 
-                               name="phone" 
-                               class="form-input" 
-                               required 
-                               placeholder="09xxxxxxxxx"
-                               pattern="^09[0-9]{7,9}$">
-                        <small>For delivery contact</small>
-                    </div>
-                    <div class="form-group">
-                        <label>Bus Gate (Optional)</label>
-                        <input type="text" 
-                               name="bus_gate" 
-                               class="form-input" 
-                               placeholder="e.g., Gate A, Near Building 5">
-                        <small>Help our driver find you easily</small>
-                    </div>
-                </div>
-
-                <!-- Payment Method -->
-                <div class="checkout-section">
-                    <h2 class="section-title">
-                        <i class="fa-solid fa-credit-card"></i> Payment Method
-                    </h2>
-                    
-                    <div class="payment-methods">
-                        <div class="payment-option">
-                            <label class="payment-radio">
-                                <input type="radio" 
-                                       name="payment_method" 
-                                       value="cod" 
-                                       checked
-                                       onchange="togglePaymentFields()">
-                                <div class="payment-content">
-                                    <div class="payment-icon">
-                                        <i class="fa-solid fa-money-bill-wave"></i>
-                                    </div>
-                                    <div class="payment-info">
-                                        <div class="payment-name">Cash on Delivery</div>
-                                        <div class="payment-desc">Pay when your order arrives</div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="payment-option">
-                            <label class="payment-radio">
-                                <input type="radio" 
-                                       name="payment_method" 
-                                       value="kpay"
-                                       onchange="togglePaymentFields()">
-                                <div class="payment-content">
-                                    <div class="payment-icon kpay">
-                                        <span>KPay</span>
-                                    </div>
-                                    <div class="payment-info">
-                                        <div class="payment-name">KBZPay</div>
-                                        <div class="payment-desc">Pay with KBZPay app</div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="payment-option">
-                            <label class="payment-radio">
-                                <input type="radio" 
-                                       name="payment_method" 
-                                       value="wave"
-                                       onchange="togglePaymentFields()">
-                                <div class="payment-content">
-                                    <div class="payment-icon wave">
-                                        <span>Wave</span>
-                                    </div>
-                                    <div class="payment-info">
-                                        <div class="payment-name">Wave Money</div>
-                                        <div class="payment-desc">Pay with Wave Money app</div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Payment Slip Upload (Hidden by default) -->
-                    <div class="payment-slip-section" id="paymentSlipSection" hidden>
-                        <div class="form-group">
-                            <label>Upload Payment Slip *</label>
-                            <input type="file" 
-                                   name="payment_slip" 
-                                   id="paymentSlip"
-                                   accept="image/jpeg,image/png,image/jpg"
-                                   class="form-input">
-                            <small>Please upload a clear screenshot of your payment receipt</small>
-                            <div id="slipPreview" class="slip-preview"></div>
-                        </div>
-                        <div class="payment-instructions">
-                            <h4>Payment Instructions:</h4>
-                            <ol>
-                                <li>Select your preferred payment method above</li>
-                                <li>Transfer the total amount to our account:</li>
-                                <li><strong>KBZPay:</strong> 09401234567</li>
-                                <li><strong>Wave Money:</strong> 09407654321</li>
-                                <li>Take a screenshot of the payment receipt</li>
-                                <li>Upload the screenshot above</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
+    <!-- Right Column: Order Summary -->
+    <div class="right-col">
+        <div class="summary-box">
+            <h2 class="section-title inline-style-62" >Order Summary</h2>
+            
+            <div class="summary-row">
+                <span>Subtotal ({{ count($cartItems) }} items)</span>
+                <span class="inline-style-63">{{ number_format($subtotal) }} Ks</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span class="inline-style-64">{{ number_format($shipping) }} Ks</span>
+            </div>
+            
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>{{ number_format($total) }} Ks</span>
             </div>
 
-            <!-- Right Column: Order Summary -->
-            <div class="checkout-sidebar">
-                <div class="order-summary">
-                    <h2 class="section-title">Order Summary</h2>
-                    
-                    <div class="summary-items">
-                        @foreach($cartItems as $item)
-                            <div class="summary-item">
-                                <div class="item-image">
-                                    @if($item['variant']->item->image)
-                                        <img src="{{ asset('storage/' . $item['variant']->item->image) }}" 
-                                             alt="{{ $item['variant']->item->name }}">
-                                    @else
-                                        <div class="no-image">No Image</div>
-                                    @endif
-                                </div>
-                                <div class="item-details">
-                                    <div class="item-name">{{ $item['variant']->item->name }}</div>
-                                    <div class="item-variant">
-                                        {{ $item['variant']->unit_label }}
-                                        @if($item['variant']->color) - {{ $item['variant']->color }} @endif
-                                        @if($item['variant']->size) - {{ $item['variant']->size }} @endif
-                                    </div>
-                                    <div class="item-qty">x {{ $item['quantity'] }}</div>
-                                </div>
-                                <div class="item-price">{{ number_format($item['subtotal']) }} Ks</div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="summary-totals">
-                        <div class="summary-row">
-                            <span>Subtotal</span>
-                            <span>{{ number_format($subtotal) }} Ks</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Shipping</span>
-                            <span>{{ $shipping > 0 ? number_format($shipping) . ' Ks' : 'Free' }}</span>
-                        </div>
-                        @if($shipping === 0)
-                            <div class="free-shipping-notice">
-                                <i class="fa-solid fa-truck"></i> Free shipping applied!
-                            </div>
-                        @endif
-                        <div class="summary-divider"></div>
-                        <div class="summary-row total">
-                            <span>Total</span>
-                            <span>{{ number_format($total) }} Ks</span>
-                        </div>
-                    </div>
-
-                    <div class="checkout-actions">
-                        <button type="submit" class="btn-place-order">
-                            Place Order
-                        </button>
-                        <p class="terms-text">
-                            By placing this order, you agree to our Terms of Service and Privacy Policy
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <button type="submit" class="btn-checkout"><i class="fa-solid fa-lock inline-style-65" ></i> Place Order</button>
         </div>
+    </div>
     </form>
 </div>
-
-
-
-
-<script>
-function showAddressForm() {
-    document.getElementById('addAddressForm').removeAttribute('hidden');
-}
-
-function hideAddressForm() {
-    document.getElementById('addAddressForm').setAttribute('hidden', '');
-}
-
-function togglePaymentFields() {
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-    const slipSection = document.getElementById('paymentSlipSection');
-    
-    if (paymentMethod === 'kpay' || paymentMethod === 'wave') {
-        slipSection.removeAttribute('hidden');
-        document.getElementById('paymentSlip').required = true;
-    } else {
-        slipSection.setAttribute('hidden', '');
-        document.getElementById('paymentSlip').required = false;
-    }
-}
-
-// Payment slip preview
-document.getElementById('paymentSlip').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const preview = document.getElementById('slipPreview');
-    
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.innerHTML = '<img src="' + e.target.result + '" alt="Payment Slip Preview">';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.innerHTML = '';
-    }
-});
-
-// Form validation
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-    const paymentSlip = document.getElementById('paymentSlip');
-    
-    if ((paymentMethod === 'kpay' || paymentMethod === 'wave') && !paymentSlip.files[0]) {
-        e.preventDefault();
-        alert('Please upload your payment slip');
-        paymentSlip.focus();
-    }
-});
-</script>
 @endsection
+
+@push('scripts')
+<script>
+function handleRegionChange() {
+        const region = document.getElementById('regionSelect').value.trim().toLowerCase();
+        const btnCOD = document.getElementById('btnCOD');
+        const codWarning = document.getElementById('codWarning');
+
+        if (region === 'yangon' || region === 'mandalay' || region === '') {
+            // Enable COD
+            btnCOD.style.opacity = '1';
+            btnCOD.style.pointerEvents = 'auto';
+            codWarning.style.display = 'none';
+        } else {
+            // Disable COD
+            btnCOD.style.opacity = '0.5';
+            btnCOD.style.pointerEvents = 'none';
+            if (document.getElementById('payment_method').value === 'cod') {
+                selectPayment('kpay'); // Default to KPay
+            }
+            codWarning.style.display = 'block';
+        }
+    }
+
+    function selectPayment(method) {
+        document.getElementById('payment_method').value = method;
+        document.querySelectorAll('.payment-method').forEach(b => b.classList.remove('active'));
+        
+        if (method === 'kpay') document.getElementById('btnKPay').classList.add('active');
+        if (method === 'wave') document.getElementById('btnWavePay').classList.add('active');
+        if (method === 'cod') document.getElementById('btnCOD').classList.add('active');
+
+        const proofSection = document.getElementById('paymentProofSection');
+        const slipInput = document.getElementById('payment_slip');
+        
+        if (method === 'cod') {
+            proofSection.style.display = 'none';
+            slipInput.required = false;
+        } else {
+            proofSection.style.display = 'block';
+            slipInput.required = true;
+        }
+    }
+
+    function fillAddressForm() {
+        const select = document.getElementById('savedAddressSelect');
+        const option = select.options[select.selectedIndex];
+        
+        if (option.value) {
+            document.getElementById('address_line').value = option.getAttribute('data-line');
+            // Assuming city contains both township and region separated by comma or just city
+            const cityParts = option.getAttribute('data-city').split(',');
+            if (cityParts.length > 1) {
+                document.getElementById('township').value = cityParts[0].trim();
+                document.getElementById('regionSelect').value = cityParts[1].trim();
+            } else {
+                document.getElementById('township').value = cityParts[0].trim();
+                document.getElementById('regionSelect').value = cityParts[0].trim();
+            }
+            document.getElementById('phone').value = option.getAttribute('data-phone');
+            handleRegionChange();
+        } else {
+            document.getElementById('address_line').value = '';
+            document.getElementById('township').value = '';
+            document.getElementById('regionSelect').value = '';
+            document.getElementById('phone').value = '';
+        }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+        selectPayment('kpay');
+        handleRegionChange();
+    });
+</script>
+@endpush

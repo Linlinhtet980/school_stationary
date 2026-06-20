@@ -1,8 +1,10 @@
 @extends('layouts.admin')
-
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/bundles.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/bundles.css') }}">
 @endpush
+
+
+
 
 @section('title', 'Add New Bundle')
 
@@ -122,82 +124,5 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Image Preview
-    const imageInput = document.getElementById('image');
-    const imagePreview = document.getElementById('imagePreview');
 
-    imageInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">`;
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-
-    imagePreview.addEventListener('click', () => imageInput.click());
-
-    // Dynamic Items Logic
-    let itemIndex = 1;
-    const itemsContainer = document.getElementById('itemsContainer');
-    const addItemBtn = document.getElementById('addItemBtn');
-    const originalPriceDisplay = document.getElementById('originalPriceDisplay');
-
-    function calculateOriginalPrice() {
-        let total = 0;
-        document.querySelectorAll('.item-row').forEach(row => {
-            const select = row.querySelector('.item-select');
-            const qtyInput = row.querySelector('.item-qty');
-            if (select.value && select.options[select.selectedIndex]) {
-                const price = parseFloat(select.options[select.selectedIndex].dataset.price) || 0;
-                const qty = parseInt(qtyInput.value) || 0;
-                total += price * qty;
-            }
-        });
-        originalPriceDisplay.textContent = new Intl.NumberFormat('en-US').format(total);
-    }
-
-    itemsContainer.addEventListener('change', calculateOriginalPrice);
-    itemsContainer.addEventListener('input', calculateOriginalPrice);
-
-    addItemBtn.addEventListener('click', function() {
-        const tr = document.createElement('tr');
-        tr.className = 'item-row';
-        tr.innerHTML = `
-            <td>
-                <select name="items[${itemIndex}][item_id]" class="form-control item-select" required>
-                    <option value="">Select an item...</option>
-                    @foreach($items as $item)
-                        <option value="{{ $item->id }}" data-price="{{ $item->price }}">{{ $item->name }} ({{ number_format($item->price, 0) }} Ks)</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <input type="number" name="items[${itemIndex}][quantity]" class="form-control item-qty" value="1" min="1" required>
-            </td>
-            <td>
-                <button type="button" class="btn btn-danger btn-sm remove-item"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-        itemsContainer.appendChild(tr);
-        itemIndex++;
-    });
-
-    itemsContainer.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-item')) {
-            const row = e.target.closest('.item-row');
-            if (document.querySelectorAll('.item-row').length > 1) {
-                row.remove();
-                calculateOriginalPrice();
-            } else {
-                alert('A bundle must have at least one item.');
-            }
-        }
-    });
-});
-</script>
 @endsection

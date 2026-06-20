@@ -63,4 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Featured Products Scrolling
+    window.scrollProducts = function(direction) {
+        const grid = document.getElementById('featuredProductsGrid');
+        if (!grid) return;
+        
+        const scrollAmount = 300; // Scroll amount in pixels
+        if (direction === 'left') {
+            grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        } else {
+            grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
 });

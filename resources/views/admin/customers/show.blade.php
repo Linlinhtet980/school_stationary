@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/customers.css') }}">
+@endpush
+
 
 @section('title', 'Customer Details')
 @section('header_title', 'Customer Details')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/customers.css') }}">
-@endpush
+
 
 @section('content')
 <div class="profile-grid">
@@ -110,7 +112,7 @@
 </div>
 
 {{-- Delivery Addresses & Wishlist (full-width below the grid) --}}
-<div class="mt-4" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+<div class="mt-4 inline-style-3" >
     {{-- Delivery Addresses --}}
     <div class="card">
         <div class="card-header">
@@ -118,9 +120,9 @@
         </div>
         <div class="card-body">
             @forelse($customer->addresses as $address)
-                <div class="info-box mb-3" style="background: var(--bg-color); border-radius: 10px; padding: 14px 16px;">
+                <div class="info-box mb-3 inline-style-4" >
                     @if($address->is_default)
-                        <span class="badge bg-primary mb-1" style="font-size:11px;">Default</span>
+                        <span class="badge bg-primary mb-1 inline-style-5" >Default</span>
                     @endif
                     <p class="mb-1 fw-bold">{{ $address->label ?? 'Address' }}</p>
                     <p class="mb-1 text-muted">{{ $address->address_line }}</p>
@@ -144,11 +146,11 @@
         </div>
         <div class="card-body">
             @forelse($customer->wishlists as $wishlist)
-                <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom: 1px solid var(--border-color);">
+                <div class="inline-style-6">
                     @if($wishlist->item && $wishlist->item->firstImage)
                         <img src="{{ Storage::url($wishlist->item->firstImage->image_path) }}" alt="{{ $wishlist->item->name }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
                     @else
-                        <div style="width:48px; height:48px; background:var(--bg-color); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); border:1px solid var(--border-color);">
+                        <div class="inline-style-7">
                             <i class="fa-solid fa-box"></i>
                         </div>
                     @endif

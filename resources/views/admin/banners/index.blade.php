@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/banners_index.css') }}">
+@endpush
+
 
 @section('title', 'Banners Management')
 @section('header_title', 'Home Banners')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/banners_index.css') }}">
-@endpush
+
 
 @section('content')
 <div class="banner-card">

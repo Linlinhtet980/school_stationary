@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/dashboard.css') }}">
+@endpush
+
 
 @section('title', 'Admin Dashboard')
 @section('header_title', 'Welcome Back, ' . auth()->user()->name . '!')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
-@endpush
+
 
 @section('content')
 <h2>Store Dashboard Overview</h2>
@@ -25,7 +27,7 @@
     <div class="stat-card">
         <div class="stat-header">
             <h3 class="stat-title text-primary">Total Orders</h3>
-            <span class="stat-pill" style="background: #EBF4FF; color: #3182CE;">All Time</span>
+            <span class="stat-pill inline-style-8" >All Time</span>
         </div>
         <div class="stat-value text-primary">{{ number_format($totalOrders) }}</div>
         <div class="stat-footer"><i class="fa-solid fa-receipt"></i> Lifetime Orders</div>
@@ -45,7 +47,7 @@
     <div class="stat-card">
         <div class="stat-header">
             <h3 class="stat-title">New Customers</h3>
-            <span class="stat-pill" style="background: #EBF4FF; color: #3182CE;">This Month</span>
+            <span class="stat-pill inline-style-9" >This Month</span>
         </div>
         <div class="stat-value">{{ number_format($newCustomers) }}</div>
         <div class="stat-footer"><i class="fa-solid fa-users"></i> Registered Accounts</div>
@@ -126,19 +128,19 @@
                 <tr>
                     <td><a href="{{ route('admin.orders.show', $order->id) }}" class="table-link" style="color: #0284c7; text-decoration: none; font-weight: 600;">{{ $order->order_number }}</a></td>
                     <td>{{ $order->customer->name ?? 'Unknown' }}</td>
-                    <td style="font-weight: 600;">{{ number_format($order->total_amount, 2) }} Ks</td>
+                    <td class="inline-style-10">{{ number_format($order->total_amount, 2) }} Ks</td>
                     <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
                     <td>
-                        <span class="badge" style="background: {{ $order->payment_status == 'paid' ? '#dcfce7' : ($order->payment_status == 'failed' ? '#fee2e2' : '#fef3c7') }}; color: {{ $order->payment_status == 'paid' ? '#16a34a' : ($order->payment_status == 'failed' ? '#dc2626' : '#d97706') }}; text-transform: capitalize;">{{ $order->payment_status }}</span>
+                        <span class="badge inline-style-11" paid' ? '#dcfce7' : ($order->payment_status == 'failed' ? '#fee2e2' : '#fef3c7') }}; color: {{ $order->payment_status == 'paid' ? '#16a34a' : ($order->payment_status == 'failed' ? '#dc2626' : '#d97706') }}; text-transform: capitalize;">{{ $order->payment_status }}</span>
                     </td>
                     <td>
-                        <span class="badge" style="background: #f1f5f9; color: #475569; text-transform: capitalize;">{{ $order->status }}</span>
+                        <span class="badge inline-style-12" >{{ $order->status }}</span>
                     </td>
                     <td><a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm" style="background: #e0f2fe; color: #0284c7; text-decoration: none;">View</a></td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">No recent orders.</td>
+                    <td colspan="7" class="inline-style-13">No recent orders.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -146,7 +148,7 @@
 </div>
 
 @if(in_array(auth()->user()->role_id, [1, 2]) && $lowStockCount > 0)
-<div class="card-container mt-4" style="border-left: 4px solid #ef4444;">
+<div class="card-container mt-4 inline-style-14" >
     <div class="card-header">
         <h2><i class="fa-solid fa-triangle-exclamation text-danger"></i> Low Stock Alerts (Stock &le; 5)</h2>
         <a href="{{ route('admin.items.index') }}" class="btn btn-outline btn-md">Manage Inventory</a>
@@ -166,7 +168,7 @@
                     <td>{{ $variant->item->name ?? 'N/A' }}</td>
                     <td>{{ $variant->unit_label }} {{ $variant->color ? '('.$variant->color.')' : '' }}</td>
                     <td>{{ $variant->sku ?: 'No SKU' }}</td>
-                    <td style="font-weight: bold; color: #ef4444;">{{ $variant->stock_quantity }} Left</td>
+                    <td class="inline-style-15">{{ $variant->stock_quantity }} Left</td>
                 </tr>
             @endforeach
         </tbody>

@@ -1,289 +1,121 @@
 @extends('layouts.customer')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/customer/views/b2s_deals.css') }}">
+@endpush
 
-@section('title', 'B2S Deals - Campus Supply')
+@section('title', 'Campus Supply - Shop')
+
+
 
 @section('content')
-<div class="page-container">
-    <div class="page-header">
-        <h1>B2S Deals</h1>
-        <p>Back to School special offers and bundles</p>
-    </div>
-
-    <div class="deal-banner">
-        <div class="deal-content">
-            <h2>🎒 Back to School Sale</h2>
-            <p>Get up to 30% off on selected items</p>
-            <div class="deal-icons">
-                <i class="fa-solid fa-pencil"></i>
-                <i class="fa-solid fa-book"></i>
-                <i class="fa-solid fa-ruler"></i>
-                <i class="fa-solid fa-eraser"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="products-grid">
-        @forelse($items as $item)
-            <div class="product-card deal-card">
-                <div class="product-badge">
-                    <span class="badge deal">Deal</span>
-                </div>
-                <div class="product-image">
-                    @if($item->image)
-                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}">
-                    @else
-                        <div class="no-image">No Image</div>
-                    @endif
-                    <div class="product-actions">
-                        <button class="action-btn" onclick="addToWishlist({{ $item->id }})">
-                            <i class="fa-regular fa-heart"></i>
-                        </button>
-                        <a href="{{ route('shop.show', $item->id) }}" class="action-btn">
-                            <i class="fa-regular fa-eye"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="product-info">
-                    <div class="product-category">{{ $item->type->name ?? 'Uncategorized' }}</div>
-                    <h3 class="product-name">
-                        <a href="{{ route('shop.show', $item->id) }}">{{ $item->name }}</a>
-                    </h3>
-                    <div class="product-price">
-                        @if($item->variants && $item->variants->count() > 0)
-                            {{ number_format($item->variants->min('price')) }} Ks
-                            @if($item->variants->min('price') != $item->variants->max('price'))
-                                - {{ number_format($item->variants->max('price')) }} Ks
-                            @endif
-                        @else
-                            {{ number_format($item->price) }} Ks
-                        @endif
-                    </div>
-                    <a href="{{ route('shop.show', $item->id) }}" class="btn-view-product">
-                        View Deal
-                    </a>
-                </div>
-            </div>
-        @empty
-            <div class="no-products">
-                <i class="fa-solid fa-box-open"></i>
-                <p>No deals available at the moment</p>
-            </div>
-        @endforelse
-    </div>
+<div class="shop-header">
+    <h1>B2S DEALS</h1>
+    <p>Grab these back-to-school deals before they are gone.</p>
 </div>
 
-<style>
-.page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
+<div class="shop-container">
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+        <form action="{{ route('shop.index') }}" method="GET" id="filterForm">
+            <div class="filter-group">
+                <div class="filter-title">Categories</div>
+                <ul class="filter-list">
+                    <li>
+                        <label>
+                            <input type="radio" name="category" value="" {{ !request('category') ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
+                            All Categories
+                        </label>
+                    </li>
+                    @foreach($categories as $category)
+                    <li>
+                        <label>
+                            <input type="radio" name="category" value="{{ $category->id }}" {{ request('category') == $category->id ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
+                            {{ $category->name }}
+                        </label>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-title">Brands</div>
+                <ul class="filter-list">
+                    <li>
+                        <label>
+                            <input type="radio" name="brand" value="" {{ !request('brand') ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
+                            All Brands
+                        </label>
+                    </li>
+                    @foreach($brands as $brand)
+                    <li>
+                        <label>
+                            <input type="radio" name="brand" value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
+                            {{ $brand->name }}
+                        </label>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-title">Price Range</div>
+                <div class="filter-price">
+                    <input type="number" name="min_price" placeholder="Min Ks" value="{{ request('min_price') }}">
+                    <span>-</span>
+                    <input type="number" name="max_price" placeholder="Max Ks" value="{{ request('max_price') }}">
+                </div>
+                <button type="submit" class="inline-style-42">Apply Filter</button>
+            </div>
+        </form>
+    </aside>
 
-.page-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
+    <!-- Main Product Area -->
+    <main class="main-content">
+        <div class="toolbar">
+            <div class="results-count">Showing {{ $items->firstItem() ?? 0 }}-{{ $items->lastItem() ?? 0 }} of {{ $items->total() }} results</div>
+            <div class="sort-by">
+                <form action="{{ route('shop.index') }}" method="GET" id="sortForm">
+                    @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+                    @if(request('brand')) <input type="hidden" name="brand" value="{{ request('brand') }}"> @endif
+                    <select name="sort" onchange="document.getElementById('sortForm').submit();">
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Sort by Latest</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Sort by Price: Low to High</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Sort by Price: High to Low</option>
+                    </select>
+                </form>
+            </div>
+        </div>
 
-.page-header h1 {
-    font-size: 2rem;
-    color: var(--secondary);
-    margin-bottom: 0.5rem;
-}
+        <div class="product-grid">
+            @forelse($items as $item)
+            <div class="card">
+                <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
+                <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
+                <div class="card-desc">{{ $item->brand->name ?? 'No Brand' }}</div>
+                <div class="card-price-row">
+                    <div class="card-price">{{ $item->price_range }}</div>
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+                </form>
+            </div>
+            @empty
+            <div class="inline-style-43">
+                <h3>No products found</h3>
+                <p>Try adjusting your filters.</p>
+            </div>
+            @endforelse
+        </div>
 
-.page-header p {
-    color: #666;
-}
+        <!-- Pagination -->
+        <div class="pagination inline-style-44" >
+            {{ $items->links('vendor.pagination.pure-css') }}
+        </div>
 
-.deal-banner {
-    background: linear-gradient(135deg, var(--secondary) 0%, #1a3a6e 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.deal-content h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
-}
-
-.deal-content p {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    opacity: 0.9;
-}
-
-.deal-icons {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    font-size: 1.5rem;
-}
-
-.deal-icons i {
-    opacity: 0.8;
-}
-
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-}
-
-.product-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
-}
-
-.deal-card {
-    border: 2px solid var(--primary);
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.product-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 2;
-}
-
-.badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.badge.deal {
-    background: #ff6b6b;
-    color: white;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-.product-image {
-    position: relative;
-    height: 250px;
-    overflow: hidden;
-}
-
-.product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.no-image {
-    width: 100%;
-    height: 100%;
-    background: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-}
-
-.product-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.action-btn {
-    width: 35px;
-    height: 35px;
-    background: white;
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: background 0.3s;
-}
-
-.action-btn:hover {
-    background: var(--primary);
-}
-
-.product-info {
-    padding: 1.25rem;
-}
-
-.product-category {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 0.5rem;
-}
-
-.product-name {
-    font-size: 1.1rem;
-    color: var(--secondary);
-    margin-bottom: 0.5rem;
-}
-
-.product-name a {
-    text-decoration: none;
-    color: inherit;
-}
-
-.product-name a:hover {
-    color: var(--primary);
-}
-
-.product-price {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #ff6b6b;
-    margin-bottom: 1rem;
-}
-
-.btn-view-product {
-    display: inline-block;
-    width: 100%;
-    padding: 0.75rem;
-    background: var(--secondary);
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background 0.3s;
-}
-
-.btn-view-product:hover {
-    background: #091a3a;
-}
-
-.no-products {
-    text-align: center;
-    padding: 3rem;
-    color: #999;
-    grid-column: span 4;
-}
-
-.no-products i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-</style>
+    </main>
+</div>
 @endsection

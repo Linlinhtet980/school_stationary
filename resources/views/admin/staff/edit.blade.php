@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/staff_form.css') }}">
+@endpush
+
 
 @section('title', 'Edit Staff')
 @section('header_title', 'Update Staff Account')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/staff_form.css') }}">
-@endpush
+
 
 @section('content')
 <div class="form-card">
@@ -16,7 +18,7 @@
     <div class="card-body">
         @if($errors->any())
             <div class="alert-error">
-                <ul style="margin: 0; padding-left: 20px;">
+                <ul class="inline-style-41">
                     @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
                 </ul>
             </div>

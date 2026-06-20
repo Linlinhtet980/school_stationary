@@ -23,7 +23,7 @@
                         <div class="fw-bold">{{ Str::limit($review->item->name ?? 'Unknown', 30) }}</div>
                     </td>
                     <td>
-                        <div style="color: #fbbf24;">
+                        <div class="inline-style-37">
                             @for($i = 1; $i <= 5; $i++)
                                 @if($i <= $review->rating)
                                     <i class="fa-solid fa-star"></i>
@@ -34,7 +34,7 @@
                         </div>
                     </td>
                     <td>
-                        <div style="max-width: 300px; white-space: normal;">
+                        <div class="inline-style-38">
                             {{ $review->comment ?: '-' }}
                         </div>
                     </td>
@@ -43,7 +43,7 @@
                             {{ ucfirst($review->status) }}
                         </span>
                     </td>
-                    <td class="actions-column" style="min-width: 120px;">
+                    <td class="actions-column inline-style-39" >
                         <form action="{{ route('admin.reviews.update', $review) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PUT')

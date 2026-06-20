@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Customer;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -24,7 +25,17 @@ class ProfileController extends Controller
                           ->orderBy('is_default', 'desc')
                           ->get();
         
-        return view('customer.profile', compact('customer', 'addresses'));
+        $orders = Order::where('customer_id', $customer->id)
+                      ->orderBy('created_at', 'desc')
+                      ->get();
+                      
+        $wishlistItems = Wishlist::with('item')
+                                ->where('user_id', Auth::id())
+                                ->latest()
+                                ->take(5)
+                                ->get();
+        
+        return view('customer.profile', compact('customer', 'addresses', 'orders', 'wishlistItems'));
     }
 
     /**

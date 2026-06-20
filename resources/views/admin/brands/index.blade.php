@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/brands.css') }}">
+@endpush
+
 
 @section('title', 'Brands Management')
 @section('header_title', 'Product Brands')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/brands.css') }}">
-@endpush
+
 
 @section('content')
 <div class="brand-card">

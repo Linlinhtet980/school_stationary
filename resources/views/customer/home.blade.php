@@ -1,158 +1,208 @@
 @extends('layouts.customer')
-
-@section('title', 'Campus Supply - Premium Store')
-
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/customer/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/home.css') }}">
 @endpush
 
+@section('title', 'Campus Supply - Home')
+
 @section('content')
-    <!-- Hero Slider Section -->
-    <div class="hero-container">
-        <div class="hero-slider" id="heroSlider">
-            <!-- Slide 1 -->
-            @forelse($banners as $index => $banner)
-                <div class="slide {{ $index === 0 ? 'active' : '' }}"
-                    style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), url('{{ asset('storage/' . $banner->image_path) }}'); background-size: cover; background-position: center;">
+<div class="hero-container">
+    <div class="hero-slider" id="heroSlider">
+        <!-- Slide 1: Promotions -->
+        <div class="slide active inline-style-66" >
+            <div class="hero-bg-shape1"></div>
+            <div class="hero-bg-shape2"></div>
+            <div class="hero-content">
+                <h1 class="inline-style-67">BACK TO SCHOOL<br>PROMOTIONS</h1>
+                <p class="inline-style-68">Gear up for the new semester! Premium stationery,<br>quality supplies, and huge savings.</p>
+                <button class="btn-shop" onclick="window.location.href='{{ route('shop.index') }}'">SHOP NOW &rarr;</button>
+            </div>
+        </div>
+        <!-- Slide 2: New Products -->
+        <div class="slide inline-style-69" >
+            <div class="hero-bg-shape3 inline-style-70" ></div>
+            <div class="hero-bg-shape4 inline-style-71" ></div>
+            <div class="hero-content">
+                <h1 class="inline-style-72">NEW ARRIVALS<br>JUST LANDED</h1>
+                <p class="inline-style-73">Discover our latest collection of modern<br>office and school essentials.</p>
+                <button class="btn-shop inline-style-74"  onclick="window.location.href='{{ route('shop.new-arrivals') }}'">VIEW NEW PRODUCTS &rarr;</button>
+            </div>
+        </div>
+        <!-- Slide 3: Information -->
+        <div class="slide inline-style-75" >
+            <div class="hero-bg-shape4 inline-style-76" ></div>
+            <div class="hero-content">
+                <h1 class="inline-style-77">FREE SHIPPING<br>NATIONWIDE</h1>
+                <p class="inline-style-78">Enjoy free delivery on all orders over 50,000 Ks.<br>Fast, reliable, and secure.</p>
+                <button class="btn-shop inline-style-79"  onclick="window.location.href='{{ route('shop.index') }}'">LEARN MORE &rarr;</button>
+            </div>
+        </div>
+        <!-- Slide 4: Expiring/Clearance -->
+        <div class="slide inline-style-80" >
+            <div class="hero-bg-shape1 inline-style-81" ></div>
+            <div class="hero-bg-shape2 inline-style-82" ></div>
+            <div class="hero-content">
+                <h1 class="inline-style-83">CLEARANCE SALE<br>UP TO 70% OFF</h1>
+                <p class="inline-style-84">Last chance to grab these expiring items before<br>they are gone forever!</p>
+                <button class="btn-shop inline-style-85"  onclick="window.location.href='{{ route('shop.b2s-deals') }}'">SHOP CLEARANCE &rarr;</button>
+            </div>
+        </div>
 
-                    <div class="hero-content">
-                        @if($banner->title)
-                            <h1 class="text-white">{{ $banner->title }}</h1>
-                        @endif
+        <!-- Slider Controls -->
+        <div class="slider-nav">
+            <button class="prev-slide" onclick="moveSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="next-slide" onclick="moveSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="slider-dots" id="sliderDots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+        </div>
+    </div>
+</div>
 
-                        @if($banner->link)
-                            <a href="{{ $banner->link }}" class="btn-shop" target="_blank">SHOP NOW &rarr;</a>
-                        @endif
-                    </div>
+<section class="section dark-section">
+    <div class="dark-shape1"></div>
+    <div class="dark-shape2"></div>
+    <div class="section-header inline-style-86" >
+        <h2 class="section-title">OUR BESTSELLERS</h2>
+        <div class="arrows">
+            <div class="arrow" onclick="scrollGrid('bestsellers-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="arrow" onclick="scrollGrid('bestsellers-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
+        </div>
+    </div>
+    <div class="slider-grid inline-style-89" id="bestsellers-grid">
+        @forelse($bestsellers as $item)
+        <div class="card">
+            <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
+            <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
+            <div class="card-desc">{{ $item->brand->name ?? 'No Brand' }}</div>
+            <div class="card-price-row">
+                <div class="card-price">{{ $item->price_range }}</div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                 </div>
-            @empty
+            </div>
+            <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </form>
+        </div>
+        @empty
+        <p class="inline-style-90">No bestsellers found.</p>
+        @endforelse
+    </div>
+</section>
 
-                <div class="slide slide-promo active">
-                    <div class="hero-bg-shape1"></div>
-                    <div class="hero-bg-shape2"></div>
-                    <div class="hero-content">
-                        <h1 class="text-secondary">WELCOME TO CAMPUS SUPPLY</h1>
-                        <p class="text-dark">Gear up for the new semester! Premium stationery, quality supplies, and huge
-                            savings.</p>
-                        <a href="{{ route('shop.index') }}" class="btn-shop">SHOP NOW &rarr;</a>
-                    </div>
+<!-- NEW ARRIVALS SECTION -->
+<section class="section inline-style-91" >
+    <div class="section-header">
+        <h2 class="section-title">NEW ARRIVALS</h2>
+        <div class="arrows">
+            <div class="arrow" onclick="scrollGrid('new-arrivals-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="arrow" onclick="scrollGrid('new-arrivals-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
+        </div>
+    </div>
+    <div class="slider-grid" id="new-arrivals-grid">
+        @forelse($newArrivals as $item)
+        <div class="card inline-style-92" >
+            <div class="inline-style-93">
+                NEW
+            </div>
+            <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
+            <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
+            <div class="card-desc">{{ $item->type->name ?? 'Category' }}</div>
+            <div class="card-price-row">
+                <div class="card-price">{{ $item->price_range }}</div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
                 </div>
-            @endforelse
+            </div>
+            <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </form>
         </div>
-
-        @if($banners && $banners->count() > 1)
-            <div class="slider-nav">
-                <button onclick="moveSlide(-1)">&#10094;</button>
-                <button onclick="moveSlide(1)">&#10095;</button>
-            </div>
-
-            <div class="slider-dots">
-                @foreach($banners as $index => $banner)
-                    <div class="dot {{ $index === 0 ? 'active' : '' }}" onclick="currentSlide({{ $index }})"></div>
-                @endforeach
-            </div>
-        @endif
+        @empty
+        <p>No new arrivals found.</p>
+        @endforelse
     </div>
+</section>
 
-    <div class="infinite-carousel-section">
-        <div class="marquee">
-            <div class="marquee-content">
-                <!-- Brand Logos -->
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 1"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 2"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 3"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 4"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 5"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 6"></div>
-                <!-- Duplicate for continuous scroll -->
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 1"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 2"></div>
-                <div class="marquee-item"><img src="https://media.istockphoto.com/id/2203911891/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%8B%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B1%80%E0%B8%B1%E0%B8%93%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B9%8B%E0%B8%A5%E0%B8%B9%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-crm-customer-relationship.jpg?s=1024x1024&w=is&k=20&c=XugWKlnnr8Xfh2z2xQsum6Kx8s6AxNEQcAcVtgno1XA="
-                    class="card-img" alt="Brand 3"></div>
-            </div>
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">FEATURED ITEMS</h2>
+        <div class="arrows">
+            <div class="arrow" onclick="scrollGrid('featured-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="arrow" onclick="scrollGrid('featured-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
         </div>
     </div>
-
-    <!-- Featured Products Section -->
-    <div class="section">
-        <div class="section-header">
-            <h2 class="section-title">FEATURED PRODUCTS</h2>
-            <div class="arrows">
-                <button class="arrow">&larr;</button>
-                <button class="arrow">&rarr;</button>
+    <div class="slider-grid" id="featured-grid">
+        @forelse($featuredItems as $item)
+        <div class="card">
+            <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
+            <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
+            <div class="stars inline-style-94" >
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
             </div>
+            <div class="card-price inline-style-95" >{{ $item->price_range }}</div>
+            <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </form>
         </div>
-        
-        <div class="product-grid">
-            @forelse($featuredItems ?? [] as $item)
-                <div class="card">
-                    @if($item->image)
-                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" class="card-img">
-                    @else
-                        <img src="https://via.placeholder.com/200" alt="{{ $item->name }}" class="card-img">
-                    @endif
-                    <h3 class="card-title">{{ $item->name }}</h3>
-                    <p class="card-desc">{{ $item->type->name ?? '' }}</p>
-                    <div class="card-price-row">
-                        <span class="card-price">
-                            @if($item->variants && $item->variants->count() > 0)
-                                {{ number_format($item->variants->min('price')) }} Ks
-                            @else
-                                {{ number_format($item->price) }} Ks
-                            @endif
-                        </span>
-                    </div>
-                    @if($item->status === 'active')
-                        <button class="btn-card btn-add" data-id="{{ $item->id }}">Add to Cart</button>
-                    @else
-                        <button class="btn-card" disabled>Out of Stock</button>
-                    @endif
-                </div>
-            @empty
-                <p>No featured products available.</p>
-            @endforelse
-        </div>
+        @empty
+        <p>No featured items.</p>
+        @endforelse
     </div>
+</section>
 
-    <!-- Categories Section -->
-    @if($categories && $categories->count() > 0)
-    <div class="section">
-        <div class="section-header">
-            <h2 class="section-title">SHOP BY CATEGORY</h2>
-            <a href="{{ route('shop.index') }}" class="view-all-link">View All &rarr;</a>
-        </div>
-
-        <div class="categories-slider">
-            @foreach($categories as $category)
-                <a href="{{ route('shop.index') }}?category={{ $category->id }}" class="category-card">
-                    <div class="category-image">
-                        @if($category->image)
-                            <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
-                        @else
-                            <div class="category-placeholder">
-                                <i class="fa-solid fa-box"></i>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="category-name">{{ $category->name }}</div>
-                    <div class="category-count">{{ $category->items->where('status', 'active')->count() }} items</div>
-                </a>
-            @endforeach
-        </div>
+<section class="contact-section">
+    <div class="contact-container">
+        <h2>GET IN TOUCH</h2>
+        <p>Have questions about your order or need help finding specific stationery? Send us a message!</p>
+        <form class="contact-form" action="{{ route('contact.submit') }}" method="POST">
+            @csrf
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="4" placeholder="How can we help you?" required></textarea>
+            <button type="submit">SEND MESSAGE</button>
+        </form>
     </div>
-    @endif
+</section>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/customer/home.js') }}"></script>
+<script>
+// Hero Slider Logic
+    let slideIndex = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let slideInterval;
+
+    function showSlide(n) {
+        if(slides.length === 0) return;
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        slideIndex = (n + slides.length) % slides.length;
+        slides[slideIndex].classList.add('active');
+        dots[slideIndex].classList.add('active');
+    }
+
+    function moveSlide(n) { showSlide(slideIndex + n); resetInterval(); }
+    function currentSlide(n) { showSlide(n); resetInterval(); }
+
+    function startInterval() { slideInterval = setInterval(() => { moveSlide(1); }, 5000); }
+    function resetInterval() { clearInterval(slideInterval); startInterval(); }
+    if (slides.length > 0) startInterval();
+
+    // Product Grid Slider Logic
+    function scrollGrid(gridId, direction) {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        const scrollAmount = grid.offsetWidth; // Scroll by visible width
+        grid.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+</script>
 @endpush
-
-

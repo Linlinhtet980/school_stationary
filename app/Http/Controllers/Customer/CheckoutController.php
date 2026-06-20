@@ -32,7 +32,7 @@ class CheckoutController extends Controller
         $subtotal = 0;
 
         foreach ($cart as $item) {
-            $variant = ItemVariant::with('item')->find($item['variant_id']);
+            $variant = ItemVariant::with(['item.images'])->find($item['variant_id']);
             if ($variant) {
                 $itemTotal = $variant->price * $item['quantity'];
                 $subtotal += $itemTotal;
@@ -64,17 +64,17 @@ class CheckoutController extends Controller
         return view('customer.checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'addresses'));
     }
 
-    /**
-     * Process checkout
-     */
     public function process(Request $request)
     {
         $request->validate([
-            'address_id' => 'required|exists:addresses,id',
+            'full_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:50',
+            'email' => 'required|email|max:255',
+            'address_line' => 'required|string',
+            'township' => 'required|string|max:100',
+            'region' => 'required|string|max:100',
             'payment_method' => 'required|in:cod,kpay,wave',
             'payment_slip' => 'required_if:payment_method,kpay,wave|image|mimes:jpeg,png,jpg|max:2048',
-            'phone' => 'required|string|max:50',
-            'bus_gate' => 'nullable|string|max:255',
         ]);
 
         $cart = Session::get('cart', []);
@@ -87,7 +87,7 @@ class CheckoutController extends Controller
         $subtotal = 0;
 
         foreach ($cart as $item) {
-            $variant = ItemVariant::with('item')->find($item['variant_id']);
+            $variant = ItemVariant::with(['item.images'])->find($item['variant_id']);
             if (!$variant || $variant->stock_quantity < $item['quantity']) {
                 return back()->with('error', 'Some items are no longer available or have insufficient stock.');
             }
@@ -113,10 +113,16 @@ class CheckoutController extends Controller
 
         $total = $subtotal + $shipping;
 
-        // Get address
-        $address = Address::find($request->address_id);
+        // Combine full shipping address
+        $fullShippingAddress = "Name: {$request->full_name}\n"
+                             . "Phone: {$request->phone}\n"
+                             . "Email: {$request->email}\n"
+                             . "Address: {$request->address_line}\n"
+                             . "Township: {$request->township}\n"
+                             . "Region: {$request->region}";
 
         DB::beginTransaction();
+        $paymentSlipPath = null;
 
         try {
             // Create order
@@ -141,7 +147,6 @@ class CheckoutController extends Controller
             }
 
             // Create payment record
-            $paymentSlipPath = null;
             if ($request->hasFile('payment_slip')) {
                 $paymentSlipPath = $request->file('payment_slip')->store('payments', 'public');
             }
@@ -156,10 +161,8 @@ class CheckoutController extends Controller
 
             // Update order with shipping info
             $order->update([
-                'shipping_address' => $address->address_line,
-                'shipping_city' => $address->city,
-                'shipping_phone' => $request->phone,
-                'bus_gate' => $request->bus_gate,
+                'shipping_address' => $fullShippingAddress,
+                'payment_method' => $request->payment_method,
             ]);
 
             // Clear cart
@@ -177,6 +180,8 @@ class CheckoutController extends Controller
             if ($paymentSlipPath && Storage::disk('public')->exists($paymentSlipPath)) {
                 Storage::disk('public')->delete($paymentSlipPath);
             }
+
+            \Illuminate\Support\Facades\Log::error('Checkout failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
 
             return back()->with('error', 'An error occurred while processing your order. Please try again.');
         }

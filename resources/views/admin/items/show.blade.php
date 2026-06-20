@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/items_show.css') }}">
+@endpush
+
 
 @section('title', 'Item Details')
 @section('header_title', 'Item Details')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/items_show.css') }}">
-@endpush
+
 
 @section('content')
 <div class="show-card">
@@ -34,7 +36,7 @@
             <!-- Gallery Images -->
             @if($item->images->count() > 0)
             <div class="gallery-wrapper mt-3">
-                <h4 class="mb-2 text-muted" style="font-size: 0.9rem; font-weight: 600;">Gallery Images</h4>
+                <h4 class="mb-2 text-muted inline-style-23" >Gallery Images</h4>
                 <div class="gallery-grid-show">
                     @foreach($item->images as $galleryImg)
                         <div class="gallery-item-show">
@@ -83,24 +85,24 @@
                 @if($item->variants->count() > 0)
                 <div class="variants-box mt-4">
                     <h4 class="mb-3"><i class="fa-solid fa-list"></i> Item Variants</h4>
-                    <table class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <table class="table inline-style-24" >
                         <thead>
-                            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                                <th style="padding: 10px; text-align: left;">Unit/Label</th>
-                                <th style="padding: 10px; text-align: left;">Color</th>
-                                <th style="padding: 10px; text-align: left;">Size</th>
-                                <th style="padding: 10px; text-align: right;">Price</th>
-                                <th style="padding: 10px; text-align: right;">Stock</th>
+                            <tr class="inline-style-25">
+                                <th class="inline-style-26">Unit/Label</th>
+                                <th class="inline-style-27">Color</th>
+                                <th class="inline-style-28">Size</th>
+                                <th class="inline-style-29">Price</th>
+                                <th class="inline-style-30">Stock</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($item->variants as $variant)
-                            <tr style="border-bottom: 1px solid #dee2e6;">
-                                <td style="padding: 10px;">{{ $variant->unit_label }} (x{{ $variant->unit_qty }})</td>
-                                <td style="padding: 10px;">{{ $variant->color ?: '-' }}</td>
-                                <td style="padding: 10px;">{{ $variant->size ?: '-' }}</td>
-                                <td style="padding: 10px; text-align: right;">{{ number_format($variant->price, 2) }} Ks</td>
-                                <td style="padding: 10px; text-align: right;">
+                            <tr class="inline-style-31">
+                                <td class="inline-style-32">{{ $variant->unit_label }} (x{{ $variant->unit_qty }})</td>
+                                <td class="inline-style-33">{{ $variant->color ?: '-' }}</td>
+                                <td class="inline-style-34">{{ $variant->size ?: '-' }}</td>
+                                <td class="inline-style-35">{{ number_format($variant->price, 2) }} Ks</td>
+                                <td class="inline-style-36">
                                     <span class="{{ $variant->stock_quantity <= 0 ? 'text-danger' : 'text-success' }}">
                                         {{ $variant->stock_quantity }}
                                     </span>

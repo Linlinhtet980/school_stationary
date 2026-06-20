@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/items_edit.css') }}">
+@endpush
+
 
 @section('title', 'Edit Item')
 @section('header_title', 'Edit Item: ' . $item->name)
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/items_edit.css') }}">
-@endpush
+
 
 @section('content')
     <div class="form-card">
@@ -80,7 +82,7 @@
                                 @if($item->image)
                                     <img id="imagePreview" src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}"
                                         style="display: block; width: 100%; height: 100%; object-fit: cover; position: absolute;">
-                                    <div class="placeholder-content" id="placeholderContent" style="display: none;">
+                                    <div class="placeholder-content inline-style-17"  id="placeholderContent">
                                         <i class="fa-solid fa-cloud-arrow-up"></i>
                                         <p>Click to replace image</p>
                                     </div>
@@ -90,10 +92,10 @@
                                         <p>Click to upload image</p>
                                     </div>
                                     <img id="imagePreview" src="" alt="Preview"
-                                        style="display: none; width: 100%; height: 100%; object-fit: cover; position: absolute;">
+                                        class="inline-style-18">
                                 @endif
                                 <input type="file" id="image" name="image" class="file-input"
-                                    accept="image/jpeg,image/png,image/jpg" onchange="previewMainImage(this)">
+                                    accept="image/jpeg,image/png,image/jpg/webp" onchange="previewMainImage(this)">
                             </div>
                         </div>
 
@@ -112,14 +114,14 @@
                                     @endforeach
                                 </div>
                             @else
-                                <p class="text-muted" style="font-size: 0.85rem;">No gallery images found.</p>
+                                <p class="text-muted inline-style-19" >No gallery images found.</p>
                             @endif
                         </div>
 
                         <div class="form-group mt-3">
                             <label for="gallery_images">Add New Gallery Images</label>
                             <input type="file" id="gallery_images" name="gallery_images[]" class="form-control" multiple
-                                accept="image/jpeg,image/png,image/jpg">
+                                accept="image/jpeg,image/png,image/jpg/webp">
                         </div>
 
                         <div class="form-group status-group mt-3">
@@ -154,8 +156,8 @@
                             </thead>
                             @if ($errors->any())
                                 <div
-                                    style="background-color: #f8d7da; color: #721c24; padding: 15px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px;">
-                                    <strong style="display: block; margin-bottom: 5px;">⚠️ ဖြည့်စွက်ချက် မှားယွင်းနေပါသည်
+                                    class="inline-style-20">
+                                    <strong class="inline-style-21">⚠️ ဖြည့်စွက်ချက် မှားယွင်းနေပါသည်
                                         -</strong>
                                     <ul>
                                         @foreach ($errors->all() as $error)
@@ -181,7 +183,7 @@
                                                 class="form-control" value="{{ $variant->stock_quantity }}" min="0"></td>
                                         <td><input type="text" name="variants[{{ $index }}][sku]" class="form-control"
                                                 value="{{ $variant->sku }}"></td>
-                                        <td style="text-align: center;">
+                                        <td class="inline-style-22">
                                             <button type="button" class="btn-remove-row" onclick="removeVariantRow(this)"><i
                                                     class="fa-solid fa-trash"></i></button>
                                         </td>

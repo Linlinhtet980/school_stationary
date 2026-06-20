@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/categories.css') }}">
+@endpush
+
 
 @section('title', 'Categories Management')
 @section('header_title', 'Product Categories')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/categories.css') }}">
-@endpush
+
 
 @section('content')
 <div class="category-card">

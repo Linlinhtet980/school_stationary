@@ -1,10 +1,12 @@
 @extends('layouts.customer')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/customer/views/cart.css') }}">
+@endpush
+
 
 @section('title', 'My Cart - Campus Supply')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/customer/cart.css') }}">
-@endpush
+
 
 @section('content')
 <div class="page-container">
@@ -68,7 +70,7 @@
                         <form action="{{ route('cart.remove') }}" method="POST" class="remove-form">
                             @csrf
                             <input type="hidden" name="key" value="{{ $cartItem['key'] }}">
-                            <button type="submit" class="btn-remove">Remove</button>
+                            <button type="submit" class="cart-btn-remove">Remove</button>
                         </form>
                     </div>
                     
@@ -120,33 +122,84 @@
 
 @push('scripts')
 <script>
-function updateQuantity(key, newQty) {
+async function updateQuantity(key, newQty) {
     if (newQty < 1) return;
     
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '{{ route('cart.update') }}';
+    document.querySelector('.cart-container').style.opacity = '0.5';
     
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = '_token';
-    csrf.value = document.querySelector('meta[name="csrf-token"]').content;
-    form.appendChild(csrf);
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+    formData.append('key', key);
+    formData.append('quantity', newQty);
     
-    const keyInput = document.createElement('input');
-    keyInput.type = 'hidden';
-    keyInput.name = 'key';
-    keyInput.value = key;
-    form.appendChild(keyInput);
-    
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'hidden';
-    qtyInput.name = 'quantity';
-    qtyInput.value = newQty;
-    form.appendChild(qtyInput);
-    
-    document.body.appendChild(form);
-    form.submit();
+    try {
+        const response = await fetch('{{ route('cart.update') }}', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Update cart container
+        const newCartContainer = doc.querySelector('.cart-container');
+        if (newCartContainer) {
+            document.querySelector('.cart-container').innerHTML = newCartContainer.innerHTML;
+        }
+        
+        // Update badge
+        const newBadge = doc.querySelector('.cart-badge');
+        const oldBadge = document.querySelector('.cart-badge');
+        if (newBadge && oldBadge) {
+            oldBadge.textContent = newBadge.textContent;
+        }
+        
+        document.querySelector('.cart-container').style.opacity = '1';
+        attachRemoveListeners(); // Reattach listeners for newly injected DOM
+    } catch (e) {
+        console.error(e);
+        location.reload();
+    }
 }
+
+function attachRemoveListeners() {
+    document.querySelectorAll('.remove-form').forEach(form => {
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            document.querySelector('.cart-container').style.opacity = '0.5';
+            
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: new FormData(this)
+                });
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const newCartContainer = doc.querySelector('.cart-container');
+                if (newCartContainer) {
+                    document.querySelector('.cart-container').innerHTML = newCartContainer.innerHTML;
+                }
+                
+                const newBadge = doc.querySelector('.cart-badge');
+                const oldBadge = document.querySelector('.cart-badge');
+                if (newBadge && oldBadge) {
+                    oldBadge.textContent = newBadge.textContent;
+                }
+                
+                document.querySelector('.cart-container').style.opacity = '1';
+                attachRemoveListeners();
+            } catch (error) {
+                location.reload();
+            }
+        };
+    });
+}
+
+// Initial attach
+document.addEventListener('DOMContentLoaded', attachRemoveListeners);
 </script>
 @endpush

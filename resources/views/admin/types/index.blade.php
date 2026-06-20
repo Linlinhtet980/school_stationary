@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/types.css') }}">
+@endpush
+
 
 @section('title', 'Types Management')
 @section('header_title', 'Product Types')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/types.css') }}">
-@endpush
+
 
 @section('content')
 <div class="type-card">

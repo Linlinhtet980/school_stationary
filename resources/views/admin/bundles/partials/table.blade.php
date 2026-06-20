@@ -25,7 +25,7 @@
                         @if($bundle->image)
                             <img src="{{ Storage::url($bundle->image) }}" alt="{{ $bundle->name }}" class="table-img" style="width:50px;height:50px;object-fit:cover;border-radius:4px;">
                         @else
-                            <div class="no-img-placeholder" style="width:50px;height:50px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;border-radius:4px;color:#9ca3af;"><i class="fa-solid fa-box"></i></div>
+                            <div class="no-img-placeholder inline-style-2" ><i class="fa-solid fa-box"></i></div>
                         @endif
                     </td>
                     <td>

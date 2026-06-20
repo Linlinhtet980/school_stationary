@@ -1,11 +1,13 @@
 @extends('layouts.admin')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/views/staff_index.css') }}">
+@endpush
+
 
 @section('title', 'Staff Management')
 @section('header_title', 'Staff Accounts')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/staff_index.css') }}">
-@endpush
+
 
 @section('content')
 <div class="staff-card">
