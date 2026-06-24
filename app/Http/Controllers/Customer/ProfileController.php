@@ -25,7 +25,7 @@ class ProfileController extends Controller
                           ->orderBy('is_default', 'desc')
                           ->get();
         
-        $orders = Order::where('customer_id', $customer->id)
+        $orders = Order::where('user_id', Auth::id())
                       ->orderBy('created_at', 'desc')
                       ->get();
                       

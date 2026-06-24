@@ -23,14 +23,7 @@
         }
 
         /* Navbar */
-        .navbar {
-            display: flex;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: white;
-            position: relative;
-        }
-
+        
         .logo-container {
             display: flex;
             align-items: center;

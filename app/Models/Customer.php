@@ -18,16 +18,16 @@ class Customer extends Model
 
     public function addresses()
     {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(Address::class, 'user_id', 'user_id');
     }
 
     public function wishlists()
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->hasMany(Wishlist::class, 'user_id', 'user_id');
     }
 
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'user_id', 'user_id');
     }
 }

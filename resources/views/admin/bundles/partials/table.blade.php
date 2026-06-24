@@ -16,7 +16,9 @@
                 @php
                     $original_price = 0;
                     foreach($bundle->bundleItems as $bi) {
-                        $original_price += $bi->item->price * $bi->quantity;
+                        if ($bi->item) {
+                            $original_price += $bi->item->display_price * $bi->quantity;
+                        }
                     }
                 @endphp
                 <tr>
@@ -40,13 +42,13 @@
                         </span>
                     </td>
                     <td class="actions-column">
-                        <a href="{{ route('admin.bundles.edit', $bundle) }}" class="btn-action edit" title="Edit">
+                        <a href="{{ route('admin.bundles.edit', $bundle) }}" class="btn-icon btn-edit" title="Edit">
                             <i class="fa-solid fa-pen"></i>
                         </a>
                         <form action="{{ route('admin.bundles.destroy', $bundle) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this bundle?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-action delete" title="Delete">
+                            <button type="submit" class="btn-icon btn-delete" title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>

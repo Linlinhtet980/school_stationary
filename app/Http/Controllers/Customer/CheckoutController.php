@@ -8,9 +8,12 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ItemVariant;
 use App\Models\Payment;
+use App\Models\User;
+use App\Notifications\NewOrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
@@ -28,14 +31,17 @@ class CheckoutController extends Controller
         $cartItems = [];
         $subtotal = 0;
 
-        foreach ($cart as $item) {
+        foreach ($cart as $key => $item) {
             $variant = ItemVariant::with(['item.images'])->find($item['variant_id']);
             if ($variant) {
-                $itemTotal = $variant->price * $item['quantity'];
+                $price = $item['custom_price'] ?? $variant->price;
+                $itemTotal = $price * $item['quantity'];
                 $subtotal += $itemTotal;
                 $cartItems[] = [
+                    'key'      => $key,
                     'variant'  => $variant,
                     'quantity' => $item['quantity'],
+                    'price'    => $price,
                     'subtotal' => $itemTotal
                 ];
             }
@@ -49,7 +55,9 @@ class CheckoutController extends Controller
             ->orderBy('is_default', 'desc')
             ->get();
 
-        $shipping = $subtotal < 50000 ? 3000 : 0;
+        // 1500 Ks shipping for bundle items, regular 3000 Ks otherwise (free over 50,000 Ks)
+        $hasBundleItems = collect($cart)->contains(fn($item) => !empty($item['bundle_id']));
+        $shipping = $hasBundleItems ? 1500 : ($subtotal < 50000 ? 3000 : 0);
         $total    = $subtotal + $shipping;
 
         return view('customer.checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'addresses'));
@@ -80,16 +88,20 @@ class CheckoutController extends Controller
             if (!$variant || $variant->stock_quantity < $item['quantity']) {
                 return back()->with('error', 'Some items are unavailable.');
             }
-            $itemTotal = $variant->price * $item['quantity'];
+            $price = $item['custom_price'] ?? $variant->price;
+            $itemTotal = $price * $item['quantity'];
             $subtotal += $itemTotal;
             $cartItems[] = [
                 'variant'  => $variant,
                 'quantity' => $item['quantity'],
+                'price'    => $price,
                 'subtotal' => $itemTotal,
             ];
         }
 
-        $shipping = $subtotal < 50000 ? 3000 : 0;
+        // 1500 Ks shipping for bundle items, regular 3000 Ks otherwise (free over 50,000 Ks)
+        $hasBundleItems = collect($cart)->contains(fn($item) => !empty($item['bundle_id']));
+        $shipping = $hasBundleItems ? 1500 : ($subtotal < 50000 ? 3000 : 0);
         $total    = $subtotal + $shipping;
 
         Session::put('checkout_data', [
@@ -169,11 +181,32 @@ class CheckoutController extends Controller
 
         DB::beginTransaction();
         try {
+            // Auto-save address if it doesn't exist
+            $existingAddress = Address::where('user_id', Auth::id())
+                ->where('address_line', $checkoutData['address_line'])
+                ->where('phone', $checkoutData['phone'])
+                ->first();
+
+            if (!$existingAddress) {
+                $hasAddresses = Address::where('user_id', Auth::id())->exists();
+                Address::create([
+                    'user_id'      => Auth::id(),
+                    'label'        => 'Checkout Address',
+                    'address_line' => $checkoutData['address_line'],
+                    'city'         => $checkoutData['township'] . ', ' . $checkoutData['region'],
+                    'phone'        => $checkoutData['phone'],
+                    'is_default'   => !$hasAddresses,
+                ]);
+            }
+
             $order = Order::create([
-                'customer_id'      => Auth::id(),
+                'user_id'         => Auth::id(),
                 'order_number'     => 'ORD-' . strtoupper(uniqid()),
                 'total_amount'     => $checkoutData['total'],
                 'shipping_address' => $fullShippingAddress,
+                'shipping_city'    => $checkoutData['region'],
+                'shipping_phone'   => $checkoutData['phone'],
+                'bus_gate'         => $checkoutData['township'],
                 'payment_method'   => $checkoutData['payment_method'],
                 'payment_status'   => 'paid',
                 'status'           => 'pending',
@@ -182,9 +215,10 @@ class CheckoutController extends Controller
             foreach ($cartItems as $ci) {
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'item_id'  => $ci['variant']->item_id,
+                    'item_variant_id' => $ci['variant']->id,
                     'quantity' => $ci['quantity'],
-                    'price'    => $ci['variant']->price,
+                    'unit_price' => $ci['variant']->price,
+                    'total_price' => $ci['subtotal'],
                 ]);
                 $ci['variant']->decrement('stock_quantity', $ci['quantity']);
             }
@@ -193,13 +227,19 @@ class CheckoutController extends Controller
                 'order_id'       => $order->id,
                 'payment_method' => 'stripe',
                 'transaction_id' => $stripeSession->payment_intent,
-                'status'         => 'paid',
+                'status'         => 'verified',
             ]);
 
             Session::forget('cart');
             Session::forget('checkout_data');
 
             DB::commit();
+
+            // Notify Staff Members
+            $admins = User::whereHas('role', function($q) {
+                $q->where('name', '!=', 'Customer');
+            })->get();
+            Notification::send($admins, new NewOrderNotification($order));
 
             return redirect()->route('checkout.success', $order->id)
                 ->with('success', 'Order placed successfully!');

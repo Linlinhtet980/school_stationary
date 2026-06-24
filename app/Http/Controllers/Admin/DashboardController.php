@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $lowStockCount = $lowStockVariants->count();
 
         // Recent Orders for the dashboard table
-        $recentOrders = Order::with('customer')
+        $recentOrders = Order::with('user.customer')
                              ->latest()
                              ->take(5)
                              ->get();

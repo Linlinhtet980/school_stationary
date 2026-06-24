@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/cart/add-ajax', 'addAjax')->name('cart.add-ajax');
         Route::get('/cart/count-ajax', 'getCountAjax')->name('cart.count-ajax');
         Route::get('/cart/get-items', 'getItemsAjax')->name('cart.get-items');
+        Route::post('/cart/add-bundle/{bundle}', 'addBundle')->name('cart.add-bundle');
     });
 
     // Checkout routes

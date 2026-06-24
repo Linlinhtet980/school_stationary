@@ -13,7 +13,7 @@ class BundleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Bundle::with('bundleItems.item');
+        $query = Bundle::with(['bundleItems.item.variants']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -45,7 +45,7 @@ class BundleController extends Controller
 
     public function create()
     {
-        $items = Item::where('status', 'active')->get();
+        $items = Item::with('variants')->where('status', 'active')->get();
         return view('admin.bundles.create', compact('items'));
     }
 
@@ -83,7 +83,7 @@ class BundleController extends Controller
 
     public function edit(Bundle $bundle)
     {
-        $items = Item::where('status', 'active')->get();
+        $items = Item::with('variants')->where('status', 'active')->get();
         $bundle->load('bundleItems.item');
         return view('admin.bundles.edit', compact('bundle', 'items'));
     }

@@ -64,7 +64,7 @@
         
         <div id="tableDataContainer">
             <div class="table-responsive">
-                <table class="order-table">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Order ID</th>
@@ -107,12 +107,12 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn-icon btn-view" title="View Order" onclick="viewOrder({{ $order->id }})">
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="btn-icon btn-view" title="View Order">
                                             <i class="fa-solid fa-eye"></i>
-                                        </button>
-                                        <button class="btn-icon btn-edit" title="Update Status" onclick="updateStatus({{ $order->id }}, '{{ $order->status }}')">
+                                        </a>
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="btn-icon btn-edit" title="Update Status">
                                             <i class="fa-solid fa-pen"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

@@ -19,20 +19,20 @@ return new class extends Migration
             SELECT CONSTRAINT_NAME
             FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
             WHERE TABLE_SCHEMA = DATABASE()
-            AND TABLE_NAME = 'addresses'
+            AND TABLE_NAME = 'reviews'
             AND COLUMN_NAME = 'customer_id'
             AND REFERENCED_TABLE_NAME IS NOT NULL
         ");
 
         if ($foreignKeyName && !empty($foreignKeyName)) {
-            DB::statement("ALTER TABLE addresses DROP FOREIGN KEY " . $foreignKeyName[0]->CONSTRAINT_NAME);
+            DB::statement("ALTER TABLE reviews DROP FOREIGN KEY " . $foreignKeyName[0]->CONSTRAINT_NAME);
         }
 
         // Rename the column
-        DB::statement("ALTER TABLE addresses CHANGE customer_id user_id BIGINT UNSIGNED NOT NULL");
+        DB::statement("ALTER TABLE reviews CHANGE customer_id user_id BIGINT UNSIGNED NOT NULL");
 
         // Add the new foreign key constraint
-        DB::statement("ALTER TABLE addresses ADD CONSTRAINT addresses_user_id_foreign FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE");
+        DB::statement("ALTER TABLE reviews ADD CONSTRAINT reviews_user_id_foreign FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE");
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
@@ -49,20 +49,20 @@ return new class extends Migration
             SELECT CONSTRAINT_NAME
             FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
             WHERE TABLE_SCHEMA = DATABASE()
-            AND TABLE_NAME = 'addresses'
+            AND TABLE_NAME = 'reviews'
             AND COLUMN_NAME = 'user_id'
             AND REFERENCED_TABLE_NAME IS NOT NULL
         ");
 
         if ($foreignKeyName && !empty($foreignKeyName)) {
-            DB::statement("ALTER TABLE addresses DROP FOREIGN KEY " . $foreignKeyName[0]->CONSTRAINT_NAME);
+            DB::statement("ALTER TABLE reviews DROP FOREIGN KEY " . $foreignKeyName[0]->CONSTRAINT_NAME);
         }
 
         // Rename the column back
-        DB::statement("ALTER TABLE addresses CHANGE user_id customer_id BIGINT UNSIGNED NOT NULL");
+        DB::statement("ALTER TABLE reviews CHANGE user_id customer_id BIGINT UNSIGNED NOT NULL");
 
         // Add the old foreign key constraint
-        DB::statement("ALTER TABLE addresses ADD CONSTRAINT addresses_customer_id_foreign FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE");
+        DB::statement("ALTER TABLE reviews ADD CONSTRAINT reviews_customer_id_foreign FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE");
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }

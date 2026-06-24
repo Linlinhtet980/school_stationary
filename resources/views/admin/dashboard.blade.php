@@ -131,7 +131,7 @@
                     <td class="inline-style-10">{{ number_format($order->total_amount, 2) }} Ks</td>
                     <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
                     <td>
-                        <span class="badge inline-style-11" paid' ? '#dcfce7' : ($order->payment_status == 'failed' ? '#fee2e2' : '#fef3c7') }}; color: {{ $order->payment_status == 'paid' ? '#16a34a' : ($order->payment_status == 'failed' ? '#dc2626' : '#d97706') }}; text-transform: capitalize;">{{ $order->payment_status }}</span>
+                        <span class="badge inline-style-11" style="background-color: {{ $order->payment_status == 'paid' ? '#dcfce7' : ($order->payment_status == 'failed' ? '#fee2e2' : '#fef3c7') }}; color: {{ $order->payment_status == 'paid' ? '#16a34a' : ($order->payment_status == 'failed' ? '#dc2626' : '#d97706') }}; text-transform: capitalize;">{{ $order->payment_status }}</span>
                     </td>
                     <td>
                         <span class="badge inline-style-12" >{{ $order->status }}</span>

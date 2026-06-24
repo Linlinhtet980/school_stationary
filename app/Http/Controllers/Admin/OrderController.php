@@ -10,12 +10,12 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('customer')->latest();
+        $query = Order::with('user.customer')->latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('order_number', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($q) use ($search) {
+                  ->orWhereHas('user.customer', function($q) use ($search) {
                       $q->where('name', 'like', "%{$search}%");
                   });
         }
@@ -40,7 +40,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['customer', 'items.itemVariant.item']);
+        $order->load(['user.customer', 'items.itemVariant.item']);
         return view('admin.orders.show', compact('order'));
     }
 

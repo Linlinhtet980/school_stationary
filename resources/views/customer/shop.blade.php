@@ -65,6 +65,9 @@
                     <input type="number" name="max_price" placeholder="Max Ks" value="{{ request('max_price') }}">
                 </div>
                 <button type="submit" class="inline-style-118">Apply Filter</button>
+                @if(request('category') || request('brand') || request('min_price') || request('max_price'))
+                    <a href="{{ route('shop.index') }}" class="clear-filters-btn" style="display: block; text-align: center; text-decoration: none; box-sizing: border-box; margin-top: 1rem;">Clear All Filters</a>
+                @endif
             </div>
         </form>
     </aside>

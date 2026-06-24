@@ -60,7 +60,7 @@
 
     <div id="tableDataContainer">
         <div class="table-responsive">
-            <table class="banner-table">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Sequence</th>

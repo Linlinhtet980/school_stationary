@@ -70,14 +70,17 @@
             @if($item->variants->count() > 0)
             <div class="options-group">
                 <div class="options-title">Color / Variant: <span id="selectedVariantName" class="inline-style-102">Select an option</span></div>
-                <div class="color-options">
+                <div class="variant-pills-container">
                     @foreach($item->variants as $variant)
-                        <div class="color-btn inline-style-103"  
-                            #CCC') }};"
-                             onclick="selectVariant({{ $variant->id }}, '{{ $variant->color_name ?? $variant->item_code }}', {{ $variant->price }}, {{ $variant->stock_quantity }})"
+                        @php
+                            $parts = array_filter([$variant->color, $variant->size, $variant->unit_label]);
+                            $variantName = empty($parts) ? 'Standard' : implode(' | ', $parts);
+                        @endphp
+                        <div class="variant-pill" 
+                             onclick="selectVariant({{ $variant->id }}, '{{ addslashes($variantName) }}', {{ $variant->price }}, {{ $variant->stock_quantity }})"
                              id="variant-btn-{{ $variant->id }}"
-                             title="{{ $variant->color_name ?? $variant->item_code }}">
-                             <i class="fa-solid fa-check"></i>
+                             title="{{ $variantName }}">
+                             <span class="variant-name">{{ $variantName }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -101,11 +104,51 @@
         </form>
     </div>
 </div>
+
+@if(isset($relatedItems) && $relatedItems->count() > 0)
+<section class="section related-products-section">
+    <div class="section-header">
+        <h2 class="section-title">YOU MAY ALSO LIKE</h2>
+        <div class="arrows">
+            <div class="arrow" onclick="scrollGrid('related-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="arrow" onclick="scrollGrid('related-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
+        </div>
+    </div>
+    <div class="slider-grid" id="related-grid">
+        @foreach($relatedItems as $related)
+        <div class="card" style="position: relative;">
+            <!-- Optional: You can add a badge here if needed like NEW -->
+            <img src="{{ $related->images->first() ? asset('storage/' . $related->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $related->id) }}'" alt="{{ $related->name }}">
+            <div class="card-title">{{ Str::limit($related->name, 30) }}</div>
+            <div class="card-desc">{{ $related->brand->name ?? 'Campus Supply' }}</div>
+            <div class="card-price-row">
+                <div class="card-price">{{ $related->price_range ?? number_format($related->price).' Ks' }}</div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            <form action="{{ route('cart.add-item', $related->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+            </form>
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
 @endsection
 
 @push('scripts')
 <script>
-function changeImage(element, src) {
+    function scrollGrid(gridId, direction) {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        const scrollAmount = grid.offsetWidth;
+        grid.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+    }
+
+    function changeImage(element, src) {
         document.getElementById('mainImage').src = src;
         document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
@@ -115,7 +158,7 @@ function changeImage(element, src) {
     
     function selectVariant(id, name, price, stock) {
         // Update UI
-        document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.variant-pill').forEach(btn => btn.classList.remove('active'));
         document.getElementById('variant-btn-' + id).classList.add('active');
         
         // Update Form & Info
@@ -156,36 +199,14 @@ function changeImage(element, src) {
         }
     }
 
-    // Add to cart AJAX
+    // Form validation before submit
     document.getElementById('addToCartForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
         if (document.getElementById('variant_id') && !document.getElementById('variant_id').value) {
             alert('Please select a variant');
-            return;
+            e.preventDefault();
+            return false;
         }
-
-        const formData = new FormData(this);
-        
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                // Open side cart drawer
-                if(typeof window.openCart === 'function') {
-                    // Update cart badge number manually or reload page
-                    location.reload(); // Simple reload to update layout variables
-                }
-            } else {
-                alert(data.message || 'Error adding to cart');
-            }
-        });
+        // Let layout.js handle the actual AJAX submission and cart drawer opening
     });
 </script>
 @endpush

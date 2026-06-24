@@ -7,46 +7,28 @@
 
 @section('content')
 <div class="hero-container">
+    @if($banners->count() > 0)
     <div class="hero-slider" id="heroSlider">
-        <!-- Slide 1: Promotions -->
-        <div class="slide active inline-style-66" >
-            <div class="hero-bg-shape1"></div>
-            <div class="hero-bg-shape2"></div>
+        @foreach($banners as $banner)
+        <div class="slide">
+            @if($banner->image_path)
+            <img src="{{ asset('storage/' . $banner->image_path) }}" alt="{{ $banner->title }}" class="banner-image">
+            @endif
             <div class="hero-content">
-                <h1 class="inline-style-67">BACK TO SCHOOL<br>PROMOTIONS</h1>
-                <p class="inline-style-68">Gear up for the new semester! Premium stationery,<br>quality supplies, and huge savings.</p>
+                @if($banner->title)
+                <h1>{{ $banner->title }}</h1>
+                @endif
+                @if($banner->description)
+                <p>{{ $banner->description }}</p>
+                @endif
+                @if($banner->link)
+                <button class="btn-shop" onclick="window.location.href='{{ $banner->link }}'">SHOP NOW &rarr;</button>
+                @else
                 <button class="btn-shop" onclick="window.location.href='{{ route('shop.index') }}'">SHOP NOW &rarr;</button>
+                @endif
             </div>
         </div>
-        <!-- Slide 2: New Products -->
-        <div class="slide inline-style-69" >
-            <div class="hero-bg-shape3 inline-style-70" ></div>
-            <div class="hero-bg-shape4 inline-style-71" ></div>
-            <div class="hero-content">
-                <h1 class="inline-style-72">NEW ARRIVALS<br>JUST LANDED</h1>
-                <p class="inline-style-73">Discover our latest collection of modern<br>office and school essentials.</p>
-                <button class="btn-shop inline-style-74"  onclick="window.location.href='{{ route('shop.new-arrivals') }}'">VIEW NEW PRODUCTS &rarr;</button>
-            </div>
-        </div>
-        <!-- Slide 3: Information -->
-        <div class="slide inline-style-75" >
-            <div class="hero-bg-shape4 inline-style-76" ></div>
-            <div class="hero-content">
-                <h1 class="inline-style-77">FREE SHIPPING<br>NATIONWIDE</h1>
-                <p class="inline-style-78">Enjoy free delivery on all orders over 50,000 Ks.<br>Fast, reliable, and secure.</p>
-                <button class="btn-shop inline-style-79"  onclick="window.location.href='{{ route('shop.index') }}'">LEARN MORE &rarr;</button>
-            </div>
-        </div>
-        <!-- Slide 4: Expiring/Clearance -->
-        <div class="slide inline-style-80" >
-            <div class="hero-bg-shape1 inline-style-81" ></div>
-            <div class="hero-bg-shape2 inline-style-82" ></div>
-            <div class="hero-content">
-                <h1 class="inline-style-83">CLEARANCE SALE<br>UP TO 70% OFF</h1>
-                <p class="inline-style-84">Last chance to grab these expiring items before<br>they are gone forever!</p>
-                <button class="btn-shop inline-style-85"  onclick="window.location.href='{{ route('shop.b2s-deals') }}'">SHOP CLEARANCE &rarr;</button>
-            </div>
-        </div>
+        @endforeach
 
         <!-- Slider Controls -->
         <div class="slider-nav">
@@ -54,13 +36,57 @@
             <button class="next-slide" onclick="moveSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
         <div class="slider-dots" id="sliderDots">
-            <span class="dot active" onclick="currentSlide(0)"></span>
-            <span class="dot" onclick="currentSlide(1)"></span>
-            <span class="dot" onclick="currentSlide(2)"></span>
-            <span class="dot" onclick="currentSlide(3)"></span>
+            @foreach($banners as $index => $banner)
+            <span class="dot {{ $index === 0 ? 'active' : '' }}" onclick="currentSlide({{ $index }})"></span>
+            @endforeach
         </div>
     </div>
+    @else
+    <!-- Fallback static content if no banners -->
+    <div class="hero-slider" id="heroSlider">
+        <div class="slide active">
+            <div class="hero-content">
+                <h1>WELCOME TO CAMPUS SUPPLY</h1>
+                <p>Your one-stop shop for school and office essentials</p>
+                <button class="btn-shop" onclick="window.location.href='{{ route('shop.index') }}'">SHOP NOW &rarr;</button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
+
+<!-- BRAND LOGOS SECTION -->
+@if($brands->count() > 0)
+<section class="brands-marquee-section">
+    <div class="section-header">
+        <h2 class="section-title">OUR PRODUCTS</h2>
+    </div>
+    <div class="marquee" style="padding: 1rem 0;">
+        <div class="marquee-content" style="gap: 2rem;">
+            <!-- First Set -->
+            @foreach($brands as $brand)
+            <div class="brand-item">
+                @if($brand->logo)
+                <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="brand-logo">
+                @else
+                <div class="brand-logo-text">{{ $brand->name }}</div>
+                @endif
+            </div>
+            @endforeach
+            <!-- Second Set for Infinite Loop -->
+            @foreach($brands as $brand)
+            <div class="brand-item">
+                @if($brand->logo)
+                <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="brand-logo">
+                @else
+                <div class="brand-logo-text">{{ $brand->name }}</div>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 
 <section class="section dark-section">
     <div class="dark-shape1"></div>

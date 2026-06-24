@@ -14,6 +14,7 @@ class Order extends Model
         'order_number',
         'total_amount',
         'stripe_session_id',
+        'payment_method',
         'payment_status',
         'status',
         'shipping_address',
@@ -27,9 +28,9 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function customer()
+    public function getCustomerAttribute()
     {
-        return $this->hasOneThrough(Customer::class, User::class);
+        return $this->user ? $this->user->customer : null;
     }
 
     public function items()

@@ -53,7 +53,9 @@
                         @endif
                         
                         <div class="item-price">
-                            @if($cartItem['variant'])
+                            @if(isset($cartItem['price']))
+                                {{ number_format($cartItem['price']) }} Ks
+                            @elseif($cartItem['variant'])
                                 {{ number_format($cartItem['variant']['price']) }} Ks
                             @else
                                 {{ number_format($cartItem['item']['price']) }} Ks
@@ -67,16 +69,19 @@
                             <input type="number" value="{{ $cartItem['quantity'] }}" class="qty-input" readonly>
                             <button type="button" class="qty-btn" onclick="updateQuantity({{ $cartItem['key'] }}, {{ $cartItem['quantity'] + 1 }})">+</button>
                         </div>
-                        <form action="{{ route('cart.remove') }}" method="POST" class="remove-form">
-                            @csrf
-                            <input type="hidden" name="key" value="{{ $cartItem['key'] }}">
-                            <button type="submit" class="cart-btn-remove">Remove</button>
-                        </form>
                     </div>
                     
                     <div class="item-total">
                         {{ number_format($cartItem['total']) }} Ks
                     </div>
+
+                    <form action="{{ route('cart.remove') }}" method="POST" class="remove-form">
+                        @csrf
+                        <input type="hidden" name="key" value="{{ $cartItem['key'] }}">
+                        <button type="submit" class="cart-btn-remove" title="Remove Item">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
             @empty
                 <div class="empty-cart">

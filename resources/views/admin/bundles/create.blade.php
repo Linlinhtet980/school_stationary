@@ -60,7 +60,7 @@
                                                 <select name="items[0][item_id]" class="form-control item-select" required>
                                                     <option value="">Select an item...</option>
                                                     @foreach($items as $item)
-                                                        <option value="{{ $item->id }}" data-price="{{ $item->price }}">{{ $item->name }} ({{ number_format($item->price, 0) }} Ks)</option>
+                                                        <option value="{{ $item->id }}" data-price="{{ $item->display_price }}">{{ $item->name }} ({{ number_format($item->display_price, 0) }} Ks)</option>
                                                     @endforeach
                                                 </select>
                                             </td>
@@ -126,3 +126,75 @@
 
 
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const itemsContainer = document.getElementById('itemsContainer');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const originalPriceDisplay = document.getElementById('originalPriceDisplay');
+        let itemIndex = 1;
+
+        function calculateOriginalPrice() {
+            let total = 0;
+            document.querySelectorAll('.item-row').forEach(row => {
+                const select = row.querySelector('.item-select');
+                const qtyInput = row.querySelector('.item-qty');
+                
+                if (select && select.selectedIndex > 0) {
+                    const price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price')) || 0;
+                    const qty = parseInt(qtyInput.value) || 0;
+                    total += price * qty;
+                }
+            });
+            originalPriceDisplay.textContent = new Intl.NumberFormat().format(total);
+        }
+
+        // Attach event listeners using event delegation
+        itemsContainer.addEventListener('change', function(e) {
+            if (e.target.classList.contains('item-select')) {
+                calculateOriginalPrice();
+            }
+        });
+
+        itemsContainer.addEventListener('input', function(e) {
+            if (e.target.classList.contains('item-qty')) {
+                calculateOriginalPrice();
+            }
+        });
+
+        itemsContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-item')) {
+                const row = e.target.closest('.item-row');
+                if (document.querySelectorAll('.item-row').length > 1) {
+                    row.remove();
+                    calculateOriginalPrice();
+                } else {
+                    alert('You must have at least one item in the bundle.');
+                }
+            }
+        });
+
+        addItemBtn.addEventListener('click', function () {
+            const firstRow = document.querySelector('.item-row');
+            const newRow = firstRow.cloneNode(true);
+            
+            // Update names with new index
+            const select = newRow.querySelector('.item-select');
+            select.name = `items[${itemIndex}][item_id]`;
+            select.value = ""; // Reset selection
+            
+            const qty = newRow.querySelector('.item-qty');
+            qty.name = `items[${itemIndex}][quantity]`;
+            qty.value = "1"; // Reset quantity
+            
+            itemsContainer.appendChild(newRow);
+            itemIndex++;
+            calculateOriginalPrice();
+        });
+
+        // Initial calculation
+        calculateOriginalPrice();
+    });
+</script>
+@endpush

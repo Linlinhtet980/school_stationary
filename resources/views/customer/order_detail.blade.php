@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        @if($order->status === 'pending')
+        @if($order->status === 'pending' && $order->payment_status !== 'paid')
             <div class="status-actions">
                 <form action="{{ route('profile.order-cancel', $order->id) }}" method="POST">
                     @csrf
@@ -84,10 +84,10 @@
                         <div class="item-details">
                             <h3>{{ $item->item->name }}</h3>
                             <p class="item-meta">Quantity: {{ $item->quantity }}</p>
-                            <p class="item-price">{{ number_format($item->price) }} Ks each</p>
+                            <p class="item-price">{{ number_format($item->unit_price) }} Ks each</p>
                         </div>
                         <div class="item-total">
-                            {{ number_format($item->price * $item->quantity) }} Ks
+                            {{ number_format($item->total_price) }} Ks
                         </div>
                     </div>
                 @endforeach

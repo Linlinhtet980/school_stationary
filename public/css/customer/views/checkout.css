@@ -575,7 +575,7 @@
     .qty-btn { background: none; border: none; padding: 0.3rem 0.8rem; font-weight: 800; color: var(--secondary); cursor: pointer; }
     .qty-input { width: 40px; text-align: center; border: none; font-weight: 800; background: none; }
     .cart-item-price { font-size: 1.2rem; font-weight: 900; color: var(--secondary); width: 100px; text-align: right; }
-    .btn-remove { color: #E53E3E; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding-left: 1rem; }
+    .checkout-btn-remove { color: #E53E3E; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding-left: 1rem; }
 
     /* Form */
     .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }

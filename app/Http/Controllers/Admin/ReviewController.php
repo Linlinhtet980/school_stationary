@@ -10,11 +10,11 @@ class ReviewController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Review::with(['customer.user', 'item']);
+        $query = Review::with(['user.customer', 'item']);
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('customer', function($q) use ($search) {
+            $query->whereHas('user.customer', function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
             })->orWhereHas('item', function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");

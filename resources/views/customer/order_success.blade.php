@@ -31,15 +31,15 @@
             <div class="order-items-list">
                 @foreach($order->items as $item)
                 <div class="order-item-row">
-                    <span>{{ $item->item->item_name ?? 'Item' }} (x{{ $item->quantity }})</span>
-                    <span>{{ number_format($item->price * $item->quantity) }} Ks</span>
+                    <span>{{ $item->item->name ?? 'Item' }} (x{{ $item->quantity }})</span>
+                    <span>{{ number_format($item->unit_price * $item->quantity) }} Ks</span>
                 </div>
                 @endforeach
             </div>
 
             @php
-                $shipping = $order->total_amount - $order->items->sum(fn($i) => $i->price * $i->quantity);
-                $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
+                $shipping = $order->total_amount - $order->items->sum(fn($i) => $i->unit_price * $i->quantity);
+                $subtotal = $order->items->sum(fn($i) => $i->unit_price * $i->quantity);
             @endphp
 
             <div class="summary-row">

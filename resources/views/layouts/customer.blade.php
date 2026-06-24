@@ -118,16 +118,50 @@
                 <span>Total:</span>
                 <span id="cartTotalDisplay">0 Ks</span>
             </div>
-            <a href="{{ route('cart.index') }}" class="btn-checkout inline-style-134">View Cart</a>
-            <a href="{{ route('checkout.index') }}" class="btn-checkout">Checkout</a>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="{{ route('cart.index') }}" class="btn-checkout-drawer" style="background: #f1f1f1; color: var(--secondary);">View Cart</a>
+                <a href="{{ route('checkout.index') }}" class="btn-checkout-drawer">Checkout</a>
+            </div>
         </div>
     </div>
 
     
+    <script>
+        // Smart Sticky Navbar (Hide on scroll down, Show on scroll up)
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const floatingBtn = document.getElementById('floatingCartBtn');
+            
+            // Glassmorphism effect when scrolled
+            if (scrollTop > 50) {
+                if (navbar) navbar.classList.add('scrolled');
+            } else {
+                if (navbar) navbar.classList.remove('scrolled');
+            }
+
+            // Floating Cart Show/Hide logic
+            if (scrollTop > 200) {
+                if(floatingBtn) floatingBtn.classList.add('show');
+            } else {
+                if(floatingBtn) floatingBtn.classList.remove('show');
+            }
+
+            // Hide/Show logic for navbar
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Downscroll - hide
+                if (navbar) navbar.classList.add('nav-up');
+            } else {
+                // Upscroll - show
+                if (navbar) navbar.classList.remove('nav-up');
+            }
+            lastScrollTop = scrollTop;
+        });
+    </script>
     @stack('scripts')
 
-</body>
-</html>
 
 <script>
 // Cart Drawer Logic
@@ -153,25 +187,25 @@
                 data.items.forEach((item, index) => {
                     let priceFormat = new Intl.NumberFormat().format(item.price);
                     html += `
-                    <div class="drawer-item" style="position:relative;">
-                        <img src="${item.image}" alt="${item.name}">
+                    <div class="drawer-item" style="position:relative; padding-bottom: 15px; border-bottom: 1px solid #eee; align-items: flex-start;">
+                        <img src="${item.image}" alt="${item.name}" style="margin-top: 5px;">
                         <div class="drawer-item-info">
-                            <h4>${item.name}</h4>
-                            <div class="drawer-qty" style="margin-top: 5px; display: flex; align-items: center; gap: 5px;">
-                                <button onclick="updateDrawerQuantity('${item.key}', ${item.quantity - 1})" style="width:25px; height:25px; cursor:pointer; border:1px solid #ccc; background:#fff;">-</button>
-                                <span>Qty: ${item.quantity}</span>
-                                <button onclick="updateDrawerQuantity('${item.key}', ${item.quantity + 1})" style="width:25px; height:25px; cursor:pointer; border:1px solid #ccc; background:#fff;">+</button>
+                            <h4 style="padding-right: 25px; line-height: 1.4;">${item.name}</h4>
+                            <div class="drawer-item-price" style="margin-bottom: 10px; font-size: 1.05rem;">${priceFormat} Ks</div>
+                            <div class="drawer-qty" style="background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; padding: 2px;">
+                                <button onclick="updateDrawerQuantity('${item.key}', ${parseInt(item.quantity) - 1})" style="width: 28px; height: 28px; border-radius: 4px; background: white; border: 1px solid #eee; cursor: pointer;">-</button>
+                                <span style="font-weight: 800; font-size: 0.9rem; width: 35px; text-align: center; display: inline-block;">${item.quantity}</span>
+                                <button onclick="updateDrawerQuantity('${item.key}', ${parseInt(item.quantity) + 1})" style="width: 28px; height: 28px; border-radius: 4px; background: white; border: 1px solid #eee; cursor: pointer;">+</button>
                             </div>
                         </div>
-                        <div class="drawer-item-price">${priceFormat} Ks</div>
-                        <button onclick="removeDrawerItem('${item.key}')" style="position:absolute; top:10px; right:10px; color:#E53E3E; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="removeDrawerItem('${item.key}')" style="position:absolute; top:0; right:0; color:#E53E3E; background:none; border:none; cursor:pointer; font-size: 1.2rem; padding: 5px; transition: 0.2s;" onmouseover="this.style.color='#c53030'" onmouseout="this.style.color='#E53E3E'"><i class="fa-solid fa-trash"></i></button>
                     </div>`;
                 });
                 container.innerHTML = html;
                 document.getElementById('cartTotalDisplay').innerText = new Intl.NumberFormat().format(data.total) + ' Ks';
                 
-                const badge = document.querySelector('.cart-badge');
-                if(badge) badge.innerText = data.cart_count;
+                const badges = document.querySelectorAll('.cart-badge');
+                badges.forEach(badge => badge.innerText = data.cart_count);
             }).catch(e => {
                 document.getElementById('cartItemsList').innerHTML = '<p style="padding:20px; text-align:center; color:red;">Error loading cart.</p>';
             });
@@ -217,8 +251,29 @@
             formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
             formData.append('key', key);
             formData.append('quantity', newQty);
-            await fetch('{{ route("cart.update-ajax") }}', { method: 'POST', body: formData });
-            loadCartDrawer();
+            
+            try {
+                const response = await fetch('{{ route("cart.update-ajax") }}', { 
+                    method: 'POST', 
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || (data && data.success === false)) {
+                    // Check if there are validation errors
+                    if (data.errors && data.errors.quantity) {
+                        alert(data.errors.quantity[0]);
+                    } else {
+                        alert(data.message || 'Cannot update quantity.');
+                    }
+                }
+            } catch (e) {
+                console.error("Update error:", e);
+            } finally {
+                loadCartDrawer();
+            }
         }
 
         async function removeDrawerItem(key) {
@@ -232,10 +287,66 @@
         // Expose openCart globally so other files can use it
         window.openCart = openCart;
 
-        // Auto-open cart drawer if item was just added
+        // Auto-open cart drawer if item was just added (Legacy fallback)
         @if(session('cart_open'))
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => openCart(), 200);
         });
         @endif
+
+        // Intercept Add to Cart forms to use AJAX
+        document.addEventListener('submit', async function(e) {
+            const form = e.target;
+
+            // Bundle forms - just disable button to prevent double submit, let normal submit happen
+            if (form.action && form.action.includes('/cart/add-bundle')) {
+                const btn = form.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+                }
+                return; // Let normal form submit happen
+            }
+
+            if (form.action && form.action.includes('/cart/add') && !form.action.includes('/cart/add-bundle')) {
+                e.preventDefault();
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) submitBtn.innerHTML = 'Adding...';
+
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        loadCartDrawer();
+                        openCart();
+                    } else {
+                        alert(data.message || 'Error adding item to cart.');
+                    }
+                } catch (error) {
+                    console.error('Add to cart error:', error);
+                    alert('Network error. Please try again.');
+                } finally {
+                    if (submitBtn) submitBtn.innerHTML = originalText;
+                }
+            }
+        });
 </script>
+    <!-- Floating Cart Button -->
+    <a href="#" id="floatingCartBtn" class="floating-cart" onclick="openCart(event)">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
+    </a>
+
+</body>
+</html>

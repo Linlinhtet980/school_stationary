@@ -118,7 +118,7 @@ class ShopController extends Controller
                            ->where('id', '!=', $item->id)
                            ->where('status', 'active')
                            ->with('variants')
-                           ->take(4)
+                           ->take(10)
                            ->get();
 
         // Calculate average rating
@@ -170,21 +170,12 @@ class ShopController extends Controller
      */
     public function b2sDeals()
     {
-        // Get items with discounted prices or special offers
-        $items = Item::with(['type', 'brand', 'variants'])
+        $bundles = \App\Models\Bundle::with(['bundleItems.item.images', 'bundleItems.item.variants'])
                     ->where('status', 'active')
-                    ->where(function($q) {
-                        $q->where('price', '<', 10000) // Example logic for deals
-                          ->orWhere('name', 'like', '%bundle%')
-                          ->orWhere('name', 'like', '%pack%');
-                    })
                     ->latest()
                     ->paginate(12);
 
-        $categories = Category::where('status', 'active')->with('types')->get();
-        $brands = Brand::orderBy('name')->get();
-
-        return view('customer.b2s_deals', compact('items', 'categories', 'brands'));
+        return view('customer.b2s_deals', compact('bundles'));
     }
 
     /**

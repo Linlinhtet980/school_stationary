@@ -40,7 +40,8 @@ class CartController extends Controller
         foreach ($cart as $key => $item) {
             $variant = ItemVariant::with('item')->find($item['variant_id']);
             if ($variant && $variant->item) {
-                $itemTotal = $variant->price * $item['quantity'];
+                $price = $item['custom_price'] ?? $variant->price;
+                $itemTotal = $price * $item['quantity'];
                 $subtotal += $itemTotal;
                 
                 $cartItems->push([
@@ -48,13 +49,21 @@ class CartController extends Controller
                     'item' => $variant->item->toArray(),
                     'variant' => $variant->toArray(),
                     'quantity' => $item['quantity'],
+                    'price' => $price,
                     'total' => $itemTotal
                 ]);
             }
         }
 
-        // Free shipping for orders over 50,000 Ks
-        $shipping = $subtotal >= 50000 ? 0 : 3000;
+        // Check if cart has any bundle items
+        $hasBundleItems = collect($cart)->contains(fn($item) => !empty($item['bundle_id']));
+
+        // Shipping: bundle items = 1500 Ks, regular = 3000 Ks (free over 50,000 Ks)
+        if ($hasBundleItems) {
+            $shipping = 1500;
+        } else {
+            $shipping = $subtotal >= 50000 ? 0 : 3000;
+        }
         $total = $subtotal + $shipping;
 
         return view('customer.cart', compact('cartItems', 'subtotal', 'shipping', 'total'));
@@ -67,7 +76,7 @@ class CartController extends Controller
     {
         $request->validate([
             'variant_id' => 'required|exists:item_variants,id',
-            'quantity' => 'required|integer|min:1|max:10'
+            'quantity' => 'required|integer|min:1'
         ]);
 
         $variantId = $request->variant_id;
@@ -123,6 +132,9 @@ class CartController extends Controller
                    ?? $item->variants->first();
 
         if (!$variant) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'This item has no available variants.'], 400);
+            }
             return back()->with('error', 'This item has no available variants.');
         }
 
@@ -131,6 +143,9 @@ class CartController extends Controller
 
         // Check stock
         if ($variant->stock_quantity < $quantity) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Not enough stock available.'], 400);
+            }
             return back()->with('error', 'Not enough stock available.');
         }
 
@@ -139,6 +154,9 @@ class CartController extends Controller
             if ($cartItem['variant_id'] == $variant->id) {
                 $newQty = $cartItem['quantity'] + $quantity;
                 if ($newQty > $variant->stock_quantity) {
+                    if ($request->ajax() || $request->wantsJson()) {
+                        return response()->json(['success' => false, 'message' => 'Cannot add more than available stock.'], 400);
+                    }
                     return back()->with('error', 'Cannot add more than available stock.');
                 }
                 $cartItem['quantity'] = $newQty;
@@ -170,8 +188,8 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'key' => 'required|integer',
-            'quantity' => 'required|integer|min:1|max:10'
+            'key' => 'required|string',
+            'quantity' => 'required|integer|min:1'
         ]);
 
         $key = $request->key;
@@ -201,7 +219,7 @@ class CartController extends Controller
     public function remove(Request $request)
     {
         $request->validate([
-            'key' => 'required|integer'
+            'key' => 'required|string'
         ]);
 
         $key = $request->key;
@@ -282,7 +300,7 @@ class CartController extends Controller
     {
         $request->validate([
             'variant_id' => 'required|exists:item_variants,id',
-            'quantity' => 'required|integer|min:1|max:10'
+            'quantity' => 'required|integer|min:1'
         ]);
 
         $variantId = $request->variant_id;
@@ -389,8 +407,8 @@ class CartController extends Controller
     public function updateAjax(Request $request)
     {
         $request->validate([
-            'key' => 'required|integer',
-            'quantity' => 'required|integer|min:1|max:10'
+            'key' => 'required|string',
+            'quantity' => 'required|integer|min:1'
         ]);
 
         $key = $request->key;
@@ -432,5 +450,72 @@ class CartController extends Controller
         $this->saveCart($cart);
 
         return response()->json(['success' => true, 'message' => 'Item removed.']);
+    }
+
+    /**
+     * Add entire bundle to cart (all items inside)
+     */
+    public function addBundle($bundleId)
+    {
+        $bundle = \App\Models\Bundle::with(['bundleItems.item.variants'])->findOrFail($bundleId);
+
+        // Calculate original total of the bundle
+        $originalTotal = 0;
+        foreach ($bundle->bundleItems as $bundleItem) {
+            $item = $bundleItem->item;
+            $variant = $item ? ($item->variants->firstWhere('stock_quantity', '>', 0) ?? $item->variants->first()) : null;
+            if ($variant) {
+                $originalTotal += $variant->price * ($bundleItem->quantity ?? 1);
+            }
+        }
+
+        // Discount ratio
+        $ratio = $originalTotal > 0 ? $bundle->bundle_price / $originalTotal : 1;
+
+        $cart = $this->getCart();
+        $addedCount = 0;
+        $errors = [];
+
+        foreach ($bundle->bundleItems as $bundleItem) {
+            $item = $bundleItem->item;
+            if (!$item) continue;
+
+            $variant = $item->variants->firstWhere('stock_quantity', '>', 0)
+                       ?? $item->variants->first();
+
+            if (!$variant) {
+                $errors[] = $item->name . ' has no variants.';
+                continue;
+            }
+
+            $qty = $bundleItem->quantity ?? 1;
+            // Use unique key for bundle items so they don't merge with regular items
+            $key = 'bundle_' . $bundle->id . '_variant_' . $variant->id;
+
+            // Proportional price
+            $customPrice = round($variant->price * $ratio);
+
+            if (isset($cart[$key])) {
+                $cart[$key]['quantity'] += $qty;
+                $cart[$key]['bundle_id'] = $bundle->id;
+                $cart[$key]['custom_price'] = $customPrice;
+            } else {
+                $cart[$key] = [
+                    'variant_id' => $variant->id,
+                    'quantity'   => $qty,
+                    'bundle_id'  => $bundle->id,
+                    'custom_price' => $customPrice,
+                ];
+            }
+            $addedCount++;
+        }
+
+        $this->saveCart($cart);
+
+        if ($addedCount > 0) {
+            return redirect()->route('cart.index')->with('success', '"' . $bundle->name . '" bundle items added to cart!');
+        }
+
+        return back()->with('error', 'Could not add bundle items to cart.');
     }
 }
