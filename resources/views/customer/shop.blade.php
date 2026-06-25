@@ -101,10 +101,7 @@
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     </div>
                 </div>
-                <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
-                </form>
+                <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $item->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
             </div>
             @empty
             <div class="inline-style-119">

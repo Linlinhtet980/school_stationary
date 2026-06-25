@@ -1,10 +1,9 @@
-// Customer Layout JavaScript - Extracted from UI Prototypes
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
 
     // Profile Dropdown Logic
-    window.toggleProfileDropdown = function() {
+    window.toggleProfileDropdown = function () {
         const dropdown = document.getElementById('profileDropdown');
         if (dropdown) {
             dropdown.classList.toggle('show');
@@ -12,10 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const dropdown = document.getElementById('profileDropdown');
         const profileButton = document.querySelector('.profile-dropdown button');
-        
+
         if (dropdown && profileButton) {
             if (!dropdown.contains(e.target) && !profileButton.contains(e.target)) {
                 dropdown.classList.remove('show');
@@ -24,10 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add to wishlist function
-    window.addToWishlist = function(itemId) {
+    window.addToWishlist = function (itemId) {
         // Check if user is authenticated
         const isAuthenticated = document.body.classList.contains('authenticated');
-        
+
         if (!isAuthenticated) {
             alert('Please login to add items to wishlist');
             window.location.href = '/login';
@@ -47,35 +46,35 @@ document.addEventListener('DOMContentLoaded', function() {
             body: formData,
             credentials: 'same-origin'
         })
-        .then(response => response.text())
-        .then(data => {
-            // Try to parse as HTML response
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'text/html');
-            
-            // Check for success message
-            const successAlert = doc.querySelector('.alert-success');
-            const errorAlert = doc.querySelector('.alert-error');
-            
-            if (successAlert) {
-                alert('Item added to wishlist successfully!');
-            } else if (errorAlert) {
-                alert(errorAlert.textContent || 'Failed to add to wishlist');
-            } else {
-                alert('Item added to wishlist!');
-            }
-        })
-        .catch(error => {
-            console.error('Error adding to wishlist:', error);
-            alert('An error occurred. Please try again.');
-        });
+            .then(response => response.text())
+            .then(data => {
+                // Try to parse as HTML response
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                // Check for success message
+                const successAlert = doc.querySelector('.alert-success');
+                const errorAlert = doc.querySelector('.alert-error');
+
+                if (successAlert) {
+                    alert('Item added to wishlist successfully!');
+                } else if (errorAlert) {
+                    alert(errorAlert.textContent || 'Failed to add to wishlist');
+                } else {
+                    alert('Item added to wishlist!');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to wishlist:', error);
+                alert('An error occurred. Please try again.');
+            });
     };
 
     // Add to cart function for shop page (AJAX version)
-    window.addToCart = async function(itemId) {
+    window.addToCart = async function (itemId) {
         // Check if user is authenticated
-        const isAuthenticated = document.querySelector('.profile-dropdown') !== null;
-        
+        const isAuthenticated = document.body.classList.contains('authenticated');
+
         if (!isAuthenticated) {
             alert('Please login to add items to cart');
             window.location.href = '/login';
@@ -90,21 +89,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error('Could not get product variant');
             }
-            
+
             const data = await response.json();
-            
+
             if (!data.variant_id) {
                 alert('This product is not available');
                 return;
             }
-            
+
             // Add to cart via AJAX
             await addToCartAjax(data.variant_id, 1);
-            
+
         } catch (error) {
             console.error('Error:', error);
             // Fallback to product detail page if AJAX fails
@@ -113,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Add to cart via AJAX (with specific variant and quantity)
-    window.addToCartAjax = async function(variantId, quantity = 1) {
+    window.addToCartAjax = async function (variantId, quantity = 1) {
         try {
             const response = await fetch('/cart/add-ajax', {
                 method: 'POST',
@@ -134,19 +133,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
-            
+
             // Update cart badge
             updateCartBadge(data.cart_count);
-            
+
             // Show success notification
             showNotification(data.message, 'success');
-            
+
             // Open cart drawer
             toggleCartDrawer(true);
             loadCartData();
-            
+
             return data;
-            
+
         } catch (error) {
             console.error('Error adding to cart:', error);
             showNotification(error.message, 'error');
@@ -156,15 +155,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update cart badge
     function updateCartBadge(newCount) {
-        const cartBadge = document.querySelector('.cart-badge');
-        if (cartBadge) {
+        const cartBadges = document.querySelectorAll('.cart-badge');
+        cartBadges.forEach(cartBadge => {
             cartBadge.textContent = newCount;
             // Add animation
             cartBadge.classList.add('badge-animation');
             setTimeout(() => {
                 cartBadge.classList.remove('badge-animation');
             }, 1000);
-        }
+        });
     }
 
     // Show notification
@@ -178,10 +177,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span>${message}</span>
             </div>
         `;
-        
+
         // Add to body
         document.body.appendChild(notification);
-        
+
         // Remove after 3 seconds
         setTimeout(() => {
             notification.classList.add('notification-hidden');
@@ -195,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleCartDrawer(show = null) {
         const cartDrawer = document.getElementById('cartDrawer');
         const cartOverlay = document.getElementById('cartDrawerOverlay');
-        
+
         if (show === null) {
             // Toggle current state
             cartDrawer.classList.toggle('show');
@@ -213,27 +212,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartIconBtn = document.getElementById('cartIconBtn');
     const closeCartBtn = document.getElementById('closeCartBtn');
     const cartOverlay = document.getElementById('cartDrawerOverlay');
-    
+
     // Open cart drawer
     if (cartIconBtn) {
-        cartIconBtn.addEventListener('click', function(e) {
+        cartIconBtn.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             toggleCartDrawer(true);
             loadCartData();
         });
     }
-    
+
     // Close cart drawer
     if (closeCartBtn) {
-        closeCartBtn.addEventListener('click', function() {
+        closeCartBtn.addEventListener('click', function () {
             toggleCartDrawer(false);
         });
     }
-    
+
     // Close cart drawer on overlay click
     if (cartOverlay) {
-        cartOverlay.addEventListener('click', function() {
+        cartOverlay.addEventListener('click', function () {
             toggleCartDrawer(false);
         });
     }
@@ -248,15 +247,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json'
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to load cart');
             }
-            
+
             const data = await response.json();
             renderCartItems(data.items);
             updateCartDrawerTotal(data.total);
-            
+
         } catch (error) {
             console.error('Error loading cart:', error);
         }
@@ -267,17 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const cartDrawerBody = document.getElementById('cartDrawerBody');
         const cartDrawerEmpty = document.getElementById('cartDrawerEmpty');
         const cartDrawerFooter = document.getElementById('cartDrawerFooter');
-        
+
         if (!items || items.length === 0) {
             cartDrawerBody.innerHTML = '';
             cartDrawerBody.appendChild(cartDrawerEmpty.cloneNode(true));
             cartDrawerFooter.style.display = 'none';
             return;
         }
-        
+
         cartDrawerFooter.style.display = 'block';
         cartDrawerBody.innerHTML = '';
-        
+
         items.forEach(item => {
             const cartItemHTML = `
                 <div class="cart-drawer-item" data-variant-id="${item.variant_id}">
@@ -285,13 +284,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="cart-drawer-item-info">
                         <div class="cart-drawer-item-name">${item.name}</div>
                         <div class="cart-drawer-item-variant">${item.variant_name}</div>
-                        <div class="cart-drawer-item-quantity">
-                            <button class="cart-drawer-qty-btn" onclick="updateCartItemQuantity(${item.variant_id}, ${item.quantity - 1})">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="cart-drawer-qty-btn" onclick="updateCartItemQuantity(${item.variant_id}, ${item.quantity + 1})">+</button>
+                        <div class="cart-drawer-item-bottom" style="display:flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                            <div class="cart-drawer-item-quantity" style="margin-top: 0;">
+                                <button class="cart-drawer-qty-btn" onclick="window.updateCartItemQuantity('${item.key}', ${item.quantity - 1})">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="cart-drawer-qty-btn" onclick="window.updateCartItemQuantity('${item.key}', ${item.quantity + 1})">+</button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="cart-drawer-item-price">Ks ${numberFormat(item.price * item.quantity)}</div>
+                                <button class="cart-drawer-item-remove" style="margin-top:0;" onclick="window.removeCartItem('${item.key}')" title="Remove Item"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                         </div>
-                        <div class="cart-drawer-item-price">Ks ${numberFormat(item.price * item.quantity)}</div>
-                        <button class="cart-drawer-item-remove" onclick="removeCartItem(${item.variant_id})">Remove</button>
                     </div>
                 </div>
             `;
@@ -312,12 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Intl.NumberFormat().format(num);
     }
 
-    // Update cart item quantity
-    async function updateCartItemQuantity(variantId, quantity) {
+    // Expose functions globally for inline onclick handlers
+    window.updateCartItemQuantity = async function(key, quantity) {
         if (quantity < 1) return;
-        
+
         try {
-            const response = await fetch('/cart/update', {
+            const response = await fetch('/cart/update-ajax', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -325,29 +328,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    variant_id: variantId,
+                    key: key,
                     quantity: quantity
                 })
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to update quantity');
             }
-            
+
             const data = await response.json();
             loadCartData();
             updateCartBadge(data.cart_count);
-            
+
         } catch (error) {
             console.error('Error updating quantity:', error);
             showNotification('Failed to update quantity', 'error');
         }
     }
 
-    // Remove cart item
-    async function removeCartItem(variantId) {
+    window.removeCartItem = async function(key) {
         try {
-            const response = await fetch('/cart/remove', {
+            const response = await fetch('/cart/remove-ajax', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -355,18 +357,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    variant_id: variantId
+                    key: key
                 })
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to remove item');
             }
-            
+
             const data = await response.json();
             loadCartData();
             updateCartBadge(data.cart_count);
-            
+
         } catch (error) {
             console.error('Error removing item:', error);
             showNotification('Failed to remove item', 'error');

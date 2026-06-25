@@ -9,7 +9,7 @@
 
     {{-- Cart Remove Forms (checkout form အပြင်မှာ သီးသန့်) --}}
     @foreach($cartItems as $item)
-        <form id="remove-form-{{ $item['variant']->id }}" action="{{ route('cart.remove', $item['variant']->id) }}"
+        <form id="remove-form-{{ $item['variant']->id }}" action="{{ route('cart.remove-variant', $item['variant']->id) }}"
             method="POST" style="display:none">
             @csrf
             @method('DELETE')

@@ -1,7 +1,9 @@
+// ၁. sidebar user profile popup
 function toggleDropdown(id) {
     document.getElementById(id).classList.toggle('show');
 }
 
+// ၂. sidebar toggle button 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {

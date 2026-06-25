@@ -110,10 +110,7 @@
                     <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                 </div>
             </div>
-            <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
-            </form>
+            <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $item->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
         </div>
         @empty
         <p class="inline-style-90">No bestsellers found.</p>
@@ -145,10 +142,7 @@
                     <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
                 </div>
             </div>
-            <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
-            </form>
+            <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $item->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
         </div>
         @empty
         <p>No new arrivals found.</p>
@@ -173,10 +167,7 @@
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
             </div>
             <div class="card-price inline-style-95" >{{ $item->price_range }}</div>
-            <form action="{{ route('cart.add-item', $item->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
-            </form>
+            <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $item->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
         </div>
         @empty
         <p>No featured items.</p>

@@ -2,12 +2,12 @@
     <ul class="pagination" style="display:flex; list-style:none; gap:5px; padding:0; margin:0; justify-content: flex-end; align-items: center;">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
-            <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
+            <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
                 <span class="page-link" aria-hidden="true" style="padding: 6px 12px; border: 1px solid var(--border-color); background: #f8fafc; color: #a0aec0; border-radius: 6px;">&lsaquo;</span>
             </li>
         @else
             <li class="page-item">
-                <a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="@lang('pagination.previous')" style="padding: 6px 12px; border: 1px solid var(--border-color); background: #fff; color: var(--secondary); text-decoration: none; border-radius: 6px; transition: all 0.2s;">&lsaquo;</a>
+                <a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Previous" style="padding: 6px 12px; border: 1px solid var(--border-color); background: #fff; color: var(--secondary); text-decoration: none; border-radius: 6px; transition: all 0.2s;">&lsaquo;</a>
             </li>
         @endif
 
@@ -33,10 +33,10 @@
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
             <li class="page-item">
-                <a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="@lang('pagination.next')" style="padding: 6px 12px; border: 1px solid var(--border-color); background: #fff; color: var(--secondary); text-decoration: none; border-radius: 6px; transition: all 0.2s;">&rsaquo;</a>
+                <a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Next" style="padding: 6px 12px; border: 1px solid var(--border-color); background: #fff; color: var(--secondary); text-decoration: none; border-radius: 6px; transition: all 0.2s;">&rsaquo;</a>
             </li>
         @else
-            <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.next')">
+            <li class="page-item disabled" aria-disabled="true" aria-label="Next">
                 <span class="page-link" aria-hidden="true" style="padding: 6px 12px; border: 1px solid var(--border-color); background: #f8fafc; color: #a0aec0; border-radius: 6px;">&rsaquo;</span>
             </li>
         @endif

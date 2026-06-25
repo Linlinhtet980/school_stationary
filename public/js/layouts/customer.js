@@ -1,5 +1,4 @@
-// js/customer.js
-
+// ၁.cart drawer ပွင့်/ပိတ် စနစ်
 document.addEventListener('DOMContentLoaded', function() {
     
     // Elements ကို ရွေးချယ်ခြင်း
@@ -35,19 +34,4 @@ document.addEventListener('DOMContentLoaded', function() {
         cartOverlay.addEventListener('click', closeCart);
     }
 
-});
-
-
-function toggleProfileDropdown() {
-    document.getElementById('profileDropdown').classList.toggle('show');
-}
-
-// Click outside => close dropdown
-document.addEventListener('click', function (event) {
-    const dropdown = document.querySelector('.profile-dropdown');
-    const menu = document.getElementById('profileDropdown');
-
-    if (!dropdown.contains(event.target)) {
-        menu.classList.remove('show');
-    }
-});
+});

@@ -44,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error("Phone number is invalid. Please check again.");
                 }
 
-                // TODO: ဤနေရာတွင် Backend သို့ API လှမ်းခေါ်သော Code ရေးရပါမည်။
-                // ဥပမာ - await fetch('/api/checkout', { method: 'POST', body: formData });
 
                 alert("Order Placed Successfully! Thank you for shopping with us.");
                 window.location.href = "index.html"; // အောင်မြင်ပါက ပင်မစာမျက်နှာသို့ ပြန်ပို့မည်

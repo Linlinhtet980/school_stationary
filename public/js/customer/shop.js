@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (priceSlider && priceOutput) {
         // 'input' event သည် user က slider ကို ဖိဆွဲနေစဥ် အချိန်တိုင်း အလုပ်လုပ်သည်
         priceSlider.addEventListener('input', updatePrice);
+    }
+
     // Real-time search functionality
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {

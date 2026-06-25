@@ -97,7 +97,7 @@
                 <button type="submit" class="btn-add-huge" id="addToCartBtn" {{ $totalStock == 0 ? 'disabled' : '' }}>
                     <i class="fa-solid fa-cart-shopping inline-style-104" ></i> Add to Cart
                 </button>
-                <button type="button" class="btn-wishlist">
+                <button type="button" class="btn-wishlist" onclick="window.addToWishlist({{ $item->id }})">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
@@ -127,10 +127,7 @@
                     <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                 </div>
             </div>
-            <form action="{{ route('cart.add-item', $related->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-add"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
-            </form>
+            <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $related->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
         </div>
         @endforeach
     </div>
@@ -199,14 +196,36 @@
         }
     }
 
-    // Form validation before submit
-    document.getElementById('addToCartForm').addEventListener('submit', function(e) {
-        if (document.getElementById('variant_id') && !document.getElementById('variant_id').value) {
+    // Form validation and AJAX submission
+    document.getElementById('addToCartForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Prevent full page reload
+        
+        const variantId = document.getElementById('variant_id') ? document.getElementById('variant_id').value : null;
+        
+        if (document.getElementById('variant_id') && !variantId) {
             alert('Please select a variant');
-            e.preventDefault();
             return false;
         }
-        // Let layout.js handle the actual AJAX submission and cart drawer opening
+
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        
+        // Wait for layout.js to be ready just in case
+        if (window.addToCartAjax) {
+            // If the item has no variants, we might need a fallback. But the form route is cart.add-item.
+            // If variantId is set, use addToCartAjax
+            if (variantId) {
+                await window.addToCartAjax(variantId, quantity);
+            } else {
+                // For items without variants, we can use the regular addToCart or fetch variant
+                // Wait, if it has no variants, the variant selector is hidden, so there's no variant_id input.
+                // We'll just call window.addToCart(itemId) multiple times? No, we need quantity.
+                // Let's use the first-variant endpoint to get it, or just submit the form if we don't have the logic ready.
+                // Since most products have variants, or the first variant is auto-resolved, let's just submit the form if no variant_id exists.
+                this.submit();
+            }
+        } else {
+            this.submit();
+        }
     });
 </script>
 @endpush
