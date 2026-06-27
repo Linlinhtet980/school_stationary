@@ -195,6 +195,47 @@
 
         // Initial calculation
         calculateOriginalPrice();
+
+        // Image Upload Preview and Click
+        const imagePreview = document.getElementById('imagePreview');
+        const imageInput = document.getElementById('image');
+
+        if(imagePreview && imageInput) {
+            imagePreview.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">`;
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Drag and Drop
+            imagePreview.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imagePreview.style.borderColor = 'var(--primary)';
+                imagePreview.style.backgroundColor = '#f8f9fa';
+            });
+            imagePreview.addEventListener('dragleave', () => {
+                imagePreview.style.borderColor = '#CBD5E0';
+                imagePreview.style.backgroundColor = 'transparent';
+            });
+            imagePreview.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imagePreview.style.borderColor = '#CBD5E0';
+                imagePreview.style.backgroundColor = 'transparent';
+                if (e.dataTransfer.files.length) {
+                    imageInput.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    imageInput.dispatchEvent(event);
+                }
+            });
+        }
     });
 </script>
 @endpush

@@ -1,6 +1,7 @@
 @extends('layouts.customer')
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/customer/views/bestsellers.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/bestsellers.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/sidebar_filter.css') }}?v=2">
 @endpush
 
 @section('title', 'Campus Supply - Shop')
@@ -15,66 +16,16 @@
 
 <div class="shop-container">
     <!-- Sidebar Filters -->
-    <aside class="sidebar">
-        <form action="{{ route('shop.index') }}" method="GET" id="filterForm">
-            <div class="filter-group">
-                <div class="filter-title">Categories</div>
-                <ul class="filter-list">
-                    <li>
-                        <label>
-                            <input type="radio" name="category" value="" {{ !request('category') ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
-                            All Categories
-                        </label>
-                    </li>
-                    @foreach($categories as $category)
-                    <li>
-                        <label>
-                            <input type="radio" name="category" value="{{ $category->id }}" {{ request('category') == $category->id ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
-                            {{ $category->name }}
-                        </label>
-                    </li>
-                    @endforeach
-                </ul>
-            </div>
-            
-            <div class="filter-group">
-                <div class="filter-title">Brands</div>
-                <ul class="filter-list">
-                    <li>
-                        <label>
-                            <input type="radio" name="brand" value="" {{ !request('brand') ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
-                            All Brands
-                        </label>
-                    </li>
-                    @foreach($brands as $brand)
-                    <li>
-                        <label>
-                            <input type="radio" name="brand" value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
-                            {{ $brand->name }}
-                        </label>
-                    </li>
-                    @endforeach
-                </ul>
-            </div>
-            
-            <div class="filter-group">
-                <div class="filter-title">Price Range</div>
-                <div class="filter-price">
-                    <input type="number" name="min_price" placeholder="Min Ks" value="{{ request('min_price') }}">
-                    <span>-</span>
-                    <input type="number" name="max_price" placeholder="Max Ks" value="{{ request('max_price') }}">
-                </div>
-                <button type="submit" class="inline-style-45">Apply Filter</button>
-            </div>
-        </form>
-    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+    @include('customer.partials.sidebar_filter', ['action' => route('shop.bestsellers')])
 
     <!-- Main Product Area -->
     <main class="main-content">
         <div class="toolbar">
+            <button type="button" class="mobile-filter-btn" onclick="toggleMobileSidebar()"><i class="fa-solid fa-filter"></i> Filters</button>
             <div class="results-count">Showing {{ $items->firstItem() ?? 0 }}-{{ $items->lastItem() ?? 0 }} of {{ $items->total() }} results</div>
             <div class="sort-by">
-                <form action="{{ route('shop.index') }}" method="GET" id="sortForm">
+                <form action="{{ route('shop.bestsellers') }}" method="GET" id="sortForm">
                     @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
                     @if(request('brand')) <input type="hidden" name="brand" value="{{ request('brand') }}"> @endif
                     <select name="sort" onchange="document.getElementById('sortForm').submit();">
@@ -115,4 +66,15 @@
 
     </main>
 </div>
+    <script>
+        function toggleMobileSidebar() {
+            document.getElementById('sidebarFilter').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+            if (document.getElementById('sidebarFilter').classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+    </script>
 @endsection

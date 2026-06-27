@@ -19,78 +19,7 @@ class ShopController extends Controller
     {
         $query = Item::with(['type', 'brand', 'variants'])->where('status', 'active');
 
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-        }
-
-        // Category filtering
-        if ($request->filled('category')) {
-            $categoryIds = explode(',', $request->category);
-            $query->whereHas('type', function($q) use ($categoryIds) {
-                $q->whereIn('category_id', $categoryIds);
-            });
-        }
-
-        // Type filtering
-        if ($request->filled('type')) {
-            $typeIds = explode(',', $request->type);
-            $query->whereIn('type_id', $typeIds);
-        }
-
-        // Brand filtering
-        if ($request->filled('brand')) {
-            $brandIds = explode(',', $request->brand);
-            $query->whereIn('brand_id', $brandIds);
-        }
-
-        // Price range filtering
-        if ($request->filled('min_price') && $request->filled('max_price')) {
-            $query->whereBetween('price', [$request->min_price, $request->max_price]);
-        } elseif ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        } elseif ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        // Stock filtering
-        if ($request->filled('stock')) {
-            if ($request->stock === 'in_stock') {
-                $query->whereHas('variants', function($q) {
-                    $q->where('stock_quantity', '>', 0);
-                });
-            } elseif ($request->stock === 'out_of_stock') {
-                $query->whereHas('variants', function($q) {
-                    $q->where('stock_quantity', '<=', 0);
-                });
-            }
-        }
-
-        // Sorting
-        $sort = $request->get('sort', 'latest');
-        switch ($sort) {
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'name_asc':
-                $query->orderBy('name', 'asc');
-                break;
-            case 'name_desc':
-                $query->orderBy('name', 'desc');
-                break;
-            case 'oldest':
-                $query->oldest();
-                break;
-            case 'latest':
-            default:
-                $query->latest();
-                break;
-        }
+        $query = $this->applyFilters($query, $request);
 
         $items = $query->paginate(12)->appends($request->except('page'));
 
@@ -134,12 +63,14 @@ class ShopController extends Controller
     /**
      * Display new arrivals page
      */
-    public function newArrivals()
+    public function newArrivals(Request $request)
     {
-        $items = Item::with(['type', 'brand', 'variants'])
-                    ->where('status', 'active')
-                    ->latest()
-                    ->paginate(12);
+        $query = Item::with(['type', 'brand', 'variants'])
+                    ->where('status', 'active');
+        
+        $query = $this->applyFilters($query, $request, 'latest');
+
+        $items = $query->paginate(12)->appends($request->except('page'));
 
         $categories = Category::where('status', 'active')->with('types')->get();
         $brands = Brand::orderBy('name')->get();
@@ -150,14 +81,16 @@ class ShopController extends Controller
     /**
      * Display bestsellers page
      */
-    public function bestsellers()
+    public function bestsellers(Request $request)
     {
         // Get items that have been ordered most frequently
-        $items = Item::with(['type', 'brand', 'variants'])
+        $query = Item::with(['type', 'brand', 'variants'])
                     ->where('status', 'active')
-                    ->withCount(['orderItems as order_count'])
-                    ->orderBy('order_count', 'desc')
-                    ->paginate(12);
+                    ->withCount(['orderItems as order_count']);
+                    
+        $query = $this->applyFilters($query, $request, 'bestselling');
+        
+        $items = $query->paginate(12)->appends($request->except('page'));
 
         $categories = Category::where('status', 'active')->with('types')->get();
         $brands = Brand::orderBy('name')->get();
@@ -235,78 +168,7 @@ class ShopController extends Controller
     {
         $query = Item::with(['type', 'brand', 'variants'])->where('status', 'active');
 
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-        }
-
-        // Category filtering
-        if ($request->filled('category')) {
-            $categoryIds = explode(',', $request->category);
-            $query->whereHas('type', function($q) use ($categoryIds) {
-                $q->whereIn('category_id', $categoryIds);
-            });
-        }
-
-        // Type filtering
-        if ($request->filled('type')) {
-            $typeIds = explode(',', $request->type);
-            $query->whereIn('type_id', $typeIds);
-        }
-
-        // Brand filtering
-        if ($request->filled('brand')) {
-            $brandIds = explode(',', $request->brand);
-            $query->whereIn('brand_id', $brandIds);
-        }
-
-        // Price range filtering
-        if ($request->filled('min_price') && $request->filled('max_price')) {
-            $query->whereBetween('price', [$request->min_price, $request->max_price]);
-        } elseif ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        } elseif ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        // Stock filtering
-        if ($request->filled('stock')) {
-            if ($request->stock === 'in_stock') {
-                $query->whereHas('variants', function($q) {
-                    $q->where('stock_quantity', '>', 0);
-                });
-            } elseif ($request->stock === 'out_of_stock') {
-                $query->whereHas('variants', function($q) {
-                    $q->where('stock_quantity', '<=', 0);
-                });
-            }
-        }
-
-        // Sorting
-        $sort = $request->get('sort', 'latest');
-        switch ($sort) {
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'name_asc':
-                $query->orderBy('name', 'asc');
-                break;
-            case 'name_desc':
-                $query->orderBy('name', 'desc');
-                break;
-            case 'oldest':
-                $query->oldest();
-                break;
-            case 'latest':
-            default:
-                $query->latest();
-                break;
-        }
+        $query = $this->applyFilters($query, $request);
 
         $items = $query->paginate(12)->appends($request->except('page'));
 
@@ -380,5 +242,91 @@ class ShopController extends Controller
             'pagination' => $pagination,
             'total' => $items->total()
         ]);
+    }
+
+    /**
+     * Apply common filters and sorting to product queries
+     */
+    private function applyFilters($query, Request $request, $defaultSort = 'latest')
+    {
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Category filtering
+        if ($request->filled('category')) {
+            $categoryIds = explode(',', $request->category);
+            $query->whereHas('type', function($q) use ($categoryIds) {
+                $q->whereIn('category_id', $categoryIds);
+            });
+        }
+
+        // Type filtering
+        if ($request->filled('type')) {
+            $typeIds = explode(',', $request->type);
+            $query->whereIn('type_id', $typeIds);
+        }
+
+        // Brand filtering
+        if ($request->filled('brand')) {
+            $brandIds = explode(',', $request->brand);
+            $query->whereIn('brand_id', $brandIds);
+        }
+
+        // Price range filtering
+        if ($request->filled('min_price') && $request->filled('max_price')) {
+            $query->whereBetween('price', [$request->min_price, $request->max_price]);
+        } elseif ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        } elseif ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Stock filtering
+        if ($request->filled('stock')) {
+            if ($request->stock === 'in_stock') {
+                $query->whereHas('variants', function($q) {
+                    $q->where('stock_quantity', '>', 0);
+                });
+            } elseif ($request->stock === 'out_of_stock') {
+                $query->whereHas('variants', function($q) {
+                    $q->where('stock_quantity', '<=', 0);
+                });
+            }
+        }
+
+        // Sorting
+        $sort = $request->get('sort', $defaultSort);
+        switch ($sort) {
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'bestselling':
+                $query->orderBy('order_count', 'desc');
+                break;
+            case 'latest':
+            default:
+                $query->latest();
+                break;
+        }
+        
+        return $query;
     }
 }

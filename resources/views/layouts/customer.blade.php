@@ -8,15 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @stack('styles')
     <link rel="stylesheet" href="{{ asset('css/customer/views/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/customer/views/customer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/customer/views/layout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/components.css') }}?v=1">
     <link rel="stylesheet" href="{{ asset('css/customer/views/prototype.css') }}">
+    @stack('styles')
 </head>
 <body class="{{ auth()->check() ? 'authenticated' : '' }}">
 
     <nav class="navbar">
+        <button type="button" id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
         <div class="logo-container">
             <img src="{{ asset('logo.png') }}" alt="Logo" class="logo-img">
             <a href="{{ route('home') }}" class="inline-style-122">
@@ -57,6 +61,38 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Slide-out Sidebar -->
+    <div id="mobileOverlay" class="mobile-overlay"></div>
+    <div id="mobileSidebar" class="mobile-sidebar">
+        <div class="mobile-sidebar-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="{{ asset('logo.png') }}" alt="Logo" style="width: 35px; height: 35px; object-fit: contain; border-radius: 6px;">
+                <div class="logo-text" style="font-size: 1.2rem; font-weight: 800;">CAMPUS<span style="color: var(--primary);">SUPPLY</span></div>
+            </div>
+            <button type="button" id="closeMobileMenuBtn" class="close-mobile-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="mobile-search">
+            <form action="{{ route('shop.search') }}" method="GET">
+                <input type="text" name="q" placeholder="Search products...">
+                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">HOME</a>
+            <a href="{{ route('shop.index') }}" class="{{ request()->routeIs('shop.index') ? 'active' : '' }}">PRODUCTS</a>
+            <a href="{{ route('shop.new-arrivals') }}" class="{{ request()->routeIs('shop.new-arrivals') ? 'active' : '' }}">NEW ARRIVALS</a>
+            <a href="{{ route('shop.bestsellers') }}" class="{{ request()->routeIs('shop.bestsellers') ? 'active' : '' }}">BESTSELLERS</a>
+            <a href="{{ route('shop.b2s-deals') }}" class="{{ request()->routeIs('shop.b2s-deals') ? 'active' : '' }}">B2S DEALS</a>
+            <hr style="margin: 1rem 0; border: none; border-top: 1px solid #eee;">
+            @auth
+                <a href="{{ route('profile.index') }}" class="{{ request()->routeIs('profile.*') && !request()->routeIs('profile.wishlist') ? 'active' : '' }}"><i class="fa-regular fa-user" style="width: 25px;"></i> PROFILE</a>
+                <a href="{{ route('profile.wishlist') }}" class="{{ request()->routeIs('profile.wishlist') ? 'active' : '' }}"><i class="fa-regular fa-heart" style="width: 25px;"></i> WISHLIST</a>
+            @else
+                <a href="{{ route('login') }}"><i class="fa-regular fa-user" style="width: 25px;"></i> LOGIN / REGISTER</a>
+            @endauth
+        </div>
+    </div>
 
     @yield('content')
 

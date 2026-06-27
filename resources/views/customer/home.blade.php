@@ -93,10 +93,10 @@
     <div class="dark-shape2"></div>
     <div class="section-header inline-style-86" >
         <h2 class="section-title">OUR BESTSELLERS</h2>
-        <div class="arrows">
-            <div class="arrow" onclick="scrollGrid('bestsellers-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="arrow" onclick="scrollGrid('bestsellers-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
-        </div>
+    </div>
+    <div class="arrows">
+        <div class="arrow" onclick="scrollGrid('bestsellers-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="arrow" onclick="scrollGrid('bestsellers-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
     </div>
     <div class="slider-grid inline-style-89" id="bestsellers-grid">
         @forelse($bestsellers as $item)
@@ -122,10 +122,10 @@
 <section class="section inline-style-91" >
     <div class="section-header">
         <h2 class="section-title">NEW ARRIVALS</h2>
-        <div class="arrows">
-            <div class="arrow" onclick="scrollGrid('new-arrivals-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="arrow" onclick="scrollGrid('new-arrivals-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
-        </div>
+    </div>
+    <div class="arrows">
+        <div class="arrow" onclick="scrollGrid('new-arrivals-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="arrow" onclick="scrollGrid('new-arrivals-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
     </div>
     <div class="slider-grid" id="new-arrivals-grid">
         @forelse($newArrivals as $item)
@@ -153,10 +153,10 @@
 <section class="section">
     <div class="section-header">
         <h2 class="section-title">FEATURED ITEMS</h2>
-        <div class="arrows">
-            <div class="arrow" onclick="scrollGrid('featured-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="arrow" onclick="scrollGrid('featured-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
-        </div>
+    </div>
+    <div class="arrows">
+        <div class="arrow" onclick="scrollGrid('featured-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="arrow" onclick="scrollGrid('featured-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
     </div>
     <div class="slider-grid" id="featured-grid">
         @forelse($featuredItems as $item)

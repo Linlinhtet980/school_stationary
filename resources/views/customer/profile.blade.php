@@ -224,7 +224,7 @@
                         <div class="form-group-p">
                             <label>Date of Birth</label>
                             <input type="date" name="dob"
-                                value="{{ $customer->dob ? $customer->dob->format('Y-m-d') : '' }}">
+                                value="{{ $customer->dob ? \Carbon\Carbon::parse($customer->dob)->format('Y-m-d') : '' }}">
                         </div>
                     </div>
                     <div class="form-group-p inline-style-113">

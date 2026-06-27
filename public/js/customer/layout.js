@@ -1,6 +1,19 @@
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Mobile Sidebar Logic
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeMobileMenuBtn = document.getElementById('closeMobileMenuBtn');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileOverlay = document.getElementById('mobileOverlay');
 
+    function toggleMobileMenu() {
+        mobileSidebar.classList.toggle('active');
+        mobileOverlay.classList.toggle('active');
+    }
+
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    if (mobileOverlay) mobileOverlay.addEventListener('click', toggleMobileMenu);
 
     // Profile Dropdown Logic
     window.toggleProfileDropdown = function () {
