@@ -26,13 +26,13 @@ class ReviewController extends Controller
         }
 
         if ($request->filled('sort')) {
-            if ($request->sort === 'oldest') {
-                $query->oldest('id');
-            } else {
+            if ($request->sort === 'newest') {
                 $query->latest('id');
+            } else {
+                $query->oldest('id');
             }
         } else {
-            $query->latest('id');
+            $query->oldest('id');
         }
 
         $reviews = $query->paginate(15)->withQueryString();

@@ -26,13 +26,13 @@ class BrandController extends Controller
         }
 
         if ($request->filled('sort')) {
-            if ($request->sort === 'oldest') {
-                $query->oldest('id');
+            if ($request->sort === 'newest') {
+                $query->latest('id'); 
             } else {
-                $query->latest('id');
+                $query->oldest('id'); 
             }
         } else {
-            $query->latest();
+            $query->oldest(); 
         }
 
         $brands = $query->paginate(5)->appends($request->except('page'));

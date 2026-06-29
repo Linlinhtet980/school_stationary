@@ -35,13 +35,13 @@ class StaffController extends Controller
         }
 
         if ($request->filled('sort')) {
-            if ($request->sort === 'oldest') {
-                $query->oldest('id');
-            } else {
+            if ($request->sort === 'newest') {
                 $query->latest('id');
+            } else {
+                $query->oldest('id');
             }
         } else {
-            $query->latest();
+            $query->oldest();
         }
 
         $staffUsers = $query->paginate(5)->appends($request->except('page'));

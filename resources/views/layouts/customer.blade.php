@@ -37,10 +37,11 @@
             </div>
             <div class="nav-actions">
                 <div class="search-bar">
-                    <form action="{{ route('shop.search') }}" method="GET" class="inline-style-123">
-                        <input type="text" name="q" placeholder="Search">
+                    <form action="{{ route('shop.index') }}" method="GET" class="inline-style-123">
+                        <input type="text" name="search" id="headerSearchInput" value="{{ request('search') }}" placeholder="Search products..." autocomplete="off">
                         <button type="submit" class="inline-style-124"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
+                    <div id="searchLiveResults" class="search-live-results"></div>
                 </div>
                 <div class="icons">
                     @auth
@@ -73,8 +74,8 @@
             <button type="button" id="closeMobileMenuBtn" class="close-mobile-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="mobile-search">
-            <form action="{{ route('shop.search') }}" method="GET">
-                <input type="text" name="q" placeholder="Search products...">
+            <form action="{{ route('shop.index') }}" method="GET">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products...">
                 <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
         </div>

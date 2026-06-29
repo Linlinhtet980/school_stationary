@@ -142,6 +142,7 @@ body {
     display: flex;
     align-items: center;
     width: 250px;
+    position: relative;
 }
 
 .search-bar form {
@@ -163,6 +164,73 @@ body {
     border: none;
     cursor: pointer;
     color: #888;
+}
+
+/* Live Search Dropdown Styles */
+.search-live-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 380px;
+    overflow-y: auto;
+    display: none;
+    border: 1px solid #eef2f5;
+}
+
+.search-live-results.show {
+    display: block;
+}
+
+.search-live-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: #333333;
+    border-bottom: 1px solid #f5f7fa;
+    transition: background 0.2s ease;
+}
+
+.search-live-item:last-child {
+    border-bottom: none;
+}
+
+.search-live-item:hover {
+    background: #f8fafc;
+}
+
+.search-live-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.search-live-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-live-item-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2b3674;
+    line-height: 1.2;
+}
+
+.search-live-item-price {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary, #4318ff);
+    margin-top: 3px;
 }
 
 .icons {

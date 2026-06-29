@@ -112,21 +112,50 @@ class ShopController extends Controller
     }
 
     /**
-     * Search products (AJAX endpoint)
+     * Search products (AJAX endpoint for live autocomplete)
      */
     public function search(Request $request)
     {
-        $search = $request->get('q', '');
+        $search = trim($request->input('q', $request->input('search', '')));
         
         if (strlen($search) < 2) {
             return response()->json([]);
         }
 
+        $searchTerms = [$search];
+        if (stripos($search, 'stationary') !== false) {
+            $searchTerms[] = str_ireplace('stationary', 'stationery', $search);
+            $searchTerms[] = 'stationery';
+        }
+
         $items = Item::where('status', 'active')
-                    ->where('name', 'like', "%{$search}%")
-                    ->with('variants')
-                    ->take(10)
-                    ->get();
+                    ->where(function($q) use ($searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $q->orWhere('name', 'like', "%{$term}%")
+                              ->orWhere('description', 'like', "%{$term}%")
+                              ->orWhereHas('type', function($tQuery) use ($term) {
+                                  $tQuery->where('name', 'like', "%{$term}%")
+                                         ->orWhereHas('category', function($cQuery) use ($term) {
+                                             $cQuery->where('name', 'like', "%{$term}%");
+                                         });
+                              })
+                              ->orWhereHas('brand', function($bQuery) use ($term) {
+                                  $bQuery->where('name', 'like', "%{$term}%");
+                              });
+                        }
+                    })
+                    ->with(['type', 'brand', 'variants'])
+                    ->take(8)
+                    ->get()
+                    ->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'price' => $item->price_range,
+                            'image' => $item->image ? asset('storage/' . $item->image) : null,
+                            'url' => route('shop.show', $item->id)
+                        ];
+                    });
 
         return response()->json($items);
     }
@@ -250,11 +279,29 @@ class ShopController extends Controller
     private function applyFilters($query, Request $request, $defaultSort = 'latest')
     {
         // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+        if ($request->filled('search') || $request->filled('q')) {
+            $search = trim($request->input('search', $request->input('q', '')));
+            
+            $searchTerms = [$search];
+            if (stripos($search, 'stationary') !== false) {
+                $searchTerms[] = str_ireplace('stationary', 'stationery', $search);
+                $searchTerms[] = 'stationery';
+            }
+
+            $query->where(function($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $q->orWhere('name', 'like', "%{$term}%")
+                      ->orWhere('description', 'like', "%{$term}%")
+                      ->orWhereHas('type', function($tQuery) use ($term) {
+                          $tQuery->where('name', 'like', "%{$term}%")
+                                 ->orWhereHas('category', function($cQuery) use ($term) {
+                                     $cQuery->where('name', 'like', "%{$term}%");
+                                 });
+                      })
+                      ->orWhereHas('brand', function($bQuery) use ($term) {
+                          $bQuery->where('name', 'like', "%{$term}%");
+                      });
+                }
             });
         }
 

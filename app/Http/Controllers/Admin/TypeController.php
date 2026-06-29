@@ -14,7 +14,7 @@ class TypeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Type::with('category')->latest();
+        $query = Type::with('category')->oldest();
 
         if ($request->filled('search')) {
             $search = $request->search;

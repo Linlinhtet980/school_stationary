@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::withCount('types')->with('staff')->latest();
+        $query = Category::withCount('types')->with('staff')->oldest();
 
         if ($request->filled('search')) {
             $search = $request->search;

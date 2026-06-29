@@ -11,7 +11,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Customer::with('user')->latest();
+        $query = Customer::with('user')->oldest();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -31,13 +31,13 @@ class CustomerController extends Controller
         }
 
         if ($request->filled('sort')) {
-            if ($request->sort === 'oldest') {
-                $query->oldest('id');
-            } else {
+            if ($request->sort === 'newest') {
                 $query->latest('id');
+            } else {
+                $query->oldest('id');
             }
         } else {
-            $query->latest();
+            $query->oldest();
         }
 
         $customers = $query->paginate(5)->appends($request->except('page'));

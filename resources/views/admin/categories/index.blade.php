@@ -27,10 +27,10 @@
                         <div class="filter-section">
                             <span class="filter-label">Sort By</span>
                             <label class="filter-option">
-                                <input type="radio" name="sort" value="newest" onchange="applyFilters()" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}> Newest First
+                                <input type="radio" name="sort" value="newest" onchange="applyFilters()" {{ request('sort') == 'newest' ? 'checked' : '' }}> Newest First
                             </label>
                             <label class="filter-option">
-                                <input type="radio" name="sort" value="oldest" onchange="applyFilters()" {{ request('sort') == 'oldest' ? 'checked' : '' }}> Oldest First
+                                <input type="radio" name="sort" value="oldest" onchange="applyFilters()" {{ request('sort') == 'oldest' || !request('sort') ? 'checked' : '' }}> Oldest First
                             </label>
                         </div>
                         <div class="filter-section">

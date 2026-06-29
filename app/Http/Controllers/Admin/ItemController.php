@@ -43,13 +43,13 @@ class ItemController extends Controller
         }
 
         if ($request->filled('sort')) {
-            if ($request->sort === 'oldest') {
-                $query->oldest('id'); // Ascending
+            if ($request->sort === 'newest') {
+                $query->latest('id'); 
             } else {
-                $query->latest('id'); // Descending
+                $query->oldest('id'); 
             }
         } else {
-            $query->latest(); // Default sort
+            $query->oldest(); 
         }
 
         $items = $query->paginate(5)->appends($request->except('page'));
@@ -76,8 +76,8 @@ class ItemController extends Controller
             'type_id' => 'required|exists:types,id',
             'name'    => 'required|string|min:3|max:100',
             'status'  => 'required',
-            'image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image'   => 'nullable|image|mimes:jpeg,png,jpg,webp,jfif,gif,svg,bmp,avif|max:10240',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,jfif,gif,svg,bmp,avif|max:10240',
             'variants' => 'nullable|array',
             'variants.*.price' => 'nullable|numeric|min:0',
             'variants.*.stock_qty' => 'nullable|integer|min:0',
@@ -179,8 +179,8 @@ class ItemController extends Controller
             'type_id' => 'required|exists:types,id',
             'name'    => 'required|string|min:3|max:100',
             'status'  => 'required',
-            'image'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image'   => 'nullable|image|mimes:jpeg,png,jpg,webp,jfif,gif,svg,bmp,avif|max:10240',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,jfif,gif,svg,bmp,avif|max:10240',
             'variants' => 'nullable|array',
             'variants.*.price' => 'nullable|numeric|min:0',
             'variants.*.stock_qty' => 'nullable|integer|min:0',
@@ -280,9 +280,8 @@ class ItemController extends Controller
      */
     public function destroyImage(int $id)
     {
-        $image = ItemImage::findOrFail($id);
-        
         try {
+            $image = ItemImage::findOrFail($id);
             $imagePath = $image->image_path;
             $image->delete(); // Delete from database
 
@@ -291,9 +290,16 @@ class ItemController extends Controller
                 Storage::disk('public')->delete($imagePath);
             }
 
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Image removed successfully.']);
+            }
+
             return redirect()->back()->with('success', 'Image removed successfully.');
         } catch (\Exception $e) {
             Log::error('Gallery Image Delete Error: ' . $e->getMessage());
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to remove image.'], 500);
+            }
             return redirect()->back()->with('error', 'Failed to remove image.');
         }
     }

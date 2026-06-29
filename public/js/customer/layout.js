@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Expose functions globally for inline onclick handlers
-    window.updateCartItemQuantity = async function(key, quantity) {
+    window.updateCartItemQuantity = async function (key, quantity) {
         if (quantity < 1) return;
 
         try {
@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    window.removeCartItem = async function(key) {
+    window.removeCartItem = async function (key) {
         try {
             const response = await fetch('/cart/remove-ajax', {
                 method: 'POST',
@@ -386,5 +386,69 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error removing item:', error);
             showNotification('Failed to remove item', 'error');
         }
+    }
+
+    // Live Search Autocomplete Functionality
+    const headerSearchInput = document.getElementById('headerSearchInput');
+    const searchLiveResults = document.getElementById('searchLiveResults');
+    let searchTimeout = null;
+
+    if (headerSearchInput && searchLiveResults) {
+        headerSearchInput.addEventListener('input', function () {
+            const query = this.value.trim();
+            clearTimeout(searchTimeout);
+
+            if (query.length < 2) {
+                searchLiveResults.classList.remove('show');
+                searchLiveResults.innerHTML = '';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/search?q=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(items => {
+                        if (!items || items.length === 0) {
+                            searchLiveResults.innerHTML = `
+                            <div style="padding: 12px 16px; font-size: 0.85rem; color: #888; text-align: center;">
+                                No products found for "${query}"
+                            </div>
+                        `;
+                        } else {
+                            searchLiveResults.innerHTML = items.map(item => `
+                            <a href="${item.url}" class="search-live-item">
+                                <img src="${item.image || '/images/no-image.png'}" alt="${item.name}">
+                                <div class="search-live-item-info">
+                                    <div class="search-live-item-name">${item.name}</div>
+                                    <div class="search-live-item-price">${item.price}</div>
+                                </div>
+                            </a>
+                        `).join('');
+                        }
+                        searchLiveResults.classList.add('show');
+                    })
+                    .catch(error => {
+                        console.error('Error in live search:', error);
+                    });
+            }, 250);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!headerSearchInput.contains(e.target) && !searchLiveResults.contains(e.target)) {
+                searchLiveResults.classList.remove('show');
+            }
+        });
+
+        headerSearchInput.addEventListener('focus', function () {
+            if (this.value.trim().length >= 2 && searchLiveResults.children.length > 0) {
+                searchLiveResults.classList.add('show');
+            }
+        });
     }
 });

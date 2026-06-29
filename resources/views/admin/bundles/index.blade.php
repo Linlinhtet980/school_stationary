@@ -39,7 +39,7 @@
                                     Newest First
                                 </label>
                                 <label class="filter-option">
-                                    <input type="radio" name="sort" value="oldest" {{ request('sort') == 'oldest' ? 'checked' : '' }}>
+                                    <input type="radio" name="sort" value="oldest" {{ request('sort') == 'oldest' || !request('sort') ? 'checked' : '' }}>
                                     Oldest First
                                 </label>
                             </div>
