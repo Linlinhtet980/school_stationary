@@ -77,6 +77,17 @@ body {
     width: 72px !important;
 }
 
+.sidebar.collapsed .sb-brand {
+    justify-content: center;
+    padding: 0;
+}
+
+.sidebar.collapsed .sb-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+}
+
 /* Brand Logo */
 .sb-brand {
     display: flex;
@@ -218,9 +229,13 @@ body {
 }
 
 .sb-item.active {
-    background: var(--primary);
-    color: var(--secondary);
+    background: rgba(255, 210, 0, 0.1) !important;
+    color: var(--primary) !important;
     font-weight: 700;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 10px 10px 0;
+    margin-left: 0;
+    padding-left: 12px;
 }
 
 .sb-item-icon {
@@ -239,8 +254,13 @@ body {
 }
 
 .sidebar.collapsed .sb-item-label {
-    opacity: 0;
-    width: 0;
+    display: none !important;
+}
+
+.sidebar.collapsed .sb-item {
+    justify-content: center !important;
+    gap: 0 !important;
+    padding: 10px 0 !important;
 }
 
 /* Tooltip & Badge */
@@ -357,16 +377,37 @@ body {
 }
 
 .sb-user-role {
-    font-size: 0.71rem;
-    opacity: 0.7;
+    font-size: 0.61rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.sidebar.collapsed .sb-user-info {
-    opacity: 0;
-    width: 0;
+.role-badge-super-admin {
+    background: #FFF9E6;
+    color: #D97706;
+}
+.role-badge-inventory-manager {
+    background: #E6FFFA;
+    color: #0D9488;
+}
+.role-badge-order-staff {
+    background: #EBF8FF;
+    color: #2563EB;
+}
+.role-badge-customer-support {
+    background: #EEF2FF;
+    color: #4F46E5;
+}
+.role-badge-finance-manager {
+    background: #FDF2F8;
+    color: #DB2777;
 }
 
 .sb-chevron {
@@ -375,9 +416,14 @@ body {
     flex-shrink: 0;
 }
 
+.sidebar.collapsed .sb-user-info,
 .sidebar.collapsed .sb-chevron {
-    opacity: 0;
-    width: 0;
+    display: none !important;
+}
+
+.sidebar.collapsed .sb-user {
+    justify-content: center !important;
+    padding: 8px 0 !important;
 }
 
 /* Profile Popup & Theme Toggle */
@@ -955,7 +1001,6 @@ body {
 .inline-style-8 { background: #EBF4FF; color: #3182CE; }
 .inline-style-9 { background: #EBF4FF; color: #3182CE; }
 .inline-style-10 { font-weight: 600; }
-.inline-style-11 { background: {{ $order->payment_status == }
 .inline-style-12 { background: #f1f5f9; color: #475569; text-transform: capitalize; }
 .inline-style-13 { text-align: center; color: #64748b; padding: 20px; }
 .inline-style-14 { border-left: 4px solid #ef4444; }
@@ -987,3 +1032,67 @@ body {
 .inline-style-40 { margin: 0; padding-left: 20px; }
 .inline-style-41 { margin: 0; padding-left: 20px; }
 .inline-style-121 { display: none; }
+
+/* Sidebar Dropdown Accordion */
+.sb-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px 6px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.sb-dropdown-trigger:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.sb-dropdown-trigger .sb-section-label {
+    padding: 0 0 0 20px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.sb-dropdown-caret {
+    position: absolute;
+    right: 20px;
+    top: 55%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.sb-dropdown-trigger.open .sb-dropdown-caret {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.sb-dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    opacity: 0;
+}
+
+.sb-dropdown-menu.open {
+    max-height: 400px;
+    opacity: 1;
+}
+
+/* Sidebar collapsed state overrides */
+.sidebar.collapsed .sb-dropdown-trigger {
+    display: none !important;
+}
+
+.sidebar.collapsed .sb-dropdown-menu {
+    max-height: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+}
+
+.sidebar.collapsed .sb-item.active {
+    justify-content: center !important;
+    padding: 10px 0 !important;
+    border-left: none !important;
+    margin: 2px 8px !important;
+}

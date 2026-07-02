@@ -13,9 +13,9 @@
     @stack('styles')
 
     <!-- Global theme overrides — MUST be last to override hardcoded colors -->
-    <link rel="stylesheet" href="{{ asset('css/admin/views/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/admin/views/admin.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/admin/views/theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/global.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/admin.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/views/theme.css') }}?v={{ time() }}">
 </head>
 
 <body>
@@ -47,81 +47,102 @@
                 <span class="sb-tooltip">Dashboard</span>
             </a>
 
+            @if(in_array(auth()->user()->role_id, [1, 2]))
             <div class="sb-divider"></div>
-            <div class="sb-section-label">Catalog</div>
+            <div class="sb-dropdown-trigger" onclick="toggleSidebarDropdown(this)">
+                <div class="sb-section-label">Catalog</div>
+                <i class="fa-solid fa-chevron-down sb-dropdown-caret"></i>
+            </div>
+            <div class="sb-dropdown-menu">
+                <a href="{{ route('admin.items.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.items.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-box-open"></i>
+                    <span class="sb-item-label">All Products</span>
+                    <span class="sb-tooltip">All Products</span>
+                </a>
+                <a href="{{ route('admin.categories.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-folder-open"></i>
+                    <span class="sb-item-label">Categories</span>
+                    <span class="sb-tooltip">Categories</span>
+                </a>
+                <a href="{{ route('admin.brands.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-copyright"></i>
+                    <span class="sb-item-label">Brands</span>
+                    <span class="sb-tooltip">Brands</span>
+                </a>
+                <a href="{{ route('admin.types.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.types.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-tag"></i>
+                    <span class="sb-item-label">Types</span>
+                    <span class="sb-tooltip">Types</span>
+                </a>
+            </div>
+            @endif
 
-            <a href="{{ route('admin.items.index') }}"
-                class="sb-item {{ request()->routeIs('admin.items.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-box-open"></i>
-                <span class="sb-item-label">All Products</span>
-                <span class="sb-tooltip">All Products</span>
-            </a>
-            <a href="{{ route('admin.categories.index') }}"
-                class="sb-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-folder-open"></i>
-                <span class="sb-item-label">Categories</span>
-                <span class="sb-tooltip">Categories</span>
-            </a>
-            <a href="{{ route('admin.brands.index') }}"
-                class="sb-item {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-copyright"></i>
-                <span class="sb-item-label">Brands</span>
-                <span class="sb-tooltip">Brands</span>
-            </a>
-            <a href="{{ route('admin.types.index') }}"
-                class="sb-item {{ request()->routeIs('admin.types.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-tag"></i>
-                <span class="sb-item-label">Types</span>
-                <span class="sb-tooltip">Types</span>
-            </a>
-
-            @if(in_array(auth()->user()->role_id, [1, 3, 5]))
+            @if(in_array(auth()->user()->role_id, [1, 3, 4, 5]))
             <div class="sb-divider"></div>
-            <div class="sb-section-label">Sales & Orders</div>
-
-            <a href="{{ route('admin.orders.index') }}" class="sb-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-receipt"></i>
-                <span class="sb-item-label">Orders</span>
-                <span class="sb-tooltip">Orders</span>
-            </a>
-            <a href="{{ route('admin.customers.index') }}" class="sb-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-users"></i>
-                <span class="sb-item-label">Customers</span>
-                <span class="sb-tooltip">Customers</span>
-            </a>
+            <div class="sb-dropdown-trigger" onclick="toggleSidebarDropdown(this)">
+                <div class="sb-section-label">Sales & Orders</div>
+                <i class="fa-solid fa-chevron-down sb-dropdown-caret"></i>
+            </div>
+            <div class="sb-dropdown-menu">
+                <a href="{{ route('admin.orders.index') }}" class="sb-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-receipt"></i>
+                    <span class="sb-item-label">Orders</span>
+                    <span class="sb-tooltip">Orders</span>
+                </a>
+                <a href="{{ route('admin.customers.index') }}" class="sb-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-users"></i>
+                    <span class="sb-item-label">Customers</span>
+                    <span class="sb-tooltip">Customers</span>
+                </a>
+            </div>
             @endif
 
             <div class="sb-divider"></div>
-            <div class="sb-section-label">Store</div>
+            <div class="sb-dropdown-trigger" onclick="toggleSidebarDropdown(this)">
+                <div class="sb-section-label">Store</div>
+                <i class="fa-solid fa-chevron-down sb-dropdown-caret"></i>
+            </div>
+            <div class="sb-dropdown-menu">
+                @if(in_array(auth()->user()->role_id, [1, 2]))
+                <a href="{{ route('admin.banners.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-image"></i>
+                    <span class="sb-item-label">Banners</span>
+                    <span class="sb-tooltip">Banners</span>
+                </a>
+                @endif
 
+                @if(auth()->user()->role_id === 1)
+                <a href="{{ route('admin.bundles.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.bundles.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-boxes-stacked"></i>
+                    <span class="sb-item-label">Bundles</span>
+                    <span class="sb-tooltip">Bundles</span>
+                </a>
+                @endif
 
-            <a href="{{ route('admin.banners.index') }}"
-                class="sb-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-image"></i>
-                <span class="sb-item-label">Banners</span>
-                <span class="sb-tooltip">Banners</span>
-            </a>
+                @if(in_array(auth()->user()->role_id, [1, 4]))
+                <a href="{{ route('admin.reviews.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-star-half-stroke"></i>
+                    <span class="sb-item-label">Reviews</span>
+                    <span class="sb-tooltip">Reviews</span>
+                </a>
+                @endif
 
-            <a href="{{ route('admin.bundles.index') }}"
-                class="sb-item {{ request()->routeIs('admin.bundles.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-boxes-stacked"></i>
-                <span class="sb-item-label">Bundles</span>
-                <span class="sb-tooltip">Bundles</span>
-            </a>
-
-            <a href="{{ route('admin.reviews.index') }}"
-                class="sb-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-star-half-stroke"></i>
-                <span class="sb-item-label">Reviews</span>
-                <span class="sb-tooltip">Reviews</span>
-            </a>
-
-            <a href="{{ route('admin.staff.index') }}"
-                class="sb-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
-                <i class="sb-item-icon fa-solid fa-users-gear"></i>
-                <span class="sb-item-label">Staff</span>
-                <span class="sb-tooltip">Staff</span>
-            </a>
+                @if(auth()->user()->role_id === 1)
+                <a href="{{ route('admin.staff.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-users-gear"></i>
+                    <span class="sb-item-label">Staff</span>
+                    <span class="sb-tooltip">Staff</span>
+                </a>
+                @endif
+            </div>
 
         </nav>
 
@@ -164,7 +185,7 @@
                 </div>
                 <div class="sb-user-info">
                     <div class="sb-user-name">{{ Auth::user()->staff?->name ?? 'Super Admin' }}</div>
-                    <div class="sb-user-role">{{ Auth::user()->role->name ?? 'Super Admin' }}</div>
+                    <div class="sb-user-role role-badge-{{ Str::slug(Auth::user()->role->name ?? 'super-admin') }}">{{ Auth::user()->role->name ?? 'Super Admin' }}</div>
                 </div>
                 <i class="fa-solid fa-chevron-up sb-chevron" id="sbChevron"></i>
             </div>
@@ -240,8 +261,8 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/layouts/admin.js') }}"></script>
-    <script src="{{ asset('js/admin/sidebar_rbac.js') }}"></script>
+    <script src="{{ asset('js/layouts/admin.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('js/admin/sidebar_rbac.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('js/admin/live_search.js?v=' . time()) }}"></script>
     @stack('scripts')
 

@@ -13,9 +13,9 @@ class AdminMiddleware
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        // Step 1:Check if user is logged in
+        // Step 1: Check if user is logged in
         if (!auth()->check()) {
             return redirect()->route('login')->withErrors("Please log in first!");
         }
@@ -27,10 +27,10 @@ class AdminMiddleware
 
         // Step 3: Role-based check
         if (!empty($roles)) {
-            $userRoledID = auth()->user()->id;
+            $userRoleID = auth()->user()->role_id; // Fix: use user's role_id instead of user's id
 
             $roleMapping = [
-                "super_admin"=> "1",
+                "super_admin" => 1,
                 "1" => 1,
                 "inventory_manager" => 2,
                 "2" => 2,
@@ -38,7 +38,7 @@ class AdminMiddleware
                 "3" => 3,
                 "customer_support" => 4,
                 "4" => 4,
-                "finane_manager" => 5,
+                "finance_manager" => 5, // Fix: correct typo 'finane_manager'
                 "5" => 5,
             ];
 
@@ -50,9 +50,9 @@ class AdminMiddleware
                 }
             }
 
-            // Step4: Check access permission
-            if (!in_array($userRoledID,$allowedRolesIds)) {
-                abort(403,'Unauthorized. You do not have permission to access this page!');
+            // Step 4: Check access permission
+            if (!in_array($userRoleID, $allowedRolesIds)) {
+                abort(403, 'Unauthorized. You do not have permission to access this page!');
             }
         }
 

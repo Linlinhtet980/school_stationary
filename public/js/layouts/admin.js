@@ -8,8 +8,13 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('collapsed');
+        // Save the collapsed state to localStorage
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('admin-sidebar-collapsed', isCollapsed ? 'true' : 'false');
     }
 }
+
+
 
 // ၂။ Light & Dark Theme ပြောင်းလဲသည့် စနစ်
 function toggleTheme() {
@@ -65,6 +70,13 @@ function toggleNotifications(event) {
 
 // ၄။ စနစ်စတင်ချိန် အလိုအလျောက် အလုပ်လုပ်မည့် စနစ်များ
 document.addEventListener('DOMContentLoaded', function () {
+
+    // သိမ်းဆည်းထားခဲ့သော Sidebar State အား ဖတ်ယူပြီး အလိုအလျောက် သတ်မှတ်ပေးရန်
+    const sidebarCollapsed = localStorage.getItem('admin-sidebar-collapsed') === 'true';
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebarCollapsed) {
+        sidebar.classList.add('collapsed');
+    }
 
     // သိမ်းဆည်းထားခဲ့သော Theme အဟောင်းအား ရှာဖွေပြီး အလိုအလျောက် သတ်မှတ်ပေးရန်
     const savedTheme = localStorage.getItem('admin-theme') || 'light';

@@ -4,23 +4,23 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!roleElement) return;
     
     // Role နာမည်ကို ယူမယ် (ဥပမာ "Super Admin", "Inventory Manager")
-    const userRole = roleElement.innerText.trim();
+    const userRole = roleElement.textContent.trim().toLowerCase(); // Normalize to lowercase and use textContent to avoid CSS text-transform issue
 
     // ၂။ Role အလိုက် ဝင်ခွင့်ရှိတဲ့ Menu တွေကို သတ်မှတ်မယ် (Menu Label အတိုင်း)
     const permissions = {
-        "Super Admin": ["ALL"], // Super Admin က အားလုံးရတယ်
+        "super admin": ["ALL"], // Super Admin က အားလုံးရတယ်
         
-        "Inventory Manager": [
+        "inventory manager": [
             "Dashboard", "All Products", "Categories", "Brands", "Types", "Banners"
         ],
-        "Order Staff": [
+        "order staff": [
             "Dashboard", "Orders", "Customers"
         ],
-        "Finance Manager": [
+        "finance manager": [
             "Dashboard", "Orders"
         ],
-        "Customer Support": [
-            "Dashboard", "Customers"
+        "customer support": [
+            "Dashboard", "Customers", "Orders", "Reviews"
         ]
     };
 
@@ -45,27 +45,49 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // ၅။ အထဲမှာ Menu မရှိတော့တဲ့ Section Label တွေကိုပါ ဖျောက်မယ် (Optional)
-    const sections = document.querySelectorAll('.sb-section-label');
-    sections.forEach(section => {
-        // Section တစ်ခုရဲ့ အောက်မှာရှိတဲ့ a.sb-item တွေကို ရှာမယ်
-        let nextEl = section.nextElementSibling;
-        let hasVisibleItems = false;
-        
-        while (nextEl && nextEl.classList.contains('sb-item')) {
-            if (nextEl.style.display !== 'none') {
-                hasVisibleItems = true;
-                break;
-            }
-            nextEl = nextEl.nextElementSibling;
-        }
-
-        // ပြစရာ item တစ်ခုမှ မရှိရင် Section Label နဲ့ Divider ကိုပါ ဖျောက်မယ်
-        if (!hasVisibleItems) {
-            section.style.display = 'none';
-            if (section.previousElementSibling && section.previousElementSibling.classList.contains('sb-divider')) {
-                section.previousElementSibling.style.display = 'none';
+    // ၅။ အထဲမှာ Menu မရှိတော့တဲ့ Section/Dropdown တွေကိုပါ ဖျောက်မယ်
+    const dropdownTriggers = document.querySelectorAll('.sb-dropdown-trigger');
+    dropdownTriggers.forEach(trigger => {
+        const menu = trigger.nextElementSibling;
+        if (menu && menu.classList.contains('sb-dropdown-menu')) {
+            // Find any visible .sb-item inside this dropdown menu
+            const visibleItems = Array.from(menu.querySelectorAll('.sb-item')).filter(item => item.style.display !== 'none');
+            if (visibleItems.length === 0) {
+                trigger.style.display = 'none';
+                menu.style.display = 'none';
+                // Hide the divider before the trigger
+                const divider = trigger.previousElementSibling;
+                if (divider && divider.classList.contains('sb-divider')) {
+                    divider.style.display = 'none';
+                }
             }
         }
     });
+
+    // ၆။ Dropdown Toggle Logic
+    window.toggleSidebarDropdown = function(trigger) {
+        console.log('toggleSidebarDropdown triggered on:', trigger);
+        trigger.classList.toggle('open');
+        const menu = trigger.nextElementSibling;
+        console.log('Next sibling is:', menu);
+        if (menu && menu.classList.contains('sb-dropdown-menu')) {
+            menu.classList.toggle('open');
+            console.log('Toggled open class on menu. Current classes:', menu.className);
+        } else {
+            console.error('Error: sb-dropdown-menu sibling not found!');
+        }
+    };
+
+    // ၇။ Page load တွင် Active Item ပါရှိသော Dropdown များကို အလိုအလျောက် ဖွင့်ပေးမယ်
+    const activeItem = document.querySelector('.sb-item.active');
+    if (activeItem) {
+        const parentMenu = activeItem.closest('.sb-dropdown-menu');
+        if (parentMenu) {
+            parentMenu.classList.add('open');
+            const trigger = parentMenu.previousElementSibling;
+            if (trigger && trigger.classList.contains('sb-dropdown-trigger')) {
+                trigger.classList.add('open');
+            }
+        }
+    }
 });
