@@ -65,6 +65,7 @@ Route::controller(ShopController::class)->group(function () {
     Route::get('/bestsellers', 'bestsellers')->name('shop.bestsellers');
     Route::get('/b2s-deals', 'b2sDeals')->name('shop.b2s-deals');
     Route::get('/search', 'search')->name('shop.search');
+    Route::get('/about', 'about')->name('about');
 });
 
 // Customer - Authentication required
@@ -121,6 +122,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/wishlist', 'wishlist')->name('profile.wishlist');
         Route::post('/wishlist/add', 'addToWishlist')->name('profile.add-wishlist');
         Route::delete('/wishlist/{id}', 'removeFromWishlist')->name('profile.remove-wishlist');
+
+        // Review routes
+        Route::post('/review', 'storeReview')->name('profile.add-review');
     });
 });
 

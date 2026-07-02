@@ -13,13 +13,13 @@
         <aside class="profile-sidebar">
             <div class="user-card">
                 <div class="user-avatar">
-                    @if($customer->image)
+                    @if($customer && $customer->image)
                         <img src="{{ asset('storage/' . $customer->image) }}" alt="Profile">
                     @else
                         <i class="fa-solid fa-user"></i>
                     @endif
                 </div>
-                <div class="user-name">{{ $customer->name ?? 'User' }}</div>
+                <div class="user-name">{{ $customer ? ($customer->name ?? 'User') : (Auth::user()->name ?? 'Staff User') }}</div>
                 <div class="user-email">{{ Auth::user()->email }}</div>
             </div>
 
@@ -36,7 +36,10 @@
                 <div class="menu-item" onclick="showSection('account')">
                     <i class="fa-solid fa-gear"></i> Account Settings
                 </div>
-                <a href="{{ route('logout') }}" class="menu-item logout-btn">
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="menu-item logout-btn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
                 </a>
             </div>
@@ -184,7 +187,7 @@
                 <!-- Profile Image -->
                 <div class="profile-image-row">
                     <div class="profile-img-circle">
-                        @if($customer->image)
+                        @if($customer && $customer->image)
                             <img src="{{ asset('storage/' . $customer->image) }}" alt="Profile">
                         @else
                             <i class="fa-solid fa-user"></i>
@@ -208,7 +211,7 @@
                     <div class="form-row-2">
                         <div class="form-group-p">
                             <label>Full Name</label>
-                            <input type="text" name="name" value="{{ $customer->name ?? '' }}" required>
+                            <input type="text" name="name" value="{{ $customer ? ($customer->name ?? '') : (Auth::user()->name ?? 'Staff User') }}" required>
                         </div>
                         <div class="form-group-p">
                             <label>Email</label>
@@ -219,22 +222,21 @@
                     <div class="form-row-2">
                         <div class="form-group-p">
                             <label>Phone</label>
-                            <input type="text" name="phone" value="{{ $customer->phone ?? '' }}">
+                            <input type="text" name="phone" value="{{ $customer ? ($customer->phone ?? '') : '' }}">
                         </div>
                         <div class="form-group-p">
                             <label>Date of Birth</label>
                             <input type="date" name="dob"
-                                value="{{ $customer->dob ? \Carbon\Carbon::parse($customer->dob)->format('Y-m-d') : '' }}">
+                                value="{{ ($customer && $customer->dob) ? \Carbon\Carbon::parse($customer->dob)->format('Y-m-d') : '' }}">
                         </div>
                     </div>
                     <div class="form-group-p inline-style-113">
                         <label>Gender</label>
                         <select name="gender">
                             <option value="">Select Gender</option>
-                            <option value="male" {{ ($customer->gender ?? '') === 'male' ? 'selected' : '' }}>Male</option>
-                            <option value="female" {{ ($customer->gender ?? '') === 'female' ? 'selected' : '' }}>Female
-                            </option>
-                            <option value="other" {{ ($customer->gender ?? '') === 'other' ? 'selected' : '' }}>Other</option>
+                            <option value="male" {{ ($customer ? $customer->gender : '') === 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ ($customer ? $customer->gender : '') === 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="other" {{ ($customer ? $customer->gender : '') === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
                     </div>
                     <button type="submit" class="btn-save-p">Save Changes</button>

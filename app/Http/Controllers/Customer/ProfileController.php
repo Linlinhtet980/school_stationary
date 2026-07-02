@@ -228,6 +228,12 @@ class ProfileController extends Controller
                         ->exists();
 
         if ($exists) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item already in wishlist.'
+                ], 400);
+            }
             return back()->with('error', 'Item already in wishlist.');
         }
 
@@ -235,6 +241,13 @@ class ProfileController extends Controller
             'user_id' => Auth::id(),
             'item_id' => $request->item_id,
         ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added to wishlist successfully!'
+            ]);
+        }
 
         return back()->with('success', 'Item added to wishlist!');
     }
@@ -247,6 +260,43 @@ class ProfileController extends Controller
         $wishlistItem = Wishlist::where('user_id', Auth::id())->findOrFail($id);
         $wishlistItem->delete();
         
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item removed from wishlist successfully!'
+            ]);
+        }
+        
         return back()->with('success', 'Item removed from wishlist!');
+    }
+
+    /**
+     * Store a product review
+     */
+    public function storeReview(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required|exists:items,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $exists = \App\Models\Review::where('user_id', Auth::id())
+                                   ->where('item_id', $request->item_id)
+                                   ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'You have already reviewed this item.');
+        }
+
+        \App\Models\Review::create([
+            'user_id' => Auth::id(),
+            'item_id' => $request->item_id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+            'status' => 'hidden',
+        ]);
+
+        return back()->with('success', 'Thank you for your review! It will be visible once approved by an admin.');
     }
 }

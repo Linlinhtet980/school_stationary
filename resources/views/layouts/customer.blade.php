@@ -29,11 +29,11 @@
         </div>
         <div class="nav-right-bg">
             <div class="nav-links">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">HOME</a>
                 <a href="{{ route('shop.index') }}" class="{{ request()->routeIs('shop.index') ? 'active' : '' }}">PRODUCTS</a>
                 <a href="{{ route('shop.new-arrivals') }}" class="{{ request()->routeIs('shop.new-arrivals') ? 'active' : '' }}">NEW ARRIVALS</a>
                 <a href="{{ route('shop.bestsellers') }}" class="{{ request()->routeIs('shop.bestsellers') ? 'active' : '' }}">BESTSELLERS</a>
                 <a href="{{ route('shop.b2s-deals') }}" class="{{ request()->routeIs('shop.b2s-deals') ? 'active' : '' }}">B2S DEALS</a>
+                <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">ABOUT US</a>
             </div>
             <div class="nav-actions">
                 <div class="search-bar">

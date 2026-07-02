@@ -134,6 +134,74 @@
 </section>
 @endif
 
+<!-- Reviews Section -->
+<section class="section reviews-section" style="max-width: 1200px; margin: 3rem auto; padding: 0 1rem;">
+    <div style="border-top: 1px solid #eee; padding-top: 2rem;">
+        <h2 class="section-title" style="font-size: 1.5rem; color: var(--secondary); margin-bottom: 1.5rem;">Customer Reviews</h2>
+        
+        @if($item->reviews->isEmpty())
+            <div style="background: #f9f9f9; padding: 2rem; border-radius: 12px; text-align: center; color: #666;">
+                <i class="fa-regular fa-comment-dots" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc; display: block;"></i>
+                <h3>No reviews yet</h3>
+                <p>Be the first to review this product!</p>
+            </div>
+        @else
+            <!-- Star Filter Controls -->
+            <div class="reviews-filter" style="display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center;">
+                <span style="font-weight: 600; color: var(--secondary); margin-right: 0.5rem;">Filter by:</span>
+                <button type="button" class="filter-pill active" onclick="filterReviews('all')" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: var(--secondary); border-radius: 20px; cursor: pointer; transition: all 0.3s; font-weight: 600; color: white;">All ({{ $item->reviews->count() }})</button>
+                @for($rating = 5; $rating >= 1; $rating--)
+                    @php $count = $item->reviews->where('rating', $rating)->count(); @endphp
+                    <button type="button" class="filter-pill" onclick="filterReviews({{ $rating }})" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #666;" {{ $count == 0 ? 'disabled' : '' }}>
+                        {{ $rating }} Star{{ $rating > 1 ? 's' : '' }} ({{ $count }})
+                    </button>
+                @endfor
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                @foreach($item->reviews as $review)
+                    <div class="review-card" data-rating="{{ $review->rating }}" style="background: white; border: 1px solid #eee; padding: 1.5rem; border-radius: 12px; transition: transform 0.3s;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <span style="font-weight: 800; color: var(--secondary); display: block; font-size: 1.05rem;">
+                                    {{ $review->user->name ?? 'Campus Customer' }}
+                                    @php
+                                        $hasPurchased = false;
+                                        if (auth()->check()) {
+                                            $hasPurchased = \App\Models\Order::where('user_id', $review->user_id)
+                                                ->where('status', 'completed')
+                                                ->whereHas('items.itemVariant', function($query) use ($item) {
+                                                    $query->where('item_id', $item->id);
+                                                })->exists();
+                                        }
+                                    @endphp
+                                    @if($hasPurchased)
+                                        <span style="background: #e6fffa; color: #008080; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; font-weight: 600; border: 1px solid #b2f5ea; display: inline-flex; align-items: center; gap: 3px;">
+                                            <i class="fa-solid fa-circle-check"></i> Verified Purchase
+                                        </span>
+                                    @endif
+                                </span>
+                                <span style="font-size: 0.8rem; color: #999;">{{ $review->created_at->format('M d, Y') }}</span>
+                            </div>
+                            <div style="color: #FFC107;">
+                                @for($i=1; $i<=5; $i++)
+                                    @if($i <= $review->rating)
+                                        <i class="fa-solid fa-star" style="font-size: 0.9rem;"></i>
+                                    @else
+                                        <i class="fa-regular fa-star" style="font-size: 0.9rem;"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                        <p style="color: #4a5568; margin: 0; line-height: 1.6; font-size: 0.95rem;">{{ $review->comment }}</p>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</section>
+
 @endsection
 
 @push('scripts')
@@ -227,5 +295,32 @@
             this.submit();
         }
     });
+
+    function filterReviews(rating) {
+        // Toggle active class on buttons
+        const pills = document.querySelectorAll('.filter-pill');
+        pills.forEach(pill => {
+            if (pill.hasAttribute('disabled')) return;
+            pill.style.background = 'white';
+            pill.style.color = '#666';
+            pill.style.borderColor = '#ddd';
+        });
+
+        // Set active style for selected button
+        const clickedButton = window.event.currentTarget;
+        clickedButton.style.background = 'var(--secondary)';
+        clickedButton.style.color = 'white';
+        clickedButton.style.borderColor = 'var(--secondary)';
+
+        // Filter cards
+        const cards = document.querySelectorAll('.review-card');
+        cards.forEach(card => {
+            if (rating === 'all' || card.getAttribute('data-rating') == rating) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
 </script>
 @endpush

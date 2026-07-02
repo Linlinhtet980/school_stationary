@@ -51,35 +51,27 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('item_id', itemId);
 
         // Send AJAX request to add to wishlist
-        fetch('/profile/wishlist/add', {
+        fetch('/wishlist/add', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                'Accept': 'application/json'
             },
             body: formData,
             credentials: 'same-origin'
         })
-            .then(response => response.text())
-            .then(data => {
-                // Try to parse as HTML response
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data, 'text/html');
-
-                // Check for success message
-                const successAlert = doc.querySelector('.alert-success');
-                const errorAlert = doc.querySelector('.alert-error');
-
-                if (successAlert) {
-                    alert('Item added to wishlist successfully!');
-                } else if (errorAlert) {
-                    alert(errorAlert.textContent || 'Failed to add to wishlist');
-                } else {
-                    alert('Item added to wishlist!');
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
                 }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message || 'Item added to wishlist successfully!');
             })
             .catch(error => {
                 console.error('Error adding to wishlist:', error);
-                alert('An error occurred. Please try again.');
+                alert(error.message || 'An error occurred. Please try again.');
             });
     };
 

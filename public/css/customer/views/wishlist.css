@@ -82,7 +82,7 @@
     color: #999;
 }
 
-.btn-remove {
+.wishlist-btn-remove {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -98,9 +98,10 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.3s;
     z-index: 2;
+    color: #666; /* Set default icon color so it is not red by default */
 }
 
-.btn-remove:hover {
+.wishlist-btn-remove:hover {
     background: #dc3545;
     color: white;
 }

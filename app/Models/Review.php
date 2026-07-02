@@ -22,7 +22,7 @@ class Review extends Model
 
     public function customer()
     {
-        return $this->hasOneThrough(Customer::class, User::class);
+        return $this->hasOneThrough(Customer::class, User::class, 'id', 'user_id', 'user_id', 'id');
     }
 
     public function item()

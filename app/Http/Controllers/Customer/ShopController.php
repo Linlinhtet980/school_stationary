@@ -39,7 +39,7 @@ class ShopController extends Controller
     public function show($id)
     {
         $item = Item::with(['type', 'brand', 'variants', 'images', 'reviews' => function($q) {
-            $q->where('status', 'approved')->latest()->take(5);
+            $q->where('status', 'visible')->latest();
         }])->findOrFail($id);
 
         // Get related items from same category
@@ -375,5 +375,13 @@ class ShopController extends Controller
         }
         
         return $query;
+    }
+
+    /**
+     * Display the About Us page
+     */
+    public function about()
+    {
+        return view('customer.about');
     }
 }

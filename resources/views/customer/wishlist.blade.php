@@ -36,7 +36,7 @@
                         @else
                             <div class="no-image">No Image</div>
                         @endif
-                        <button class="btn-remove" onclick="removeFromWishlist({{ $wishlistItem->id }})">
+                        <button class="wishlist-btn-remove" onclick="removeFromWishlist({{ $wishlistItem->id }})">
                             <i class="fa-solid fa-times"></i>
                         </button>
                     </div>
@@ -128,6 +128,7 @@ function removeFromWishlist(id) {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
             }
         }).then(response => response.json())
         .then(data => {
