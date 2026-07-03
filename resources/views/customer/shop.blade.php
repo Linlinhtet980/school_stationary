@@ -45,6 +45,9 @@
             <div class="product-grid">
                 @forelse($items as $item)
                     <div class="card">
+                        <button type="button" class="btn-wishlist" onclick="window.addToWishlist({{ $item->id }})" title="Add to Wishlist">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
                         <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}"
                             class="card-img" style="cursor:pointer;"
                             onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">

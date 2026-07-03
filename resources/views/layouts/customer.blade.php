@@ -8,14 +8,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{ asset('css/customer/views/global.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/customer/views/customer.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/customer/views/layout.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/customer/views/components.css') }}?v=1">
-    <link rel="stylesheet" href="{{ asset('css/customer/views/prototype.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/global.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/customer.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/layout.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/components.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/prototype.css') }}?v={{ time() }}">
     @stack('styles')
 </head>
 <body class="{{ auth()->check() ? 'authenticated' : '' }}">
+
+    <!-- ═══ Page Loading Overlay ═══ -->
+    <div id="pageLoader">
+        <div class="loader-content">
+            <img src="{{ asset('logo.png') }}" alt="Loading..." class="loader-logo">
+            <div class="loader-ring"></div>
+            <span class="loader-label">Loading…</span>
+        </div>
+    </div>
 
     <nav class="navbar">
         <button type="button" id="mobileMenuBtn" class="mobile-menu-btn">
@@ -47,17 +56,18 @@
                     @auth
                         <a href="{{ route('profile.index') }}" class="inline-style-125"><i class="fa-regular fa-user"></i></a>
                         <a href="{{ route('profile.wishlist') }}" class="inline-style-126"><i class="fa-regular fa-heart"></i></a>
+                        
+                        <a href="#" id="cartIconBtn" class="inline-style-129">
+                            <div class="cart-wrapper">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
+                            </div>
+                        </a>
                     @else
-                        <a href="{{ route('login') }}" class="inline-style-127"><i class="fa-regular fa-user"></i></a>
-                        <a href="{{ route('login') }}" class="inline-style-128"><i class="fa-regular fa-heart"></i></a>
+                        <a href="{{ route('login') }}" class="btn-login-header">
+                            Login / Register
+                        </a>
                     @endauth
-                    
-                    <a href="#" id="cartIconBtn" class="inline-style-129">
-                        <div class="cart-wrapper">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
-                        </div>
-                    </a>
                 </div>
             </div>
         </div>
@@ -208,5 +218,6 @@
         <span class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
     </a>
 
+    <script src="{{ asset('js/page-loader.js') }}?v={{ time() }}"></script>
 </body>
 </html>

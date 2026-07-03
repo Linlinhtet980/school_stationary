@@ -201,20 +201,49 @@ class ItemController extends Controller
             // အဆင့် (၂) - Item ရဲ့ အခြေခံအချက်အလက် (နာမည်၊ ဈေး၊ စသည်) ကို Update လုပ်ပါမယ်
             $item->update($data);
 
-            // အဆင့် (၃) - Item Variants တွေကို Update လုပ်ပါမယ် (လွတ်နေရင် Default တန်ဖိုးတွေ အစားထိုးထည့်ပေးမည်)
-            $item->variants()->delete();
+            // အဆင့် (၃) - Item Variants တွေကို Update လုပ်ပါမယ်
+            // - Variant ID ပါလာသော (existing) variant: stock ကို ထပ်ပေါင်း (accumulate) ဆောင်ရွက်မည်
+            // - Variant ID မပါသော (new) variant: အသစ်ဖန်တီးပြီး stock_qty ကို direct သိမ်းမည်
             if ($request->has('variants')) {
+                // Track which variant IDs are still in the form (to delete removed ones)
+                $submittedVariantIds = [];
+
                 foreach ($request->variants as $variantData) {
-                    $item->variants()->create([
-                        'unit_label' => $variantData['unit_label'] ?? 'Default',
-                        'unit_qty'   => $variantData['unit_qty'] ?: 1,
-                        'color'      => $variantData['color'] ?: null,
-                        'size'       => $variantData['size'] ?: null,
-                        'price'      => $variantData['price'] ?: 0,
-                        'stock_quantity'  => $variantData['stock_qty'] ?: 0,
-                        'sku'        => $variantData['sku'] ?: null,
-                    ]);
+                    $variantId = $variantData['variant_id'] ?? null;
+
+                    if ($variantId) {
+                        // Existing variant: update fields, accumulate stock
+                        $existingVariant = $item->variants()->find($variantId);
+                        if ($existingVariant) {
+                            $addStock = intval($variantData['add_stock'] ?? 0);
+                            $existingVariant->update([
+                                'unit_label'     => $variantData['unit_label'] ?? 'Default',
+                                'unit_qty'       => $variantData['unit_qty'] ?: 1,
+                                'color'          => $variantData['color'] ?: null,
+                                'size'           => $variantData['size'] ?: null,
+                                'price'          => $variantData['price'] ?: 0,
+                                'sku'            => $variantData['sku'] ?: null,
+                                'stock_quantity' => $existingVariant->stock_quantity + $addStock,
+                            ]);
+                            $submittedVariantIds[] = $existingVariant->id;
+                        }
+                    } else {
+                        // New variant row: create directly with entered stock_qty
+                        $newVariant = $item->variants()->create([
+                            'unit_label'     => $variantData['unit_label'] ?? 'Default',
+                            'unit_qty'       => $variantData['unit_qty'] ?: 1,
+                            'color'          => $variantData['color'] ?: null,
+                            'size'           => $variantData['size'] ?: null,
+                            'price'          => $variantData['price'] ?: 0,
+                            'stock_quantity' => $variantData['stock_qty'] ?: 0,
+                            'sku'            => $variantData['sku'] ?: null,
+                        ]);
+                        $submittedVariantIds[] = $newVariant->id;
+                    }
                 }
+
+                // Delete variants that were removed from the form
+                $item->variants()->whereNotIn('id', $submittedVariantIds)->delete();
             }
 
             // အဆင့် (၄) - ပုံအပို (Gallery Images) အသစ်တွေ ထပ်ပါလာရင် သိမ်းပါမယ်

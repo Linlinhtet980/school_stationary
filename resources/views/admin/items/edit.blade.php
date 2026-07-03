@@ -149,7 +149,8 @@
                                     <th>Color</th>
                                     <th>Size</th>
                                     <th>Price <span class="text-required">*</span></th>
-                                    <th>Stock Qty <span class="text-required">*</span></th>
+                                    <th>Current Stock</th>
+                                    <th>Add Stock</th>
                                     <th>SKU</th>
                                     <th>Action</th>
                                 </tr>
@@ -169,6 +170,8 @@
                             <tbody id="variantsBody">
                                 @foreach($item->variants as $index => $variant)
                                     <tr class="variant-row">
+                                        {{-- Hidden: pass existing variant ID so controller can update instead of delete+recreate --}}
+                                        <input type="hidden" name="variants[{{ $index }}][variant_id]" value="{{ $variant->id }}">
                                         <td><input type="text" name="variants[{{ $index }}][unit_label]" class="form-control"
                                                 value="{{ $variant->unit_label }}"></td>
                                         <td><input type="number" name="variants[{{ $index }}][unit_qty]" class="form-control"
@@ -179,8 +182,15 @@
                                                 value="{{ $variant->size }}"></td>
                                         <td><input type="number" step="0.01" name="variants[{{ $index }}][price]"
                                                 class="form-control" value="{{ $variant->price }}" required min="0"></td>
-                                        <td><input type="number" step="1" name="variants[{{ $index }}][stock_qty]"
-                                                class="form-control" value="{{ $variant->stock_quantity }}" min="0"></td>
+                                        <td>
+                                            {{-- Show current stock (read-only display) --}}
+                                            <span style="font-weight:700; color:#0B2149;">{{ $variant->stock_quantity }}</span>
+                                        </td>
+                                        <td>
+                                            {{-- Add Stock: ဤနေရာတွင် ထည့်သော ဂဏန်း ကို ရှိပြီးသား stock ပေါ် ထပ်ပေါင်းမည် --}}
+                                            <input type="number" step="1" name="variants[{{ $index }}][add_stock]"
+                                                class="form-control" value="0" min="0" placeholder="+0">
+                                        </td>
                                         <td><input type="text" name="variants[{{ $index }}][sku]" class="form-control"
                                                 value="{{ $variant->sku }}"></td>
                                         <td class="inline-style-22">

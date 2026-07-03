@@ -187,3 +187,119 @@ body.register-page .auth-image {
     font-weight: 600;
     text-decoration: none;
 }
+
+/* Mobile Logo Header (Hidden on Desktop) */
+.auth-mobile-header {
+    display: none;
+}
+
+.auth-mobile-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+.auth-mobile-header h2 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--secondary);
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+/* Responsive Rules for Tablet / Mobile */
+@media (max-width: 992px) {
+    body {
+        flex-direction: column;
+    }
+
+    .auth-image {
+        display: none; /* Hide the big image section */
+    }
+
+    .auth-form-container {
+        flex: none;
+        width: 100%;
+        min-height: 100vh;
+        padding: 3rem 1.5rem;
+        background: #fafafa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-box {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        border: 1px solid #f0f0f0;
+    }
+
+    .auth-mobile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-box h1 {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .auth-box p {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-form-container {
+        padding: 1.5rem 1rem;
+        background: white; /* No extra padding container card background on tiny screens */
+    }
+
+    .auth-box {
+        padding: 1rem 0.5rem;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+    }
+
+    .auth-box h1 {
+        font-size: 1.75rem;
+    }
+}
+
+/* Password visibility toggle styling */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    padding-right: 2.8rem !important; /* Ensure text doesn't overlap the eye icon */
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+    z-index: 10;
+}
+
+.toggle-password-btn:hover {
+    color: var(--secondary);
+}

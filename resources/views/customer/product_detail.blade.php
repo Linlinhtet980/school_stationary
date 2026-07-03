@@ -268,6 +268,14 @@
     document.getElementById('addToCartForm').addEventListener('submit', async function(e) {
         e.preventDefault(); // Prevent full page reload
         
+        // Check if user is authenticated
+        const isAuthenticated = document.body.classList.contains('authenticated');
+        if (!isAuthenticated) {
+            alert('Please login to add items to cart');
+            window.location.href = '/login';
+            return false;
+        }
+        
         const variantId = document.getElementById('variant_id') ? document.getElementById('variant_id').value : null;
         
         if (document.getElementById('variant_id') && !variantId) {

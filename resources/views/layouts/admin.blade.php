@@ -20,6 +20,15 @@
 
 <body>
 
+    <!-- ═══ Page Loading Overlay ═══ -->
+    <div id="pageLoader">
+        <div class="loader-content">
+            <img src="{{ asset('logo.png') }}" alt="Loading..." class="loader-logo">
+            <div class="loader-ring"></div>
+            <span class="loader-label">Loading…</span>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
 
@@ -264,6 +273,7 @@
     <script src="{{ asset('js/layouts/admin.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('js/admin/sidebar_rbac.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('js/admin/live_search.js?v=' . time()) }}"></script>
+    <script src="{{ asset('js/page-loader.js') }}?v={{ time() }}"></script>
     @stack('scripts')
 
 </body>

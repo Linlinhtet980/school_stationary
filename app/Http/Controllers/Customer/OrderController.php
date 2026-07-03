@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\ItemVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,7 +40,8 @@ class OrderController extends Controller
      */
     public function cancel(Request $request, $id)
     {
-        $order = Order::where('user_id', Auth::id())
+        $order = Order::with('items')
+                     ->where('user_id', Auth::id())
                      ->where('id', $id)
                      ->firstOrFail();
 
@@ -50,6 +52,12 @@ class OrderController extends Controller
 
         $order->update(['status' => 'cancelled']);
 
-        return back()->with('success', 'Order cancelled successfully.');
+        // Order cancel ဖြစ်သည့်အခါ stock ကို ပြန်ထည့် (restore)
+        foreach ($order->items as $orderItem) {
+            ItemVariant::where('id', $orderItem->item_variant_id)
+                       ->increment('stock_quantity', $orderItem->quantity);
+        }
+
+        return back()->with('success', 'Order cancelled successfully. Stock has been restored.');
     }
 }

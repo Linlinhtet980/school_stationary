@@ -223,6 +223,15 @@ document.addEventListener('DOMContentLoaded', function () {
         cartIconBtn.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
+
+            // Check if user is authenticated
+            const isAuthenticated = document.body.classList.contains('authenticated');
+            if (!isAuthenticated) {
+                alert('Please login to view your cart');
+                window.location.href = '/login';
+                return;
+            }
+
             toggleCartDrawer(true);
             loadCartData();
         });

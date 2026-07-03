@@ -36,7 +36,6 @@ Route::controller(AuthController::class)->group(function () {
     });
 });
 
-// Default route - redirect based on auth status
 Route::get('/', function () {
     if (Auth::check()) {
         if (Auth::user()->isCustomer()) {
@@ -45,7 +44,7 @@ Route::get('/', function () {
             return redirect()->route('admin.dashboard');
         }
     }
-    return redirect()->route('login');
+    return redirect()->route('home');
 })->name('default');
 
 

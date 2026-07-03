@@ -1,6 +1,6 @@
 @extends('layouts.customer')
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/customer/views/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/home.css') }}?v={{ time() }}">
 @endpush
 
 @section('title', 'Campus Supply - Home')
@@ -101,6 +101,9 @@
     <div class="slider-grid inline-style-89" id="bestsellers-grid">
         @forelse($bestsellers as $item)
         <div class="card">
+            <button type="button" class="btn-wishlist" onclick="window.addToWishlist({{ $item->id }})" title="Add to Wishlist">
+                <i class="fa-regular fa-heart"></i>
+            </button>
             <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
             <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
             <div class="card-desc">{{ $item->brand->name ?? 'No Brand' }}</div>
@@ -130,6 +133,9 @@
     <div class="slider-grid" id="new-arrivals-grid">
         @forelse($newArrivals as $item)
         <div class="card inline-style-92" >
+            <button type="button" class="btn-wishlist" onclick="window.addToWishlist({{ $item->id }})" title="Add to Wishlist">
+                <i class="fa-regular fa-heart"></i>
+            </button>
             <div class="inline-style-93">
                 NEW
             </div>
@@ -161,6 +167,9 @@
     <div class="slider-grid" id="featured-grid">
         @forelse($featuredItems as $item)
         <div class="card">
+            <button type="button" class="btn-wishlist" onclick="window.addToWishlist({{ $item->id }})" title="Add to Wishlist">
+                <i class="fa-regular fa-heart"></i>
+            </button>
             <img src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
             <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
             <div class="stars inline-style-94" >
