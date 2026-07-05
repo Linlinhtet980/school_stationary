@@ -29,6 +29,9 @@
         </div>
     </div>
 
+    <!-- Sidebar Overlay (for mobile) -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
 
@@ -204,7 +207,12 @@
     <!-- Main Wrapper -->
     <div class="main-wrapper">
         <div class="topbar">
-            <h1 id="page-title">@yield('header_title', 'Welcome Back, Admin!')</h1>
+            <div class="topbar-left">
+                <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1 id="page-title">@yield('header_title', 'Welcome Back, Admin!')</h1>
+            </div>
 
             <div class="topbar-actions">
                 <div class="notification-bell" id="notificationTrigger" onclick="toggleNotifications(event)">

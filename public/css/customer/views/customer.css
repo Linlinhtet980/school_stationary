@@ -97,22 +97,34 @@ body {
     font-size: 0.85rem;
     letter-spacing: 1px;
     text-transform: uppercase;
+    position: relative;
+    padding-bottom: 2px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
 }
 
 .nav-links a:hover {
     color: var(--primary);
-    text-decoration: underline;
-    text-decoration-color: var(--primary);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 2px;
+    text-decoration: none;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
 }
 
 .nav-links a.active {
     color: var(--primary);
-    text-decoration: underline;
-    text-decoration-color: var(--primary);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 2px;
+    text-decoration: none;
 }   
 
 .nav-actions {

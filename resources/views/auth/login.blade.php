@@ -144,9 +144,6 @@
                 } else if (!emailRegex.test(val)) {
                     showError(emailInput, errorEl, 'Please enter a valid email address.');
                     isEmailValid = false;
-                } else if (!val.toLowerCase().endsWith('@gmail.com')) {
-                    showError(emailInput, errorEl, 'Email address must be a Gmail account (@gmail.com).');
-                    isEmailValid = false;
                 } else {
                     showSuccess(emailInput, errorEl);
                     isEmailValid = true;

@@ -1096,3 +1096,105 @@ body {
     border-left: none !important;
     margin: 2px 8px !important;
 }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   ========================================================================== */
+
+/* Mobile Menu Button - Hidden on Desktop */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    cursor: pointer;
+    margin-right: 15px;
+    padding: 5px;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Tablet & Mobile (Max 768px) */
+@media screen and (max-width: 768px) {
+    /* Topbar */
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    #page-title {
+        font-size: 1.25rem;
+    }
+
+    .topbar {
+        padding: 15px 20px;
+    }
+
+    /* Main Wrapper */
+    .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* Sidebar (Off-Canvas) */
+    .sidebar {
+        position: fixed;
+        left: -260px; /* Hide off-screen */
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+        transition: left 0.3s ease;
+    }
+
+    .sidebar.active {
+        left: 0; /* Slide in */
+    }
+    
+    /* Hide the desktop collapse toggle button on mobile */
+    .sb-toggle {
+        display: none;
+    }
+}
+
+/* Mobile S - L (Max 426px) */
+@media screen and (max-width: 426px) {
+    .topbar-actions {
+        gap: 15px;
+    }
+    
+    .profile-menu .sb-user-info {
+        display: none; /* Hide user name/role text on small topbar to save space */
+    }
+    
+    .profile-menu .sb-chevron {
+        display: none;
+    }
+
+    .topbar-left #page-title {
+        font-size: 1.1rem;
+    }
+}

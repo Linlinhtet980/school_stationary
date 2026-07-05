@@ -7,6 +7,18 @@
     margin-bottom: 2rem;
 }
 
+@media screen and (max-width: 1024px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
 .stat-card {
     background: #fff;
     border-radius: 12px;
@@ -153,6 +165,12 @@ tr:last-child td {
     grid-template-columns: 2fr 1fr;
     gap: 1.5rem;
     margin-bottom: 2rem;
+}
+
+@media screen and (max-width: 1024px) {
+    .grid-2-asymmetric {
+        grid-template-columns: 1fr;
+    }
 }
 
 .mb-0 {

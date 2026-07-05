@@ -39,13 +39,61 @@ class DashboardController extends Controller
                              ->take(5)
                              ->get();
 
+        // --- Chart Data: Sales Performance (Last 30 Days) ---
+        $thirtyDaysAgo = Carbon::now()->subDays(29)->startOfDay(); // 30 days including today
+        $salesDataRaw = Order::where('created_at', '>=', $thirtyDaysAgo)
+            ->where('payment_status', 'paid')
+            ->select(
+                \DB::raw('DATE(created_at) as date'),
+                \DB::raw('SUM(total_amount) as total_sales'),
+                \DB::raw('COUNT(id) as total_orders')
+            )
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        $salesChartLabels = [];
+        $salesChartData = [];
+        $ordersChartData = [];
+
+        for ($i = 29; $i >= 0; $i--) {
+            $dateObj = Carbon::now()->subDays($i);
+            $dateStr = $dateObj->format('Y-m-d');
+            $salesChartLabels[] = $dateObj->format('M d');
+            
+            $dayData = $salesDataRaw->firstWhere('date', $dateStr);
+            $salesChartData[] = $dayData ? (float)$dayData->total_sales : 0;
+            $ordersChartData[] = $dayData ? (int)$dayData->total_orders : 0;
+        }
+
+        // --- Chart Data: Sales by Category (All time paid) ---
+        $categorySales = \DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('item_variants', 'order_items.item_variant_id', '=', 'item_variants.id')
+            ->join('items', 'item_variants.item_id', '=', 'items.id')
+            ->join('types', 'items.type_id', '=', 'types.id')
+            ->join('categories', 'types.category_id', '=', 'categories.id')
+            ->where('orders.payment_status', 'paid')
+            ->select('categories.name as category_name', \DB::raw('SUM(order_items.total_price) as total_sales'))
+            ->groupBy('categories.id', 'categories.name')
+            ->orderBy('total_sales', 'DESC')
+            ->get();
+
+        $categoryChartLabels = $categorySales->pluck('category_name')->toArray();
+        $categoryChartData = $categorySales->pluck('total_sales')->map(function($val) { return (float)$val; })->toArray();
+
         return view('admin.dashboard', compact(
             'dailySales', 
             'totalOrders', 
             'newCustomers', 
             'lowStockVariants', 
             'lowStockCount',
-            'recentOrders'
+            'recentOrders',
+            'salesChartLabels',
+            'salesChartData',
+            'ordersChartData',
+            'categoryChartLabels',
+            'categoryChartData'
         ));
     }
 

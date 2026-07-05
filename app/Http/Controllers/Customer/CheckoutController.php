@@ -120,15 +120,37 @@ class CheckoutController extends Controller
 
         $lineItems = [];
         foreach ($cartItems as $ci) {
+            // Using actual item name and variant details
+            $itemName = $ci['variant']->item->name;
+            if ($ci['variant']->unit_label) {
+                $itemName .= ' (' . $ci['variant']->unit_label . ')';
+            }
+
             $lineItems[] = [
                 'price_data' => [
-                    'currency'     => 'usd',
-                    'unit_amount'  => 50,
+                    'currency'     => 'usd', // Stripe requires a supported currency
+                    // Multiply by 100 because Stripe expects the amount in the smallest unit (e.g., cents for USD)
+                    // If price is 1500, passing 150000 will display as $1500.00
+                    'unit_amount'  => (int) ($ci['variant']->price * 100),
                     'product_data' => [
-                        'name' => $ci['variant']->item->name,
+                        'name' => $itemName,
                     ],
                 ],
                 'quantity' => $ci['quantity'],
+            ];
+        }
+
+        // Add Shipping Fee as a separate line item if applicable
+        if ($shipping > 0) {
+            $lineItems[] = [
+                'price_data' => [
+                    'currency'     => 'usd',
+                    'unit_amount'  => (int) ($shipping * 100),
+                    'product_data' => [
+                        'name' => 'Shipping Fee',
+                    ],
+                ],
+                'quantity' => 1,
             ];
         }
 

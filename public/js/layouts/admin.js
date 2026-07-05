@@ -6,11 +6,20 @@ function toggleDropdown(id) {
 // ၂. sidebar toggle button 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
     if (sidebar) {
-        sidebar.classList.toggle('collapsed');
-        // Save the collapsed state to localStorage
-        const isCollapsed = sidebar.classList.contains('collapsed');
-        localStorage.setItem('admin-sidebar-collapsed', isCollapsed ? 'true' : 'false');
+        if (window.innerWidth <= 768) {
+            // Mobile/Tablet off-canvas toggle
+            sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+        } else {
+            // Desktop collapse toggle
+            sidebar.classList.toggle('collapsed');
+            // Save the collapsed state to localStorage
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('admin-sidebar-collapsed', isCollapsed ? 'true' : 'false');
+        }
     }
 }
 
