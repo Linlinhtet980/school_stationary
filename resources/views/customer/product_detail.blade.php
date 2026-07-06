@@ -105,35 +105,6 @@
     </div>
 </div>
 
-@if(isset($relatedItems) && $relatedItems->count() > 0)
-<section class="section related-products-section">
-    <div class="section-header">
-        <h2 class="section-title">YOU MAY ALSO LIKE</h2>
-        <div class="arrows">
-            <div class="arrow" onclick="scrollGrid('related-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="arrow" onclick="scrollGrid('related-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
-        </div>
-    </div>
-    <div class="slider-grid" id="related-grid">
-        @foreach($relatedItems as $related)
-        <div class="card" style="position: relative;">
-            <!-- Optional: You can add a badge here if needed like NEW -->
-            <img src="{{ $related->images->first() ? asset('storage/' . $related->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $related->id) }}'" alt="{{ $related->name }}">
-            <div class="card-title">{{ Str::limit($related->name, 30) }}</div>
-            <div class="card-desc">{{ $related->brand->name ?? 'Campus Supply' }}</div>
-            <div class="card-price-row">
-                <div class="card-price">{{ $related->price_range ?? number_format($related->price).' Ks' }}</div>
-                <div class="stars">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-            </div>
-            <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $related->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
-        </div>
-        @endforeach
-    </div>
-</section>
-@endif
-
 <!-- Reviews Section -->
 <section class="section reviews-section" style="max-width: 1200px; margin: 3rem auto; padding: 0 1rem;">
     <div style="border-top: 1px solid #eee; padding-top: 2rem;">
@@ -201,6 +172,35 @@
         @endif
     </div>
 </section>
+
+@if(isset($relatedItems) && $relatedItems->count() > 0)
+<section class="section related-products-section" style="max-width: 1200px; margin: 4rem auto 0 auto; padding: 0 1rem;">
+    <div class="section-header">
+        <h2 class="section-title">YOU MAY ALSO LIKE</h2>
+        <div class="arrows">
+            <div class="arrow" onclick="scrollGrid('related-grid', -1)"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="arrow" onclick="scrollGrid('related-grid', 1)"><i class="fa-solid fa-chevron-right"></i></div>
+        </div>
+    </div>
+    <div class="slider-grid" id="related-grid">
+        @foreach($relatedItems as $related)
+        <div class="card" style="position: relative;">
+            <!-- Optional: You can add a badge here if needed like NEW -->
+            <img src="{{ $related->images->first() ? asset('storage/' . $related->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="card-img" style="cursor:pointer;" onclick="window.location.href='{{ route('shop.show', $related->id) }}'" alt="{{ $related->name }}">
+            <div class="card-title">{{ Str::limit($related->name, 30) }}</div>
+            <div class="card-desc">{{ $related->brand->name ?? 'Campus Supply' }}</div>
+            <div class="card-price-row">
+                <div class="card-price">{{ $related->price_range ?? number_format($related->price).' Ks' }}</div>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            <button type="button" class="btn-add" style="margin-top: auto;" onclick="window.addToCart({{ $related->id }})"><span>Add to Cart</span> <i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
 
 @endsection
 
@@ -332,3 +332,4 @@
     }
 </script>
 @endpush
+

@@ -69,6 +69,7 @@
 
     // ─── Show on form submits (login, search, filters, etc.) ───
     document.addEventListener('submit', function (e) {
+        if (e.defaultPrevented) return;
         var form = e.target;
         // Skip forms marked as AJAX / no-loader
         if (form.hasAttribute('data-no-loader')) return;

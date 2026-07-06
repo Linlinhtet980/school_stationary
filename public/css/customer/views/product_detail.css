@@ -631,6 +631,7 @@ margin-bottom: 0.5rem;
     scroll-behavior: smooth;
     padding: 1rem 0;
     scrollbar-width: none;
+    align-items: stretch;
 }
 
 .slider-grid::-webkit-scrollbar {
@@ -640,6 +641,8 @@ margin-bottom: 0.5rem;
 .slider-grid .card {
     flex: 0 0 calc(25% - 1.125rem);
     min-width: 260px;
+    align-self: stretch;
+    height: auto;
 }
 
 /* Product Card (Matching Home Page) */
