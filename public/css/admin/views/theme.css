@@ -395,11 +395,7 @@ label {
 }
 
 /* ── Profile Grid (Customers Show) ─────────────────────────────────── */
-.profile-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px;
-}
+/* Layout handled in customers.css */
 
 .profile-detail-row {
     border-bottom-color: var(--border-color) !important;

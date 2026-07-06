@@ -9,7 +9,7 @@
         <!-- Accordion Category/Type -->
         <div class="accordion-item filter-group">
             <div class="accordion-header filter-title" onclick="toggleAccordion(this)">
-                <span>Categories</span>
+                <span><i class="fa-solid fa-list-ul" style="margin-right: 8px; color: var(--primary);"></i>Categories</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-content">
@@ -23,11 +23,14 @@
                     </li>
                     @foreach($categories as $category)
                         <li class="category-tree-node">
-                            <div class="category-name-header">
-                                {{ $category->name }} ({{ $category->types->count() }})
+                            <div class="category-name-header" onclick="toggleCategoryNode(this)">
+                                <span><i class="fa-regular fa-folder" style="margin-right: 6px; color: var(--primary);"></i>{{ $category->name }} ({{ $category->types->count() }})</span>
+                                @if($category->types->count() > 0)
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                @endif
                             </div>
                             @if($category->types->count() > 0)
-                                <ul class="type-list">
+                                <ul class="type-list sub-accordion-content">
                                     @foreach($category->types as $type)
                                         <li>
                                             <label class="custom-radio">
@@ -47,7 +50,7 @@
         <!-- Accordion Brand -->
         <div class="accordion-item filter-group">
             <div class="accordion-header filter-title" onclick="toggleAccordion(this)">
-                <span>Brands</span>
+                <span><i class="fa-solid fa-tags" style="margin-right: 8px; color: var(--primary);"></i>Brands</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-content">
@@ -75,7 +78,7 @@
         <!-- Accordion Price -->
         <div class="accordion-item filter-group">
             <div class="accordion-header filter-title" onclick="toggleAccordion(this)">
-                <span>Price Range</span>
+                <span><i class="fa-solid fa-wallet" style="margin-right: 8px; color: var(--primary);"></i>Price Range</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-content">
@@ -96,6 +99,11 @@
 
 <script>
 function toggleAccordion(element) {
+    const item = element.parentElement;
+    item.classList.toggle('active');
+}
+
+function toggleCategoryNode(element) {
     const item = element.parentElement;
     item.classList.toggle('active');
 }

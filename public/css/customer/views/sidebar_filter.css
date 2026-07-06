@@ -42,6 +42,25 @@
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+.category-name-header .fa-chevron-down {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+    color: #888;
+}
+.category-tree-node.active .category-name-header .fa-chevron-down {
+    transform: rotate(180deg);
+}
+.sub-accordion-content {
+    display: none !important;
+}
+.category-tree-node.active .sub-accordion-content {
+    display: block !important;
 }
 .type-list {
     list-style: none;

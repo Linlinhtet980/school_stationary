@@ -19,7 +19,6 @@
 html, body {
     background-color: #FDFDF7;
     color: var(--text-dark);
-    overflow-x: hidden;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
@@ -460,3 +459,4 @@ html, body {
     text-transform: uppercase;
     opacity: 0.9;
 }
+

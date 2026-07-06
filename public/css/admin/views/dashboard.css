@@ -238,9 +238,8 @@ tr:last-child td {
 
 .pie-chart-container {
     height: 220px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
+    width: 100%;
+    display: block; 
     position: relative;
 }
 

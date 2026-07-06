@@ -14,7 +14,10 @@
 
 <div class="product-container">
     <!-- Image Section -->
-    <div class="product-image-section">
+    <div class="product-image-section" style="position: relative;">
+        <button type="button" class="btn-wishlist-floating" onclick="window.addToWishlist({{ $item->id }})" title="Add to Wishlist" style="position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; border-radius: 50%; background: white; border: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #ff4757; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; transition: transform 0.2s;">
+            <i class="fa-regular fa-heart"></i>
+        </button>
         <img id="mainImage" src="{{ $item->images->first() ? asset('storage/' . $item->images->first()->image_path) : asset('images/placeholder.jpg') }}" class="main-image" alt="{{ $item->name }}">
         @if($item->images->count() > 1)
         <div class="thumbnail-list">
@@ -96,9 +99,6 @@
                 </div>
                 <button type="submit" class="btn-add-huge" id="addToCartBtn" {{ $totalStock == 0 ? 'disabled' : '' }}>
                     <i class="fa-solid fa-cart-shopping inline-style-104" ></i> Add to Cart
-                </button>
-                <button type="button" class="btn-wishlist" onclick="window.addToWishlist({{ $item->id }})">
-                    <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
         </form>

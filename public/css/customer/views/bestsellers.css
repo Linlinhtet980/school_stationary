@@ -127,6 +127,7 @@
         height: fit-content;
         max-height: calc(100vh - 4rem);
         overflow-y: auto;
+        align-self: start;
     }
 }
 
@@ -233,3 +234,4 @@
         grid-template-columns: 1fr !important;
     }
 }
+

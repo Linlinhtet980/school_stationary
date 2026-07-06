@@ -91,13 +91,13 @@ class CartController extends Controller
 
         // Check if item already exists in cart
         $found = false;
-        foreach ($cart as &$item) {
+        foreach ($cart as $key => $item) {
             if ($item['variant_id'] == $variantId) {
                 $newQuantity = $item['quantity'] + $quantity;
                 if ($newQuantity > $variant->stock_quantity) {
                     return back()->with('error', 'Cannot add more than available stock.');
                 }
-                $item['quantity'] = $newQuantity;
+                $cart[$key]['quantity'] = $newQuantity;
                 $found = true;
                 break;
             }
@@ -150,7 +150,7 @@ class CartController extends Controller
         }
 
         $found = false;
-        foreach ($cart as &$cartItem) {
+        foreach ($cart as $key => $cartItem) {
             if ($cartItem['variant_id'] == $variant->id) {
                 $newQty = $cartItem['quantity'] + $quantity;
                 if ($newQty > $variant->stock_quantity) {
@@ -159,7 +159,7 @@ class CartController extends Controller
                     }
                     return back()->with('error', 'Cannot add more than available stock.');
                 }
-                $cartItem['quantity'] = $newQty;
+                $cart[$key]['quantity'] = $newQty;
                 $found = true;
                 break;
             }
@@ -318,7 +318,7 @@ class CartController extends Controller
 
         // Check if item already exists in cart
         $found = false;
-        foreach ($cart as &$item) {
+        foreach ($cart as $key => $item) {
             if ($item['variant_id'] == $variantId) {
                 $newQuantity = $item['quantity'] + $quantity;
                 if ($newQuantity > $variant->stock_quantity) {
@@ -327,7 +327,7 @@ class CartController extends Controller
                         'message' => 'Cannot add more than available stock.'
                     ], 400);
                 }
-                $item['quantity'] = $newQuantity;
+                $cart[$key]['quantity'] = $newQuantity;
                 $found = true;
                 break;
             }
