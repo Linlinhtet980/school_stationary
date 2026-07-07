@@ -52,7 +52,14 @@
                             class="card-img" style="cursor:pointer;"
                             onclick="window.location.href='{{ route('shop.show', $item->id) }}'" alt="{{ $item->name }}">
                         <div class="card-title">{{ Str::limit($item->name, 30) }}</div>
-                        <div class="card-desc">{{ $item->brand->name ?? 'No Brand' }}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<div class="card-desc" style="margin-bottom: 0;">{{ $item->brand->name ?? 'No Brand' }}</div>
+@if($item->total_stock > 0)
+                            <div class="card-stock" style="color: #28a745; font-size: 0.8rem; font-weight: 600; "><i class="fa-solid fa-check-circle"></i> In Stock</div>
+                        @else
+                            <div class="card-stock" style="color: #dc3545; font-size: 0.8rem; font-weight: 600; "><i class="fa-solid fa-times-circle"></i> Out of Stock</div>
+                        @endif
+</div>
                         <div class="card-price-row">
                             <div class="card-price">{{ $item->price_range }}</div>
                             <div class="stars">
