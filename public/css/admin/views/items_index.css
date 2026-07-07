@@ -11,7 +11,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 20px;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -203,7 +203,7 @@
     border-left: 4px solid #48BB78;
 }
 
-.pagination-container { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+.pagination-container { padding: 20px; border-top: 1px solid var(--border-color); }
 
 /* Empty State */
 .empty-state { text-align: center; padding: 4rem 2rem; }

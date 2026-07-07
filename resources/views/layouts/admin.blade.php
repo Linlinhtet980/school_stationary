@@ -62,7 +62,7 @@
             @if(in_array(auth()->user()->role_id, [1, 2]))
             <div class="sb-divider"></div>
             <div class="sb-dropdown-trigger" onclick="toggleSidebarDropdown(this)">
-                <div class="sb-section-label">Catalog</div>
+                <div class="sb-section-label"><i class="fa-solid fa-layer-group" style="margin-right: 6px;"></i>Catalog</div>
                 <i class="fa-solid fa-chevron-down sb-dropdown-caret"></i>
             </div>
             <div class="sb-dropdown-menu">
@@ -96,7 +96,7 @@
             @if(in_array(auth()->user()->role_id, [1, 3, 4, 5]))
             <div class="sb-divider"></div>
             <div class="sb-dropdown-trigger" onclick="toggleSidebarDropdown(this)">
-                <div class="sb-section-label">Sales & Orders</div>
+                <div class="sb-section-label"><i class="fa-solid fa-cart-shopping" style="margin-right: 6px;"></i>Sales & Orders</div>
                 <i class="fa-solid fa-chevron-down sb-dropdown-caret"></i>
             </div>
             <div class="sb-dropdown-menu">
@@ -115,7 +115,7 @@
 
             <div class="sb-divider"></div>
             <div class="sb-dropdown-trigger" onclick="toggleSidebarDropdown(this)">
-                <div class="sb-section-label">Store</div>
+                <div class="sb-section-label"><i class="fa-solid fa-shop" style="margin-right: 6px;"></i>Store</div>
                 <i class="fa-solid fa-chevron-down sb-dropdown-caret"></i>
             </div>
             <div class="sb-dropdown-menu">

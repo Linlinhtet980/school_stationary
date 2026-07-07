@@ -221,12 +221,12 @@
 
 .btn-primary {
     background-color: var(--primary);
-    color: white;
+    color: var(--secondary);
     border: none;
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
+    background-color: #e6bd00;
 }
 
 .btn-outline {

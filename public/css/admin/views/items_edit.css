@@ -13,7 +13,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
+    padding: 20px 24px;
     border-bottom: 1px solid var(--border-color);
     background: #F8FAFC;
 }
@@ -50,7 +50,7 @@
     color: #C53030;
     padding: 1rem 1.5rem;
     border-radius: 8px;
-    margin-bottom: 2rem;
+    margin-bottom: 24px;
     border-left: 4px solid #E53E3E;
 }
 
@@ -134,21 +134,21 @@
 @media (max-width: 900px) {
     .form-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 16px;
     }
 }
 
 .form-column {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 16px;
     min-width: 0;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 1.5rem;
+    gap: 16px;
     min-width: 0;
 }
 
@@ -296,7 +296,7 @@ textarea.form-control {
 
 .status-group {
     background: #F8FAFC;
-    padding: 1.5rem;
+    padding: 20px;
     border-radius: 12px;
     border: 1px solid #E2E8F0;
 }

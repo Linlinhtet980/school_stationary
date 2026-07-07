@@ -209,7 +209,7 @@
     justify-content: center;
     gap: 8px;
     background: #0ea5e9;
-    color: white;
+    color: var(--secondary);
     border: none;
     padding: 10px 16px;
     border-radius: 6px;

@@ -10,7 +10,7 @@
 
 
 @section('content')
-<h2>Store Dashboard Overview</h2>
+<h2 style="margin-top: 0; margin-bottom: 1rem; color: var(--secondary);">Store Dashboard Overview</h2>
 
 <div class="grid-4">
     @if(in_array(auth()->user()->role_id, [1, 5]))
