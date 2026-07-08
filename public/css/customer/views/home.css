@@ -665,3 +665,12 @@
     object-fit: cover;
     z-index: 0;
 }
+
+/* Mobile adjustments for contact section */
+@media (max-width: 768px) {
+    .contact-section { padding: 2rem 1rem !important; }
+    .contact-container { padding: 1.5rem !important; }
+    .contact-container h2 { font-size: 1.5rem !important; }
+    .contact-container p { margin-bottom: 1.5rem; }
+}
+

@@ -106,7 +106,8 @@ body {
     -webkit-backdrop-filter: blur(10px);
 }
 .nav-right-bg {
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 3rem;
     padding: 0 2rem;
 }
 

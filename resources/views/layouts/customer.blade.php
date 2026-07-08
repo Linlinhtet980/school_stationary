@@ -90,11 +90,11 @@
             </form>
         </div>
         <div class="mobile-nav-links">
-            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">HOME</a>
-            <a href="{{ route('shop.index') }}" class="{{ request()->routeIs('shop.index') ? 'active' : '' }}">PRODUCTS</a>
-            <a href="{{ route('shop.new-arrivals') }}" class="{{ request()->routeIs('shop.new-arrivals') ? 'active' : '' }}">NEW ARRIVALS</a>
-            <a href="{{ route('shop.bestsellers') }}" class="{{ request()->routeIs('shop.bestsellers') ? 'active' : '' }}">BESTSELLERS</a>
-            <a href="{{ route('shop.b2s-deals') }}" class="{{ request()->routeIs('shop.b2s-deals') ? 'active' : '' }}">B2S DEALS</a>
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="fa-solid fa-house" style="width: 25px;"></i> HOME</a>
+            <a href="{{ route('shop.index') }}" class="{{ request()->routeIs('shop.index') ? 'active' : '' }}"><i class="fa-solid fa-box-open" style="width: 25px;"></i> PRODUCTS</a>
+            <a href="{{ route('shop.new-arrivals') }}" class="{{ request()->routeIs('shop.new-arrivals') ? 'active' : '' }}"><i class="fa-solid fa-wand-magic-sparkles" style="width: 25px;"></i> NEW ARRIVALS</a>
+            <a href="{{ route('shop.bestsellers') }}" class="{{ request()->routeIs('shop.bestsellers') ? 'active' : '' }}"><i class="fa-solid fa-fire" style="width: 25px;"></i> BESTSELLERS</a>
+            <a href="{{ route('shop.b2s-deals') }}" class="{{ request()->routeIs('shop.b2s-deals') ? 'active' : '' }}"><i class="fa-solid fa-tags" style="width: 25px;"></i> B2S DEALS</a>
             <hr style="margin: 1rem 0; border: none; border-top: 1px solid #eee;">
             @auth
                 <a href="{{ route('profile.index') }}" class="{{ request()->routeIs('profile.*') && !request()->routeIs('profile.wishlist') ? 'active' : '' }}"><i class="fa-regular fa-user" style="width: 25px;"></i> PROFILE</a>
