@@ -63,8 +63,8 @@
             @endif
         </div>
 
-        <p class="description">
-            {{ $item->description }}
+        <p class="description" style="line-height: 1.8;">
+            {!! nl2br(e($item->description)) !!}
         </p>
 
         <form action="{{ route('cart.add-item', $item->id) }}" method="POST" id="addToCartForm">
