@@ -59,7 +59,7 @@
                 <form action="{{ route('profile.order-cancel', $order->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="btn-cancel" 
-                            onclick="return confirm('Are you sure you want to cancel this order?')">
+                            onclick="event.preventDefault(); showConfirmModal('Are you sure you want to cancel this order?', () => this.closest('form').submit());">
                         Cancel Order
                     </button>
                 </form>

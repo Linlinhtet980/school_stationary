@@ -168,7 +168,7 @@
                                             <button type="submit">Set Default</button>
                                         </form>
                                         <form action="{{ route('profile.delete-address', $address->id) }}" method="POST"
-                                            onsubmit="return confirm('Delete this address?')">
+                                            onsubmit="event.preventDefault(); showConfirmModal('Delete this address?', () => this.submit());">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="del-btn">Delete</button>
                                         </form>

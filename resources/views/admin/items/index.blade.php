@@ -142,7 +142,7 @@
                                             <i class="fa-solid fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.items.destroy', $item->id) }}" method="POST"
-                                            onsubmit="return confirm('Are you sure you want to delete this item?');"
+                                            onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this item?', () => this.submit());"
                                             class="form-inline">
                                             @csrf
                                             @method('DELETE')

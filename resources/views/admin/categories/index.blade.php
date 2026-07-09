@@ -105,7 +105,7 @@
                                 <button class="btn-icon btn-edit" onclick="openEditModal({{ $category->id }}, '{{ addslashes($category->name) }}', '{{ addslashes($category->description) }}', '{{ $category->status }}')" title="Edit">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
-                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');" class="form-inline">
+                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this category?', () => this.submit());" class="form-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-icon btn-delete" title="Delete">

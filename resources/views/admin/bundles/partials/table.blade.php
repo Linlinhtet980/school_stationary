@@ -45,7 +45,7 @@
                         <a href="{{ route('admin.bundles.edit', $bundle) }}" class="btn-icon btn-edit" title="Edit">
                             <i class="fa-solid fa-pen"></i>
                         </a>
-                        <form action="{{ route('admin.bundles.destroy', $bundle) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this bundle?');">
+                        <form action="{{ route('admin.bundles.destroy', $bundle) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this bundle?', () => this.submit());">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-icon btn-delete" title="Delete">

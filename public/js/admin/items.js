@@ -87,39 +87,37 @@ function previewMainImage(input) {
 
 // ၅။ Existing Gallery Image ဖျက်ခြင်း (AJAX)
 function deleteGalleryImage(imageId, csrfToken) {
-    if (!confirm('Are you sure you want to delete this gallery image?')) {
-        return;
-    }
-
-    fetch(`/admin/items/image/${imageId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const galleryBtn = document.querySelector(`button[onclick*="deleteGalleryImage(${imageId}"]`);
-            if (galleryBtn) {
-                const galleryItem = galleryBtn.closest('.gallery-item');
-                if (galleryItem) {
-                    galleryItem.style.transition = 'all 0.3s ease';
-                    galleryItem.style.opacity = '0';
-                    galleryItem.style.transform = 'scale(0.8)';
-                    setTimeout(() => {
-                        galleryItem.remove();
-                    }, 300);
-                }
+    showConfirmModal('Are you sure you want to delete this gallery image?', () => {
+        fetch(`/admin/items/image/${imageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        } else {
-            alert(data.message || 'Failed to delete image');
-        }
-    })
-    .catch(error => {
-        console.error('Error deleting gallery image:', error);
-        alert('An error occurred while deleting the image.');
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const galleryBtn = document.querySelector(`button[onclick*="deleteGalleryImage(${imageId}"]`);
+                if (galleryBtn) {
+                    const galleryItem = galleryBtn.closest('.gallery-item');
+                    if (galleryItem) {
+                        galleryItem.style.transition = 'all 0.3s ease';
+                        galleryItem.style.opacity = '0';
+                        galleryItem.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                            galleryItem.remove();
+                        }, 300);
+                    }
+                }
+            } else {
+                alert(data.message || 'Failed to delete image');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting gallery image:', error);
+            alert('An error occurred while deleting the image.');
+        });
     });
 }

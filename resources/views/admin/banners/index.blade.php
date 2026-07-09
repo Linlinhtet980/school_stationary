@@ -101,7 +101,7 @@
                                     <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn-icon btn-edit" title="Edit">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
-                                    <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this banner?');" class="form-inline">
+                                    <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this banner?', () => this.submit());" class="form-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-icon btn-delete" title="Delete">

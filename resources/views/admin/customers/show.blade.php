@@ -59,7 +59,7 @@
 
             @if($customer->user)
                 <div class="mt-4">
-                    <form action="{{ route('admin.customers.block', $customer->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                    <form action="{{ route('admin.customers.block', $customer->id) }}" method="POST" onsubmit="event.preventDefault(); showConfirmModal('Are you sure?', () => this.submit());">
                         @csrf
                         <button type="submit" class="btn {{ $customer->user->status === 'blocked' ? 'btn-success' : 'btn-danger' }}">
                             <i class="fa-solid {{ $customer->user->status === 'blocked' ? 'fa-unlock' : 'fa-ban' }}"></i> 

@@ -108,7 +108,7 @@
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
                                     @if(auth()->id() !== $user->id)
-                                        <form action="{{ route('admin.staff.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this staff member?');" class="form-inline">
+                                        <form action="{{ route('admin.staff.destroy', $user->id) }}" method="POST" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this staff member?', () => this.submit());" class="form-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-icon btn-delete" title="Delete">

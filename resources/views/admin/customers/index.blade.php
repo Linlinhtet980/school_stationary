@@ -105,7 +105,7 @@
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
                                         @if($customer->user)
-                                            <form action="{{ route('admin.customers.block', $customer->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to {{ $customer->user->status === 'blocked' ? 'unblock' : 'block' }} this customer?');">
+                                            <form action="{{ route('admin.customers.block', $customer->id) }}" method="POST" class="inline-block" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to {{ $customer->user->status === 'blocked' ? 'unblock' : 'block' }} this customer?', () => this.submit());">
                                                 @csrf
                                                 <button type="submit" class="btn-icon {{ $customer->user->status === 'blocked' ? 'btn-unblock-action' : 'btn-block-action' }}" title="{{ $customer->user->status === 'blocked' ? 'Unblock Customer' : 'Block Customer' }}">
                                                     <i class="fa-solid {{ $customer->user->status === 'blocked' ? 'fa-unlock' : 'fa-ban' }}"></i>

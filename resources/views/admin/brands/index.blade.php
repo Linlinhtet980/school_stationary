@@ -108,7 +108,7 @@
                                     <button onclick="editBrand({{ $brand->id }}, '{{ htmlspecialchars($brand->name, ENT_QUOTES) }}', '{{ $brand->status }}')" class="btn-icon btn-edit" title="Edit Brand">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" class="form-inline" onsubmit="return confirm('Are you sure you want to delete this brand?');">
+                                    <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" class="form-inline" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this brand?', () => this.submit());">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-icon btn-delete" title="Delete Brand">

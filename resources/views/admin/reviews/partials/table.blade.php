@@ -60,7 +60,7 @@
                             @endif
                         </form>
                         
-                        <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this review?');">
+                        <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this review?', () => this.submit());">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-action delete" title="Delete">

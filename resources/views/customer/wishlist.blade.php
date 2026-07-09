@@ -123,7 +123,7 @@
 @push('scripts')
 <script>
 function removeFromWishlist(id) {
-    if (confirm('Remove this item from wishlist?')) {
+    showConfirmModal('Remove this item from wishlist?', () => {
         fetch('{{ route('profile.remove-wishlist', ':id') }}'.replace(':id', id), {
             method: 'DELETE',
             headers: {
@@ -136,7 +136,7 @@ function removeFromWishlist(id) {
                 location.reload();
             }
         });
-    }
+    });
 }
 
 function addToCartFromWishlist(itemId) {

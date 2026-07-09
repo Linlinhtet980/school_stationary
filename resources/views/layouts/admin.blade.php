@@ -284,6 +284,7 @@
     <script src="{{ asset('js/page-loader.js') }}?v={{ time() }}"></script>
     @stack('scripts')
 
+    @include('partials.confirm_modal')
 </body>
 
 </html>

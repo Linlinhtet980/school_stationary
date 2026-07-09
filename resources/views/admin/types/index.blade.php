@@ -106,7 +106,7 @@
                                     <button onclick="editType({{ $type->id }}, '{{ htmlspecialchars($type->name, ENT_QUOTES) }}', '{{ $type->category_id }}', '{{ htmlspecialchars($type->description, ENT_QUOTES) }}', '{{ $type->status }}')" class="btn-icon btn-edit" title="Edit Type">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <form action="{{ route('admin.types.destroy', $type->id) }}" method="POST" class="form-inline" onsubmit="return confirm('Are you sure you want to delete this item type?');">
+                                    <form action="{{ route('admin.types.destroy', $type->id) }}" method="POST" class="form-inline" onsubmit="event.preventDefault(); showConfirmModal('Are you sure you want to delete this item type?', () => this.submit());">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-icon btn-delete" title="Delete Type">
