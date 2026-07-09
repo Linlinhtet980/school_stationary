@@ -45,12 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
 
-                alert("Order Placed Successfully! Thank you for shopping with us.");
+                showAlertModal("Order Placed Successfully! Thank you for shopping with us.", "Success");
                 window.location.href = "index.html"; // အောင်မြင်ပါက ပင်မစာမျက်နှာသို့ ပြန်ပို့မည်
 
             } catch (error) {
                 // Error ရှိပါက User ကို ပြမည်
-                alert(error.message);
+                showAlertModal(error.message, "Error");
                 console.error("Checkout Error:", error);
             }
         });

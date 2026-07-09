@@ -170,7 +170,7 @@
                     row.remove();
                     calculateOriginalPrice();
                 } else {
-                    alert('You must have at least one item in the bundle.');
+                    showAlertModal('You must have at least one item in the bundle.', 'Validation Error');
                 }
             }
         });

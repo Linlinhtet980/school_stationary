@@ -220,5 +220,6 @@
 
     <script src="{{ asset('js/page-loader.js') }}?v={{ time() }}"></script>
     @include('partials.confirm_modal')
+    @include('partials.alert_modal')
 </body>
 </html>

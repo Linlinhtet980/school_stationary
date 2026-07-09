@@ -203,9 +203,9 @@
                 const data = await response.json();
                 if (!response.ok || (data && data.success === false)) {
                     if (data.errors && data.errors.quantity) {
-                        alert(data.errors.quantity[0]);
+                        showAlertModal(data.errors.quantity[0], 'Error');
                     } else {
-                        alert(data.message || 'Cannot update quantity.');
+                        showAlertModal(data.message || 'Cannot update quantity.', 'Error');
                     }
                 } else {
                     window.location.reload();

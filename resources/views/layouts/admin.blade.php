@@ -285,6 +285,7 @@
     @stack('scripts')
 
     @include('partials.confirm_modal')
+    @include('partials.alert_modal')
 </body>
 
 </html>

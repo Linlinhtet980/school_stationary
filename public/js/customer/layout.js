@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const isAuthenticated = document.body.classList.contains('authenticated');
 
         if (!isAuthenticated) {
-            alert('Please login to add items to wishlist');
+            showAlertModal('Please login to add items to wishlist', 'Authentication Required');
             window.location.href = '/login';
             return;
         }
@@ -67,11 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                alert(data.message || 'Item added to wishlist successfully!');
+                showAlertModal(data.message || 'Item added to wishlist successfully!', 'Success');
             })
             .catch(error => {
                 console.error('Error adding to wishlist:', error);
-                alert(error.message || 'An error occurred. Please try again.');
+                showAlertModal(error.message || 'An error occurred. Please try again.', 'Error');
             });
     };
 
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const isAuthenticated = document.body.classList.contains('authenticated');
 
         if (!isAuthenticated) {
-            alert('Please login to add items to cart');
+            showAlertModal('Please login to add items to cart', 'Authentication Required');
             window.location.href = '/login';
             return;
         }
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
             if (!data.variant_id) {
-                alert('This product is not available');
+                showAlertModal('This product is not available', 'Not Available');
                 return;
             }
 
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Check if user is authenticated
             const isAuthenticated = document.body.classList.contains('authenticated');
             if (!isAuthenticated) {
-                alert('Please login to view your cart');
+                showAlertModal('Please login to view your cart', 'Authentication Required');
                 window.location.href = '/login';
                 return;
             }

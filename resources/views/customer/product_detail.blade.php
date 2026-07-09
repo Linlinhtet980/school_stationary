@@ -265,7 +265,7 @@
         
         // Need to select variant first if there are variants
         if (document.getElementById('variant_id') && !document.getElementById('variant_id').value) {
-            alert('Please select a variant first');
+            showAlertModal('Please select a variant first', 'Selection Required');
             return;
         }
         
@@ -281,7 +281,7 @@
         // Check if user is authenticated
         const isAuthenticated = document.body.classList.contains('authenticated');
         if (!isAuthenticated) {
-            alert('Please login to add items to cart');
+            showAlertModal('Please login to add items to cart', 'Authentication Required');
             window.location.href = '/login';
             return false;
         }
@@ -289,7 +289,7 @@
         const variantId = document.getElementById('variant_id') ? document.getElementById('variant_id').value : null;
         
         if (document.getElementById('variant_id') && !variantId) {
-            alert('Please select a variant');
+            showAlertModal('Please select a variant', 'Selection Required');
             return false;
         }
 

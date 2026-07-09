@@ -41,7 +41,7 @@ function removeVariantRow(button) {
         button.closest('tr').remove();
         updateRowIndices(); // ဖျက်ပြီးပါက Index များကို ပြန်ညှိပေးရန်
     } else {
-        alert("Warning: At least one variant is required for an item.");
+        showAlertModal("Warning: At least one variant is required for an item.", "Warning");
     }
 }
 
@@ -112,12 +112,12 @@ function deleteGalleryImage(imageId, csrfToken) {
                     }
                 }
             } else {
-                alert(data.message || 'Failed to delete image');
+                showAlertModal(data.message || 'Failed to delete image', 'Error');
             }
         })
         .catch(error => {
             console.error('Error deleting gallery image:', error);
-            alert('An error occurred while deleting the image.');
+            showAlertModal('An error occurred while deleting the image.', 'Error');
         });
     });
 }
