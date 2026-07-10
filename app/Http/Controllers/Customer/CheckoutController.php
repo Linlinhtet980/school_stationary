@@ -55,12 +55,11 @@ class CheckoutController extends Controller
             ->orderBy('is_default', 'desc')
             ->get();
 
-        // 1500 Ks shipping for bundle items, regular 3000 Ks otherwise (free over 50,000 Ks)
-        $hasBundleItems = collect($cart)->contains(fn($item) => !empty($item['bundle_id']));
-        $shipping = $hasBundleItems ? 1500 : ($subtotal < 50000 ? 3000 : 0);
-        $total    = $subtotal + $shipping;
+        $shippingRates = \App\Models\ShippingRate::all();
+        $shipping = 0; 
+        $total    = $subtotal;
 
-        return view('customer.checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'addresses'));
+        return view('customer.checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'addresses', 'shippingRates'));
     }
 
     public function process(Request $request)
@@ -99,10 +98,16 @@ class CheckoutController extends Controller
             ];
         }
 
-        // 1500 Ks shipping for bundle items, regular 3000 Ks otherwise (free over 50,000 Ks)
-        $hasBundleItems = collect($cart)->contains(fn($item) => !empty($item['bundle_id']));
-        $shipping = $hasBundleItems ? 1500 : ($subtotal < 50000 ? 3000 : 0);
-        $total    = $subtotal + $shipping;
+        $totalItems = collect($cart)->sum('quantity');
+        $shippingRate = \App\Models\ShippingRate::where('region_name', $request->region)->first();
+        
+        if ($shippingRate) {
+            $shipping = $shippingRate->base_fee + ($shippingRate->extra_fee_per_item * max(0, $totalItems - 1));
+        } else {
+            $shipping = 3000;
+        }
+        
+        $total = $subtotal + $shipping;
 
         Session::put('checkout_data', [
             'full_name'      => $request->full_name,

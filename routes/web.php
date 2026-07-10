@@ -153,6 +153,7 @@ Route::middleware(['auth', 'admin:super_admin,inventory_manager'])->group(functi
     Route::resource('admin/items', ItemController::class)->names('admin.items');
     Route::resource('admin/banners', BannerController::class)->names('admin.banners');
     Route::delete('admin/items/image/{id}', [ItemController::class, 'destroyImage'])->name('admin.items.destroyImage');
+    Route::resource('admin/shipping-rates', \App\Http\Controllers\Admin\ShippingRateController::class)->names('admin.shipping-rates');
 });
 
 // Bundles (Role 1 - Super Admin Only)

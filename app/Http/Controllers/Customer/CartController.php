@@ -58,12 +58,9 @@ class CartController extends Controller
         // Check if cart has any bundle items
         $hasBundleItems = collect($cart)->contains(fn($item) => !empty($item['bundle_id']));
 
-        // Shipping: bundle items = 1500 Ks, regular = 3000 Ks (free over 50,000 Ks)
-        if ($hasBundleItems) {
-            $shipping = 1500;
-        } else {
-            $shipping = $subtotal >= 50000 ? 0 : 3000;
-        }
+        // We now calculate shipping dynamically at checkout based on region.
+        // For the cart view, we just show 0 or an estimate.
+        $shipping = 0;
         $total = $subtotal + $shipping;
 
         return view('customer.cart', compact('cartItems', 'subtotal', 'shipping', 'total'));

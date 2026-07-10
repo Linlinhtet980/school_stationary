@@ -90,6 +90,12 @@
                     <span class="sb-item-label">Types</span>
                     <span class="sb-tooltip">Types</span>
                 </a>
+                <a href="{{ route('admin.shipping-rates.index') }}"
+                    class="sb-item {{ request()->routeIs('admin.shipping-rates.*') ? 'active' : '' }}">
+                    <i class="sb-item-icon fa-solid fa-truck"></i>
+                    <span class="sb-item-label">Shipping Rates</span>
+                    <span class="sb-tooltip">Shipping Rates</span>
+                </a>
             </div>
             @endif
 

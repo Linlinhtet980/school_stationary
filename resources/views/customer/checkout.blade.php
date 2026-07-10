@@ -106,16 +106,15 @@
                     </div>
                     <div class="form-group">
                         <label>City / Region</label>
-                        <input type="text" name="region" id="regionSelect" list="regionOptions" value="{{ old('region') }}"
-                            class="inline-style-53" placeholder="Select or type region..." required
-                            oninput="handleRegionChange()">
-                        <datalist id="regionOptions">
-                            <option value="Yangon">
-                            <option value="Mandalay">
-                            <option value="Naypyidaw">
-                            <option value="Bago">
-                            <option value="Shan State">
-                        </datalist>
+                        <select name="region" id="regionSelect" class="inline-style-53" required onchange="handleRegionChange()">
+                            <option value="">Select a region...</option>
+                            @foreach($shippingRates as $rate)
+                                <option value="{{ $rate->region_name }}" {{ old('region') == $rate->region_name ? 'selected' : '' }}>
+                                    {{ $rate->region_name }}
+                                </option>
+                            @endforeach
+                            <option value="Other" {{ old('region') == 'Other' ? 'selected' : '' }}>Other Regions</option>
+                        </select>
                         @error('region') <span class="error-msg">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -162,11 +161,11 @@
                     </div>
                     <div class="summary-row">
                         <span>Shipping</span>
-                        <span class="inline-style-64">{{ number_format($shipping) }} Ks</span>
+                        <span class="inline-style-64" id="shippingDisplay">{{ number_format($shipping) }} Ks</span>
                     </div>
                     <div class="summary-row total">
                         <span>Total</span>
-                        <span>{{ number_format($total) }} Ks</span>
+                        <span id="totalDisplay">{{ number_format($total) }} Ks</span>
                     </div>
                     <button type="submit" class="btn-checkout">
                         <i class="fa-solid fa-lock inline-style-65"></i> Place Order
@@ -216,6 +215,10 @@
             }
         }
 
+        const shippingRates = @json($shippingRates);
+        const subtotal = {{ $subtotal }};
+        const totalItems = {{ collect($cartItems)->sum('quantity') }};
+
         function handleRegionChange() {
             const region = document.getElementById('regionSelect').value.trim().toLowerCase();
             const btnCOD = document.getElementById('btnCOD');
@@ -233,6 +236,21 @@
                 }
                 codWarning.style.display = 'block';
             }
+
+            // Calculate Shipping Dynamically
+            let shipping = 3000; // default
+            if(region !== '') {
+                let foundRate = shippingRates.find(r => r.region_name.toLowerCase() === region);
+                if (foundRate) {
+                    shipping = foundRate.base_fee + (foundRate.extra_fee_per_item * Math.max(0, totalItems - 1));
+                }
+            } else {
+                shipping = 0; // Don't show shipping until region selected if you want, or show default. Let's show 0.
+            }
+
+            let total = subtotal + shipping;
+            document.getElementById('shippingDisplay').innerText = new Intl.NumberFormat('en-US').format(shipping) + ' Ks';
+            document.getElementById('totalDisplay').innerText = new Intl.NumberFormat('en-US').format(total) + ' Ks';
         }
 
         function selectPayment(method) {
