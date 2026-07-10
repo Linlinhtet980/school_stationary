@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         label: 'Total Sales (Ks)',
                         data: chartData.salesData,
-                        borderColor: '#3182CE',
+                        borderColor: '#ce5b31ff',
                         backgroundColor: 'rgba(49, 130, 206, 0.2)',
                         borderWidth: 2,
                         tension: 0.4,

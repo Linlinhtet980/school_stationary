@@ -326,12 +326,16 @@ class ShopController extends Controller
         }
 
         // Price range filtering
-        if ($request->filled('min_price') && $request->filled('max_price')) {
-            $query->whereBetween('price', [$request->min_price, $request->max_price]);
-        } elseif ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        } elseif ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+        if ($request->filled('min_price') || $request->filled('max_price')) {
+            $minPrice = $request->filled('min_price') ? $request->min_price : 0;
+            $maxPrice = $request->filled('max_price') ? $request->max_price : 999999999;
+            
+            $query->where(function($q) use ($minPrice, $maxPrice) {
+                $q->whereBetween('price', [$minPrice, $maxPrice])
+                  ->orWhereHas('variants', function($vq) use ($minPrice, $maxPrice) {
+                      $vq->whereBetween('price', [$minPrice, $maxPrice]);
+                  });
+            });
         }
 
         // Stock filtering

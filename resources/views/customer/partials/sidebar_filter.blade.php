@@ -7,18 +7,18 @@
     <form action="{{ $action }}" method="GET" id="filterForm">
         
         <!-- Accordion Category/Type -->
-        <div class="accordion-item filter-group">
+        <div class="accordion-item filter-group {{ request('type') || request('category') || empty(request()->except('page', 'sort')) ? 'active' : '' }}">
             <div class="accordion-header filter-title" onclick="toggleAccordion(this)">
                 <span><i class="fa-solid fa-list-ul" style="margin-right: 8px; color: var(--primary);"></i>Categories</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-content">
                 <ul class="filter-list">
-                    <li>
-                        <label class="custom-radio">
+                    <li style="margin-bottom: 12px;">
+                        <label class="visual-pill {{ !request('type') ? 'active' : '' }}">
                             <input type="radio" name="type" value="" {{ !request('type') ? 'checked' : '' }}
                                 onchange="document.getElementById('filterForm').submit();">
-                            All Categories
+                            <span>All Categories</span>
                         </label>
                     </li>
                     @foreach($categories as $category)
@@ -30,12 +30,12 @@
                                 @endif
                             </div>
                             @if($category->types->count() > 0)
-                                <ul class="type-list sub-accordion-content">
+                                <ul class="pill-list sub-accordion-content" style="margin-top: 8px;">
                                     @foreach($category->types as $type)
                                         <li>
-                                            <label class="custom-radio">
+                                            <label class="visual-pill {{ request('type') == $type->id ? 'active' : '' }}">
                                                 <input type="radio" name="type" value="{{ $type->id }}" {{ request('type') == $type->id ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
-                                                {{ $type->name }}
+                                                <span>{{ $type->name }}</span>
                                             </label>
                                         </li>
                                     @endforeach
@@ -48,16 +48,16 @@
         </div>
 
         <!-- Accordion Brand -->
-        <div class="accordion-item filter-group">
+        <div class="accordion-item filter-group {{ request('brand') ? 'active' : '' }}">
             <div class="accordion-header filter-title" onclick="toggleAccordion(this)">
                 <span><i class="fa-solid fa-tags" style="margin-right: 8px; color: var(--primary);"></i>Brands</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-content">
                 <input type="text" id="brandSearch" class="brand-search-input" placeholder="Search brands..." onkeyup="filterBrands()">
-                <ul class="filter-list" id="brandList">
+                <ul class="pill-list" id="brandList">
                     <li class="brand-item">
-                        <label class="custom-radio">
+                        <label class="visual-pill {{ !request('brand') ? 'active' : '' }}">
                             <input type="radio" name="brand" value="" {{ !request('brand') ? 'checked' : '' }}
                                 onchange="document.getElementById('filterForm').submit();">
                             <span class="brand-name">All Brands</span>
@@ -65,7 +65,7 @@
                     </li>
                     @foreach($brands as $brand)
                         <li class="brand-item">
-                            <label class="custom-radio">
+                            <label class="visual-pill {{ request('brand') == $brand->id ? 'active' : '' }}">
                                 <input type="radio" name="brand" value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
                                 <span class="brand-name">{{ $brand->name }}</span>
                             </label>
@@ -76,16 +76,22 @@
         </div>
 
         <!-- Accordion Price -->
-        <div class="accordion-item filter-group">
+        <div class="accordion-item filter-group {{ request('min_price') || request('max_price') ? 'active' : '' }}">
             <div class="accordion-header filter-title" onclick="toggleAccordion(this)">
                 <span><i class="fa-solid fa-wallet" style="margin-right: 8px; color: var(--primary);"></i>Price Range</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-content">
-                <div class="filter-price">
-                    <input type="number" name="min_price" placeholder="Min Ks" value="{{ request('min_price') }}">
-                    <span>-</span>
-                    <input type="number" name="max_price" placeholder="Max Ks" value="{{ request('max_price') }}">
+                <div class="price-slider-container">
+                    <div class="price-display">
+                        <span id="minPriceDisplay">{{ request('min_price', 0) }} Ks</span>
+                        <span id="maxPriceDisplay">{{ request('max_price', 100000) }} Ks</span>
+                    </div>
+                    <div class="range-slider">
+                        <div class="progress" id="sliderProgress"></div>
+                        <input type="range" name="min_price" id="minPriceInput" min="0" max="100000" value="{{ request('min_price', 0) }}" step="1000" oninput="updateSlider()">
+                        <input type="range" name="max_price" id="maxPriceInput" min="0" max="100000" value="{{ request('max_price', 100000) }}" step="1000" oninput="updateSlider()">
+                    </div>
                 </div>
                 <button type="submit" class="btn-apply-filter">Apply Filter</button>
             </div>
@@ -126,4 +132,28 @@ function filterBrands() {
         }
     }
 }
+
+function updateSlider() {
+    let minPrice = parseInt(document.getElementById('minPriceInput').value);
+    let maxPrice = parseInt(document.getElementById('maxPriceInput').value);
+    const maxAllowed = parseInt(document.getElementById('maxPriceInput').max);
+
+    if (minPrice > maxPrice) {
+        let temp = minPrice;
+        minPrice = maxPrice;
+        maxPrice = temp;
+    }
+
+    document.getElementById('minPriceDisplay').innerText = minPrice + ' Ks';
+    document.getElementById('maxPriceDisplay').innerText = maxPrice + ' Ks';
+
+    const progress = document.getElementById('sliderProgress');
+    progress.style.left = (minPrice / maxAllowed) * 100 + '%';
+    progress.style.right = 100 - (maxPrice / maxAllowed) * 100 + '%';
+}
+
+// Initialize slider on load
+document.addEventListener('DOMContentLoaded', function() {
+    updateSlider();
+});
 </script>
