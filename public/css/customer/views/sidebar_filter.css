@@ -4,6 +4,7 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    width: 100% !important; /* Override prototype.css 250px width */
 }
 
 .accordion-item {
@@ -59,14 +60,22 @@
     color: #444;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; /* keep vertical center if it wraps */
+    align-items: flex-start; /* Actually flex-start might be better if it wraps */
     cursor: pointer;
     user-select: none;
+    line-height: 1.5;
+    gap: 10px;
+}
+.category-name-header span {
+    flex: 1;
 }
 .category-name-header .fa-chevron-down {
     transition: transform 0.3s ease;
     font-size: 0.8rem;
     color: #888;
+    margin-top: 5px; /* align with first line if flex-start */
+    flex-shrink: 0;
 }
 .category-tree-node.active .category-name-header .fa-chevron-down {
     transform: rotate(180deg);

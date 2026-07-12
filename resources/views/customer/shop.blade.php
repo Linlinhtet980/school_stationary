@@ -1,7 +1,7 @@
 @extends('layouts.customer')
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/customer/views/shop.css') }}?v=3">
-    <link rel="stylesheet" href="{{ asset('css/customer/views/sidebar_filter.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/customer/views/sidebar_filter.css') }}?v={{ time() }}">
 @endpush
 
 @section('title', 'Campus Supply - Shop')

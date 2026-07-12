@@ -47,8 +47,11 @@
 
 .shop-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 325px 1fr;
     gap: 2rem;
+    padding: 2rem; /* Align with logo padding */
+    max-width: none;
+    margin: 0;
 }
 
 @media (max-width: 768px) {
