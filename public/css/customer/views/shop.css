@@ -365,7 +365,7 @@
         padding: 1rem;
     }
 }
-@media (max-width: 400px) {
+@media (max-width: 426px) {
     .product-grid {
         grid-template-columns: 1fr !important;
     }

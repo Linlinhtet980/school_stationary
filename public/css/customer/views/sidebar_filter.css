@@ -4,7 +4,11 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    width: 100% !important; /* Override prototype.css 250px width */
+}
+@media (min-width: 992px) {
+    .sidebar {
+        width: 100% !important; /* Override prototype.css 250px width only on desktop */
+    }
 }
 
 .accordion-item {
