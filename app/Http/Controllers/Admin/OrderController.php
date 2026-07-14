@@ -51,10 +51,16 @@ class OrderController extends Controller
             'payment_status' => 'required|in:pending,paid,failed',
         ]);
 
+        $oldStatus = $order->status;
+        
         $order->update([
             'status' => $request->status,
             'payment_status' => $request->payment_status,
         ]);
+
+        if ($oldStatus !== $request->status) {
+            $order->user->notify(new \App\Notifications\OrderStatusChanged($order));
+        }
 
         return redirect()->route('admin.orders.show', $order->id)
                          ->with('success', 'Order status updated successfully.');
@@ -70,11 +76,13 @@ class OrderController extends Controller
             if ($request->action === 'verify') {
                 $order->payment->update(['status' => 'verified']);
                 $order->update(['payment_status' => 'paid', 'status' => 'processing']);
+                $order->user->notify(new \App\Notifications\OrderStatusChanged($order));
                 $msg = 'Payment verified and order status updated to processing.';
             } else {
                 $order->payment->update(['status' => 'rejected']);
-                $order->update(['payment_status' => 'failed']);
-                $msg = 'Payment rejected.';
+                $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
+                $order->user->notify(new \App\Notifications\OrderStatusChanged($order));
+                $msg = 'Payment rejected and order cancelled.';
             }
 
             return redirect()->route('admin.orders.show', $order->id)->with('success', $msg);

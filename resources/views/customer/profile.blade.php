@@ -107,21 +107,21 @@
                         @foreach($wishlistItems as $wish)
                             @if($wish->item)
                                 <div class="wishlist-card">
-                                    <form action="{{ route('profile.remove-wishlist', $wish->id) }}" method="POST"
-                                        style="position:absolute; top:10px; right:10px;">
+                                    <form action="{{ route('profile.remove-wishlist', $wish->id) }}" method="POST">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="wishlist-remove" title="Remove"><i
                                                 class="fa-solid fa-times"></i></button>
                                     </form>
-                                    <img src="{{ $wish->item->images->first() ? asset('storage/' . $wish->item->images->first()->image_path) : asset('images/placeholder.jpg') }}"
-                                        alt="{{ $wish->item->name }}">
-                                    <div class="wishlist-name">{{ Str::limit($wish->item->name, 30) }}</div>
-                                    <div class="wishlist-price">{{ number_format($wish->item->price) }} Ks</div>
+                                    <a href="{{ route('shop.show', $wish->item->id) }}" style="text-decoration: none; display: block;">
+                                        <img src="{{ $wish->item->images->first() ? asset('storage/' . $wish->item->images->first()->image_path) : asset('images/placeholder.jpg') }}"
+                                            alt="{{ $wish->item->name }}">
+                                        <div class="wishlist-name" title="{{ $wish->item->name }}">{{ Str::limit($wish->item->name, 40) }}</div>
+                                        <div class="wishlist-price">{{ $wish->item->price_range }}</div>
+                                    </a>
                                     <div class="wishlist-actions">
-                                        <a href="{{ route('shop.show', $wish->item->id) }}" class="btn-view-detail">View</a>
                                         <form action="{{ route('cart.add-item', $wish->item->id) }}" method="POST" style="flex:1;">
                                             @csrf
-                                            <button class="btn-add-cart-wl inline-style-107" type="submit">
+                                            <button class="btn-add-cart-wl inline-style-107" type="submit" style="width: 100%;">
                                                 <i class="fa-solid fa-cart-shopping"></i> Add to Cart
                                             </button>
                                         </form>

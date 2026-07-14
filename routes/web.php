@@ -124,6 +124,10 @@ Route::middleware('auth')->group(function () {
 
         // Review routes
         Route::post('/review', 'storeReview')->name('profile.add-review');
+
+        // Notification routes
+        Route::post('/notifications/mark-all-read', 'markAllNotificationsAsRead')->name('profile.notifications.markAllRead');
+        Route::get('/notifications/{id}/read', 'markNotificationAsRead')->name('profile.notifications.markRead');
     });
 });
 

@@ -299,4 +299,33 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Thank you for your review! It will be visible once approved by an admin.');
     }
+
+    /**
+     * Mark all notifications as read
+     */
+    public function markAllNotificationsAsRead()
+    {
+        Auth::user()->unreadNotifications->markAsRead();
+        return back();
+    }
+
+    /**
+     * Mark a specific notification as read and redirect
+     */
+    public function markNotificationAsRead($id)
+    {
+        $notification = Auth::user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        // Check type and redirect accordingly
+        if ($notification->type == 'order_status' && isset($notification->data['order_id'])) {
+            return redirect()->route('customer.orders.show', $notification->data['order_id']);
+        }
+
+        if (in_array($notification->type, ['wishlist_back_in_stock', 'wishlist_low_stock']) && isset($notification->data['item_id'])) {
+            return redirect()->route('shop.show', $notification->data['item_id']);
+        }
+
+        return back();
+    }
 }

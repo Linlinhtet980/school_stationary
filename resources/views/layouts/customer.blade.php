@@ -57,6 +57,51 @@
                         <a href="{{ route('profile.index') }}" class="inline-style-125"><i class="fa-regular fa-user"></i></a>
                         <a href="{{ route('profile.wishlist') }}" class="inline-style-126"><i class="fa-regular fa-heart"></i></a>
                         
+                        <!-- Notification Dropdown -->
+                        <div class="notification-dropdown-container" style="position: relative; display: inline-block;">
+                            <a href="#" id="notiIconBtn" class="inline-style-126" onclick="document.getElementById('notiDropdown').classList.toggle('show'); return false;">
+                                <div class="cart-wrapper">
+                                    <i class="fa-regular fa-bell"></i>
+                                    @if(auth()->user()->unreadNotifications->count() > 0)
+                                        <span class="cart-badge">{{ auth()->user()->unreadNotifications->count() }}</span>
+                                    @endif
+                                </div>
+                            </a>
+                            <div id="notiDropdown" class="noti-dropdown">
+                                <div class="noti-header">
+                                    <h4>Notifications</h4>
+                                    @if(auth()->user()->unreadNotifications->count() > 0)
+                                        <form action="{{ route('profile.notifications.markAllRead') }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="mark-read-btn">Mark all as read</button>
+                                        </form>
+                                    @endif
+                                </div>
+                                <div class="noti-body">
+                                    @forelse(auth()->user()->notifications()->take(5)->get() as $notification)
+                                        <a href="{{ route('profile.notifications.markRead', $notification->id) }}" class="noti-item {{ $notification->read_at ? '' : 'unread' }}">
+                                            <div class="noti-icon">
+                                                @if(isset($notification->data['type']) && $notification->data['type'] == 'order_status')
+                                                    <i class="fa-solid fa-box"></i>
+                                                @else
+                                                    <i class="fa-solid fa-heart"></i>
+                                                @endif
+                                            </div>
+                                            <div class="noti-content">
+                                                <p>{{ $notification->data['message'] ?? 'New notification' }}</p>
+                                                <small>{{ $notification->created_at->diffForHumans() }}</small>
+                                            </div>
+                                        </a>
+                                    @empty
+                                        <div class="noti-empty">No notifications yet.</div>
+                                    @endforelse
+                                </div>
+                                <div class="noti-footer">
+                                    <a href="{{ route('profile.index') }}">View all in Profile</a>
+                                </div>
+                            </div>
+                        </div>
+
                         <a href="#" id="cartIconBtn" class="inline-style-129">
                             <div class="cart-wrapper">
                                 <i class="fa-solid fa-cart-shopping"></i>

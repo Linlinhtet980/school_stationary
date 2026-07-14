@@ -188,6 +188,7 @@ class ItemController extends Controller
         DB::beginTransaction();
 
         try {
+            $oldTotalStock = $item->total_stock;
             $data = $request->except(['image', 'gallery_images', 'variants', '_method', '_token']);
             
             // အဆင့် (၁) - ပုံအသစ်ပါလာရင် ပုံဟောင်းကိုဖျက်ပြီး ပုံသစ်ကို သိမ်းပါမယ်
@@ -244,6 +245,27 @@ class ItemController extends Controller
 
                 // Delete variants that were removed from the form
                 $item->variants()->whereNotIn('id', $submittedVariantIds)->delete();
+            }
+
+            // Reload variants to calculate new total stock accurately
+            $item->load('variants');
+            $newTotalStock = $item->total_stock;
+
+            // Trigger Notifications
+            if ($oldTotalStock == 0 && $newTotalStock > 0) {
+                $wishlists = \App\Models\Wishlist::where('item_id', $item->id)->with('user')->get();
+                foreach ($wishlists as $wishlist) {
+                    if ($wishlist->user) {
+                        $wishlist->user->notify(new \App\Notifications\WishlistBackInStock($item));
+                    }
+                }
+            } elseif ($oldTotalStock > 5 && $newTotalStock > 0 && $newTotalStock <= 5) {
+                $wishlists = \App\Models\Wishlist::where('item_id', $item->id)->with('user')->get();
+                foreach ($wishlists as $wishlist) {
+                    if ($wishlist->user) {
+                        $wishlist->user->notify(new \App\Notifications\WishlistLowStock($item));
+                    }
+                }
             }
 
             // အဆင့် (၄) - ပုံအပို (Gallery Images) အသစ်တွေ ထပ်ပါလာရင် သိမ်းပါမယ်
