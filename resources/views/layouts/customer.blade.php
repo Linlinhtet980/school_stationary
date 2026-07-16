@@ -266,5 +266,33 @@
     <script src="{{ asset('js/page-loader.js') }}?v={{ time() }}"></script>
     @include('partials.confirm_modal')
     @include('partials.alert_modal')
+
+    @if(!Auth::check())
+    <style>
+        .guest-disabled-cart {
+            cursor: not-allowed !important;
+            opacity: 0.65 !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all possible Add to Cart buttons including those with inline onclick
+            const cartButtons = document.querySelectorAll('form[action*="/cart/add"] button[type="submit"], .btn-add-cart, .btn-add-cart-wl, .btn-add');
+            
+            cartButtons.forEach(btn => {
+                btn.classList.add('guest-disabled-cart');
+                
+                // Remove inline onclick so it doesn't trigger addToCart()
+                btn.removeAttribute('onclick');
+                
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showAlertModal('ဝယ်ယူရန်အတွက် ကျေးဇူးပြု၍ Login အရင်ဝင်ပါ ခင်ဗျာ။', 'Login Required');
+                });
+            });
+        });
+    </script>
+    @endif
 </body>
 </html>
